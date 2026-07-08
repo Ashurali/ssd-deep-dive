@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flash Timing &amp; Parallelism Lab — pipelining, planes, AIPR</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{font:600 14px "Space Grotesk";background:var(--panel);color:var(--dim);border:1px solid var(--line);border-radius:9px;padding:8px 14px;cursor:pointer}
+.tabs button.on{color:var(--bg);background:var(--cyan);border-color:var(--cyan)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
+button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{background:rgba(77,208,196,.12)}
+button.amber{color:var(--amber);border-color:var(--amber)}
+button.tgl.on{background:var(--cyan);color:var(--bg)}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.meter{font-family:"IBM Plex Mono";font-size:15px;color:var(--amber)}
+.note{color:var(--dim);font-size:13px;margin-top:6px}
+svg{display:block;width:100%;height:auto}
+.hidden{display:none}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>The <span class="a">flash timing</span> &amp; parallelism lab</h1>
+<p class="sub">Firmware performance work is reasoning about these timelines. Four scenes, from one shared bus to BiCS-style independent planes.</p>
+
+<div class="tabs">
+  <button id="t0" class="on">1 · One bus, four dies</button>
+  <button id="t1">2 · Register pipelining</button>
+  <button id="t2">3 · Multi-plane</button>
+  <button id="t3">4 · AIPR (the missing figure)</button>
+</div>
+
+<!-- scene 1: CE select -->
+<div class="panel" id="s0">
+  <div class="row"><button class="amber" id="busGo">run: read on die 0, then program on die 2</button></div>
+  <svg id="busSvg" viewBox="0 0 960 260"></svg>
+  <p class="note">One channel = one shared 8-bit bus. <b>CE#</b> picks which die is listening; <b>CLE/ALE</b> flags say whether the bytes on the pins are a command, an address, or data. Eight pins carry everything — that's why channel time is precious and long media operations should never hog it. (Fig 2-8, 3-31→3-35)</p>
+</div>
+
+<!-- scene 2: pipelining -->
+<div class="panel hidden" id="s1">
+  <div class="row">
+    <button class="tgl on" id="pipeTgl">cache-register pipelining ON</button>
+    <span class="meter" id="pipeTotal"></span>
+  </div>
+  <svg id="pipeSvg" viewBox="0 0 960 240"></svg>
+  <p class="note">Reading 4 pages with the book's own numbers (media→register <b>50 µs</b> read + register→controller <b>50 µs</b> transfer, drawn to scale). With the cache register, page N+1 loads from media <em>while</em> page N streams out — the transfers hide under the loads. Toggle it off and watch the timeline stretch. (Fig 3-8, §3.1.3's arithmetic)</p>
+</div>
+
+<!-- scene 3: dual plane -->
+<div class="panel hidden" id="s2">
+  <div class="row">
+    <button class="tgl" id="planeTgl">dual-plane OFF</button>
+    <span class="meter" id="planeTotal"></span>
+  </div>
+  <svg id="planeSvg" viewBox="0 0 960 200"></svg>
+  <p class="note">Programming two pages (1.5 ms program, 50 µs data-in each). Single-plane: strictly serial. Dual-plane: one command programs both planes at once — 2 pages ≈ 1.5 ms + 2×50 µs instead of 2×(1.5 ms + 50 µs). Nearly double throughput, same die. (Figs 3-36→3-38 plane bits)</p>
+</div>
+
+<!-- scene 4: AIPR -->
+<div class="panel hidden" id="s3">
+  <div class="row">
+    <button class="tgl" id="aiprTgl">independent planes (AIPR) OFF</button>
+    <button class="amber" id="aiprGo">fire 2 random reads at the same die</button>
+    <label><input type="checkbox" id="stripeChk"> stripe hot data across planes</label>
+    <span class="meter" id="aiprLat"></span>
+  </div>
+  <svg id="aiprSvg" viewBox="0 0 960 200"></svg>
+  <p class="note">Classic lockstep: the die is one worker — the second read <em>queues</em> (tail-latency spike). AIPR: each plane is its own worker — concurrent reads, <em>if they hit different planes</em>. Same-plane collisions still serialize, which is why placement (striping hot data) matters. This is the 2nd edition's §5.4.3 — and BiCS8's read-QoS story — drawn as the figure the book never had.</p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 2-8, 3-8, 3-31→3-41 and the 2nd-edition AIPR addendum (CH2 p. 10; CH3 pp. 8, 33–41) — Cluster E of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS="http://www.w3.org/2000/svg";
+function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
+function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"start"});e.textContent=s;return e;}
+
+const scn=["s0","s1","s2","s3"],tb=["t0","t1","t2","t3"];
+tb.forEach((t,i)=>$(t).onclick=()=>{scn.forEach((s,j)=>$(s).classList.toggle("hidden",i!==j));tb.forEach((u,j)=>$(u).classList.toggle("on",i===j));});
+
+/* Gantt renderer: rows=[{label}], bars=[{row,t0,t1,color,label}] ; animated reveal to `until` */
+function gantt(svg,rows,bars,tmax,until,unit){
+  svg.innerHTML="";
+  const X0=150,W=780,rh=34;
+  rows.forEach((r,i)=>{
+    txt(svg,10,34+i*rh+16,r,"#8ea0c9",12);
+    mk(svg,"line",{x1:X0,x2:X0+W,y1:34+i*rh+24,y2:34+i*rh+24,stroke:"#1a2342"});
+  });
+  bars.forEach(b=>{
+    if(b.t0>=until)return;
+    const t1=Math.min(b.t1,until);
+    mk(svg,"rect",{x:X0+b.t0/tmax*W,y:34+b.row*rh+2,width:Math.max(1,(t1-b.t0)/tmax*W),height:20,rx:4,fill:b.color,opacity:0.85});
+    if(t1-b.t0>tmax*0.05) txt(svg,X0+(b.t0+t1)/2/tmax*W,34+b.row*rh+16,b.label,"#0b1020",10,"middle");
+  });
+  for(let t=0;t<=tmax;t+=tmax/8){
+    txt(svg,X0+t/tmax*W,26,Math.round(t)+unit,"#3a4468",9,"middle");
+  }
+  // playhead
+  mk(svg,"line",{x1:X0+Math.min(until,tmax)/tmax*W,x2:X0+Math.min(until,tmax)/tmax*W,y1:30,y2:34+rows.length*rh,stroke:"#e8eeff","stroke-dasharray":"3 3"});
+}
+function play(svg,rows,bars,tmax,unit,doneCb){
+  if(RM){gantt(svg,rows,bars,tmax,tmax,unit);doneCb&&doneCb();return;}
+  let t=0;
+  const iv=setInterval(()=>{
+    t+=tmax/90;
+    gantt(svg,rows,bars,tmax,t,unit);
+    if(t>=tmax){clearInterval(iv);doneCb&&doneCb();}
+  },28);
+}
+
+/* ---------- scene 1: shared bus ---------- */
+$("busGo").onclick=()=>{
+  const rows=["channel bus (8 pins)","die 0 (CE0#)","die 1","die 2 (CE2#)","die 3"];
+  const C="#a78bfa",A="#f2b13c",D="#4dd0c4",M="#3a4468";
+  const bars=[
+    {row:0,t0:0,t1:4,color:C,label:"CMD 00h"},{row:0,t0:4,t1:12,color:A,label:"ADDR ×5"},
+    {row:1,t0:12,t1:52,color:M,label:"tR — media busy (bus FREE)"},
+    {row:0,t0:14,t1:18,color:C,label:"CMD 80h"},{row:0,t0:18,t1:26,color:A,label:"ADDR"},
+    {row:0,t0:26,t1:46,color:D,label:"DATA-IN → die 2"},
+    {row:3,t0:46,t1:100,color:M,label:"tPROG — media busy"},
+    {row:0,t0:52,t1:72,color:D,label:"DATA-OUT ← die 0"},
+  ];
+  play($("busSvg"),rows,bars,100,"");
+};
+$("busGo").click();
+
+/* ---------- scene 2: pipelining ---------- */
+let pipeOn=true;
+function pipeRun(){
+  const rows=["media → cache register","register → controller"];
+  const bars=[];let total;
+  if(pipeOn){
+    for(let p=0;p<4;p++){
+      bars.push({row:0,t0:p*50,t1:p*50+50,color:"#3a4468",label:"load P"+p+" (50µs)"});
+      bars.push({row:1,t0:(p+1)*50,t1:(p+1)*50+50,color:"#4dd0c4",label:"xfer P"+p});
+    }
+    total=250;
+  } else {
+    for(let p=0;p<4;p++){
+      bars.push({row:0,t0:p*100,t1:p*100+50,color:"#3a4468",label:"load P"+p});
+      bars.push({row:1,t0:p*100+50,t1:p*100+100,color:"#4dd0c4",label:"xfer P"+p});
+    }
+    total=400;
+  }
+  play($("pipeSvg"),rows,bars,400,"µs",()=>{
+    $("pipeTotal").textContent="4 pages in "+total+" µs "+(pipeOn?"(transfers hidden under loads)":"(strictly serial)");
+  });
+}
+$("pipeTgl").onclick=e=>{pipeOn=!pipeOn;e.target.classList.toggle("on",pipeOn);e.target.textContent="cache-register pipelining "+(pipeOn?"ON":"OFF");pipeRun();};
+pipeRun();
+
+/* ---------- scene 3: dual plane ---------- */
+let dual=false;
+function planeRun(){
+  const rows=["bus (data-in)","plane 0","plane 1"];
+  const bars=[];let total;
+  if(dual){
+    bars.push({row:0,t0:0,t1:50,color:"#4dd0c4",label:"data P0"});
+    bars.push({row:0,t0:50,t1:100,color:"#4dd0c4",label:"data P1"});
+    bars.push({row:1,t0:100,t1:1600,color:"#3a4468",label:"tPROG both planes together (1.5ms)"});
+    bars.push({row:2,t0:100,t1:1600,color:"#3a4468",label:"tPROG"});
+    total=1600;
+  } else {
+    bars.push({row:0,t0:0,t1:50,color:"#4dd0c4",label:"data P0"});
+    bars.push({row:1,t0:50,t1:1550,color:"#3a4468",label:"tPROG (1.5ms)"});
+    bars.push({row:0,t0:1550,t1:1600,color:"#4dd0c4",label:"data P1"});
+    bars.push({row:2,t0:1600,t1:3100,color:"#3a4468",label:"tPROG (1.5ms)"});
+    total=3100;
+  }
+  play($("planeSvg"),rows,bars,3100,"µs",()=>{
+    $("planeTotal").textContent="2 pages in "+(total/1000).toFixed(2)+" ms — "+(dual?"≈2× throughput":"serial baseline");
+  });
+}
+$("planeTgl").onclick=e=>{dual=!dual;e.target.classList.toggle("on",dual);e.target.textContent="dual-plane "+(dual?"ON":"OFF");planeRun();};
+planeRun();
+
+/* ---------- scene 4: AIPR ---------- */
+let aipr=false;
+$("aiprTgl").onclick=e=>{aipr=!aipr;e.target.classList.toggle("on",aipr);e.target.textContent="independent planes (AIPR) "+(aipr?"ON":"OFF");};
+$("aiprGo").onclick=()=>{
+  const stripe=$("stripeChk").checked;
+  const samePlane = aipr && !stripe && Math.random()<0.5;
+  const rows=["plane 0","plane 1"];
+  const bars=[];let lat2;
+  if(!aipr){
+    bars.push({row:0,t0:0,t1:60,color:"#4dd0c4",label:"read A (60µs)"});
+    bars.push({row:0,t0:60,t1:120,color:"#f2b13c",label:"read B — queued behind A"});
+    lat2=120;
+  } else if(samePlane){
+    bars.push({row:0,t0:0,t1:60,color:"#4dd0c4",label:"read A"});
+    bars.push({row:0,t0:60,t1:120,color:"#f2b13c",label:"read B — same-plane collision!"});
+    lat2=120;
+  } else {
+    bars.push({row:0,t0:0,t1:60,color:"#4dd0c4",label:"read A"});
+    bars.push({row:1,t0:0,t1:60,color:"#f2b13c",label:"read B — concurrent"});
+    lat2=60;
+  }
+  play($("aiprSvg"),rows,bars,120,"µs",()=>{
+    $("aiprLat").textContent="read B latency: "+lat2+" µs"+(samePlane?" (unlucky placement)":"")+(aipr&&stripe?" (striping made the collision impossible)":"");
+  });
+};
+$("aiprGo").click();
+</script>
+</body>
+</html>

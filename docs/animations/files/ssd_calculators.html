@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The SSD Calculator Bundle — bandwidth, WA/TBW, endurance, QoS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{font:600 14px "Space Grotesk";background:var(--panel);color:var(--dim);border:1px solid var(--line);border-radius:9px;padding:8px 14px;cursor:pointer}
+.tabs button.on{color:var(--bg);background:var(--cyan);border-color:var(--cyan)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:8px 0}
+label{color:var(--dim);font-size:13px}
+input[type=range]{accent-color:var(--cyan);width:160px;vertical-align:middle}
+select{font:13px "IBM Plex Mono";background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+button.act{font:600 13px "IBM Plex Sans";background:transparent;color:var(--amber);border:1px solid var(--amber);border-radius:8px;padding:5px 11px;cursor:pointer}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.big{font-family:"IBM Plex Mono";font-size:22px;color:var(--amber)}
+.out{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;font-family:"IBM Plex Mono";font-size:13px;line-height:1.9}
+.out b{color:var(--cyan)}
+.note{color:var(--dim);font-size:13px;margin-top:8px}
+svg{display:block;width:100%;height:auto}
+.hidden{display:none}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>The <span class="a">calculator</span> bundle</h1>
+<p class="sub">The book's formula figures as live number-crunchers. Presets reproduce the worked examples from the guides.</p>
+
+<div class="tabs">
+  <button id="t0" class="on">J1 · PCIe bandwidth</button>
+  <button id="t1">J2 · OP ↔ WA ↔ TBW</button>
+  <button id="t2">J3 · Endurance sampling</button>
+  <button id="t3">J4 · QoS "nines"</button>
+</div>
+
+<!-- J1 -->
+<div class="panel" id="p0">
+  <div class="row">
+    <label>generation <select id="gen"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></label>
+    <label>lanes <select id="lanes"><option>1</option><option>2</option><option selected>4</option><option>8</option><option>16</option></select></label>
+    <label>MPS <span class="mono" id="mpsV">256</span> B</label><input type="range" id="mps" min="7" max="12" value="8" step="1">
+  </div>
+  <div class="out" id="o0"></div>
+  <p class="note">Raw bits/s × encoding efficiency = usable link rate; every TLP then pays ~24–28 B of header per MPS-byte payload — the §5.13 overhead model. The book's Gen3 ×4 example lands at ~1.9 GB/s effective with MPS 512, exactly what a good NVMe drive achieves. IOPS ceiling = effective bandwidth ÷ 4 KB.</p>
+</div>
+
+<!-- J2 -->
+<div class="panel hidden" id="p1">
+  <div class="row">
+    <label>capacity <span class="mono" id="capV">200</span> GB</label><input type="range" id="cap" min="120" max="4000" value="200" step="40">
+    <label>P/E cycles <span class="mono" id="pecV">3000</span></label><input type="range" id="pec" min="500" max="30000" value="3000" step="500">
+    <label>OP <span class="mono" id="opV">28</span>%</label><input type="range" id="opR" min="7" max="100" value="28">
+    <label>warranty <span class="mono" id="yrV">5</span> yr</label><input type="range" id="yr" min="1" max="10" value="5">
+    <button class="act" id="s3710">S3710 preset</button>
+  </div>
+  <div class="out" id="o1"></div>
+  <svg id="waPlot" viewBox="0 0 940 190"></svg>
+  <p class="note">WA here is the book's worst-case model (garbage spread evenly): WA = (1+OP)/OP — real greedy GC does better, so treat it as an upper bound. Then TBW ≈ capacity × P/E ÷ WA and DWPD = TBW ÷ (365 × years × capacity). The curve is Fig 4-25 recomputed live.</p>
+</div>
+
+<!-- J3 -->
+<div class="panel hidden" id="p2">
+  <div class="row">
+    <label>FFR <span class="mono" id="ffrV">3</span>%</label><input type="range" id="ffr" min="1" max="10" value="3">
+    <label>UBER 1e-<span class="mono" id="uberV">16</span></label><input type="range" id="uber" min="14" max="18" value="16">
+    <label>TBW <span class="mono" id="tbwV">100</span></label><input type="range" id="tbw" min="20" max="2000" value="100" step="20">
+    <label>hours needed <span class="mono" id="hrsV">400</span></label><input type="range" id="hrs" min="50" max="3000" value="400" step="50">
+  </div>
+  <div class="out" id="o2"></div>
+  <p class="note">JESD218A's two inequalities with UCL(0 failures)=0.92; allowed data errors comes from reverse-looking-up the UCL table (0.92, 2.02, 3.11, 4.18, 5.24…). The temperature row uses the book's Table 7-9 shape: hotter = shorter. Defaults reproduce the Ch7 §7.8 worked example: 31 drives, ≤1 data error, 66 °C.</p>
+</div>
+
+<!-- J4 -->
+<div class="panel hidden" id="p3">
+  <div class="row">
+    <label>tail heaviness <span class="mono" id="tailV">moderate</span></label><input type="range" id="tail" min="1" max="10" value="4">
+    <label>confidence: <span class="big" id="ninesLab">99.9%</span></label><input type="range" id="nines" min="0" max="4" value="1" step="1">
+  </div>
+  <svg id="qosSvg" viewBox="0 0 940 240"></svg>
+  <div class="out" id="o3"></div>
+  <p class="note">A latency histogram with a log-normal tail. Drag the "nines": the average barely moves, but each extra nine walks the cursor deep into the tail — that's why enterprise buyers read QoS, not averages (Fig 1-20), and why FIO prints clat percentiles (§7.1.1).</p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 5-66 &amp; §5.13's model, Fig 4-25 + §1.5.3's formulas, Ch7 §7.8/Tables 7-6→7-9, and Fig 1-20 — Cluster J of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const scn=["p0","p1","p2","p3"],tb=["t0","t1","t2","t3"];
+tb.forEach((t,i)=>$(t).onclick=()=>{scn.forEach((s,j)=>$(s).classList.toggle("hidden",i!==j));tb.forEach((u,j)=>$(u).classList.toggle("on",i===j));});
+
+/* ---- J1: PCIe bandwidth ---- */
+const GENS={1:[2.5,.8],2:[5,.8],3:[8,128/130],4:[16,128/130],5:[32,128/130],6:[64,242/256],7:[128,242/256]};
+function j1(){
+  const g=+$("gen").value,l=+$("lanes").value,mps=2**(+$("mps").value);
+  $("mpsV").textContent=mps;
+  const [gt,eff]=GENS[g];
+  const raw=gt*l/8;                       // GB/s per direction before encoding
+  const usable=raw*eff;
+  const tlpEff=mps/(mps+26);              // ~26B header+framing per TLP
+  const effective=usable*tlpEff;
+  const iops=effective*1e9/4096;
+  $("o0").innerHTML=
+    "raw signalling: <b>"+(gt*l)+" GT/s</b> ("+gt+" GT/s × "+l+" lanes)<br>"+
+    "after "+(g<3?"8b/10b":(g<6?"128b/130b":"FLIT"))+" encoding: <b>"+usable.toFixed(2)+" GB/s</b> per direction<br>"+
+    "after TLP headers @ MPS "+mps+": <b>"+effective.toFixed(2)+" GB/s effective</b> ("+Math.round(tlpEff*100)+"% efficiency)<br>"+
+    "4 KB IOPS ceiling: <span class='big'>"+(iops/1e6).toFixed(2)+" M IOPS</span>";
+}
+["gen","lanes","mps"].forEach(id=>$(id).oninput=j1); j1();
+
+/* ---- J2: OP/WA/TBW ---- */
+function j2(){
+  const cap=+$("cap").value,pe=+$("pec").value,op=+$("opR").value/100,yr=+$("yr").value;
+  $("capV").textContent=cap;$("pecV").textContent=pe;$("opV").textContent=Math.round(op*100);$("yrV").textContent=yr;
+  const wa=(1+op)/op;
+  const tbw=cap/1000*pe/wa;               // TB
+  const dwpd=tbw*1000/(365*yr*cap);
+  $("o1").innerHTML=
+    "worst-case WA = (1+OP)/OP = <b>"+wa.toFixed(2)+"</b><br>"+
+    "TBW ≈ "+cap+" GB × "+pe+" ÷ "+wa.toFixed(2)+" = <span class='big'>"+Math.round(tbw)+" TB</span><br>"+
+    "DWPD = "+Math.round(tbw)+" TB ÷ (365 × "+yr+" × "+cap+" GB) = <span class='big'>"+dwpd.toFixed(2)+"</span>";
+  // Fig 4-25 curve: WA vs OP
+  const svg=$("waPlot");svg.innerHTML="";
+  const mk=(t,a)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
+  let d="";
+  for(let o=0.05;o<=1.0;o+=0.01){
+    const w=(1+o)/o, x=60+(o-0.05)/0.95*840, y=160-Math.min(150,(w-1)/20*150);
+    d+=(d?"L":"M")+x.toFixed(1)+","+y.toFixed(1);
+  }
+  mk("path",{d,fill:"none",stroke:"#4dd0c4","stroke-width":2.5});
+  mk("line",{x1:60,x2:900,y1:160,y2:160,stroke:"#26304d"});
+  const cx=60+(op-0.05)/0.95*840, cy=160-Math.min(150,((1+op)/op-1)/20*150);
+  mk("circle",{cx,cy,r:6,fill:"#f2b13c"});
+  const t=mk("text",{x:480,y:185,fill:"#8ea0c9","font-size":11,"text-anchor":"middle"});t.textContent="OP → (Fig 4-25: more reserve, less amplification — steeply at first)";
+}
+["cap","pec","opR","yr"].forEach(id=>$(id).oninput=j2);
+$("s3710").onclick=()=>{$("cap").value=200;$("pec").value=25000;$("opR").value=42;$("yr").value=5;j2();};
+j2();
+
+/* ---- J3: endurance sampling ---- */
+const UCL=[0.92,2.02,3.11,4.18,5.24,6.29,7.35,8.38,9.42,10.45];
+function j3(){
+  const ffr=+$("ffr").value/100, uber=Math.pow(10,-$("uber").value), tbw=+$("tbw").value, hrs=+$("hrs").value;
+  $("ffrV").textContent=Math.round(ffr*100);$("uberV").textContent=$("uber").value;$("tbwV").textContent=tbw;$("hrsV").textContent=hrs;
+  const ss1=UCL[0]/ffr;
+  const bits=tbw*8e12;                    // min(TBW,TBR)×8×10^12
+  const ss2=UCL[0]/(bits*uber);
+  const ss=Math.ceil(Math.max(ss1,ss2));
+  const prod=bits*uber*ss;
+  let maxErr=0; while(maxErr+1<UCL.length && UCL[maxErr+1]<=prod) maxErr++;
+  // temperature: log interpolation of the book's anchors (86°C→50h, 66°C→400h, 48°C→3000h)
+  const T=Math.round(86-(Math.log(hrs)-Math.log(50))/(Math.log(3000)-Math.log(50))*(86-48));
+  $("o2").innerHTML=
+    "SS ≥ UCL/FFR = 0.92/"+ffr.toFixed(2)+" = <b>"+ss1.toFixed(1)+"</b> (functional-failure requirement)<br>"+
+    "SS ≥ 0.92/(TBW×8e12×UBER) = <b>"+ss2.toFixed(1)+"</b> (data-error requirement)<br>"+
+    "→ test <span class='big'>"+ss+" drives</span><br>"+
+    "UCL(data errors) ≤ "+prod.toFixed(2)+" → allowed data errors: <span class='big'>"+maxErr+"</span> (functional failures: 0)<br>"+
+    "ramped high-temp for "+hrs+" h ≈ <span class='big'>"+T+" °C</span> (Table 7-9 shape)";
+}
+["ffr","uber","tbw","hrs"].forEach(id=>$(id).oninput=j3); j3();
+
+/* ---- J4: QoS nines ---- */
+function j4(){
+  const tail=+$("tail").value, nines=+$("nines").value;
+  $("tailV").textContent=["","tiny","light","light","moderate","moderate","heavy","heavy","brutal","brutal","brutal"][tail];
+  const conf=[0.99,0.999,0.9999,0.99999,0.999999][nines];
+  $("ninesLab").textContent=(conf*100).toFixed(conf>=0.9999?3:1).replace(/\.?0+$/,"")+"%";
+  // log-normal: mu=ln(100µs), sigma from tail slider
+  const mu=Math.log(100), sg=0.25+tail*0.09;
+  // percentile via inverse erf approximation (Beasley-Springer/Moro-lite): use binary search on CDF
+  const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
+  const cdf=v=>0.5*(1+erf((Math.log(v)-mu)/(sg*Math.SQRT2)));
+  let lo=1,hi=1e6;
+  for(let i=0;i<60;i++){const mid=(lo+hi)/2;(cdf(mid)<conf)?lo=mid:hi=mid;}
+  const pv=lo, mean=Math.exp(mu+sg*sg/2);
+  // histogram
+  const svg=$("qosSvg");svg.innerHTML="";
+  const mk=(t,a)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
+  const X=v=>60+(Math.log10(v)-1)/(4.5)*840;  // 10µs .. ~300ms log axis
+  let peak=0;const ys=[];
+  for(let px=0;px<=840;px+=6){
+    const v=Math.pow(10,1+px/840*4.5);
+    const pdf=Math.exp(-((Math.log(v)-mu)**2)/(2*sg*sg))/(v*sg);
+    ys.push([60+px,pdf]);peak=Math.max(peak,pdf);
+  }
+  let d="";ys.forEach(([x,p],i)=>{d+=(i?"L":"M")+x+","+(200-p/peak*170);});
+  mk("path",{d,fill:"none",stroke:"#4dd0c4","stroke-width":2.5});
+  mk("line",{x1:60,x2:900,y1:200,y2:200,stroke:"#26304d"});
+  [[X(mean),"#8ea0c9","mean "+mean.toFixed(0)+"µs"],[X(pv),"#f2b13c",(conf*100)+"% @ "+(pv>=1000?(pv/1000).toFixed(1)+"ms":pv.toFixed(0)+"µs")]].forEach(([x,c,l])=>{
+    mk("line",{x1:x,x2:x,y1:20,y2:200,stroke:c,"stroke-dasharray":"5 4"});
+    const t=mk("text",{x:Math.min(x,830),y:16,fill:c,"font-size":11,"text-anchor":"middle"});t.textContent=l;
+  });
+  const ax=mk("text",{x:480,y:228,fill:"#8ea0c9","font-size":11,"text-anchor":"middle"});ax.textContent="latency (log scale) →";
+  $("o3").innerHTML="mean: <b>"+mean.toFixed(0)+" µs</b> — but the worst command in "+$("ninesLab").textContent+" of I/Os takes <span class='big'>"+(pv>=1000?(pv/1000).toFixed(2)+" ms":pv.toFixed(0)+" µs")+"</span>";
+}
+["tail","nines"].forEach(id=>$(id).oninput=j4); j4();
+</script>
+</body>
+</html>

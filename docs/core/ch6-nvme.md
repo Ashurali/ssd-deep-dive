@@ -65,6 +65,15 @@ The key asymmetry: the host does **not** push commands to the SSD. It places the
 
 ## 6.3 The three treasures in detail — SQ, CQ, DB — pp. 13–23 ⭐⭐
 
+??? example "🎬 Animate this — The NVMe Ring Machine"
+
+    The SQ/CQ/doorbell dance as a working machine — submit commands, watch the phase tag flip on wraparound.
+
+    [Animation page](../animations/nvme-ring-machine.md) · [open full-screen ↗](../animations/files/nvme_ring_machine.html)
+
+    <iframe src="../../animations/files/nvme_ring_machine.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The NVMe Ring Machine"></iframe>
+
+
 **SQ/CQ pairing (p. 13–15).** The host writes to SQ; the SSD writes completions to CQ. SQ:CQ can be **1:1 or many:1**, but they always come in pairs (cause and effect). Two flavors:
 - **Admin SQ/CQ** — exactly **one pair** per controller, always 1:1, holds Admin commands.
 - **I/O SQ/CQ** — up to **65,535 pairs**, holds I/O commands; created *by* Admin commands (so I/O queues aren't there at boot — you make them).

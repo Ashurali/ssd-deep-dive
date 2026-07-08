@@ -20,6 +20,15 @@ source_anchor: "CH5 file, pp. 1–74"
 
 ## 5.1 Starting with speed — pp. 1–7 ⭐
 
+??? example "🎬 Animate this — The SSD Calculator Bundle"
+
+    This section's formulas as live sliders — move an input and watch the answer (and the curve) recompute.
+
+    [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
+
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+
+
 **Why PCIe for SSDs? Because it's fast — faster than SATA.** The chapter opens by building up the bandwidth numbers *(p. 1–2, Table 5-1)*.
 
 **Lanes = highway lanes (p. 1–2, Figs 5-1/5-2).** A PCIe link's width is its number of **Lanes** (×1, ×2, ×4… up to ×32), exactly like a highway with 1, 2, or 4 lanes. A connection between two devices is a **Link**. Each Lane has *separate* send and receive wires, so data flows both directions **simultaneously** — the spec calls this **Dual-Simplex** (effectively full-duplex).
@@ -59,6 +68,15 @@ source_anchor: "CH5 file, pp. 1–74"
 ---
 
 ## 5.3 The three-layer stack — pp. 11–16 ⭐⭐ *the core mental model*
+
+??? example "🎬 Animate this — The Packet Dresser & ACK/NAK Lab"
+
+    Dress a TLP layer by layer, then let the Jammer corrupt the wire and watch ACK/NAK recover.
+
+    [Animation page](../animations/packet-dresser.md) · [open full-screen ↗](../animations/files/packet_dresser.html)
+
+    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
+
 
 Like most buses, PCIe is layered *(p. 11–12, Figs 5-11/5-12)*. Three layers, each serving the one above:
 
@@ -124,6 +142,15 @@ Every TLP (request or completion) has the same shape *(p. 21, Fig 5-19)*: **Head
 
 ## 5.6 Config space and BARs — pp. 28–37 ⭐ *how devices become addressable*
 
+??? example "🎬 Animate this — The Enumeration & Routing Explorer"
+
+    The BAR all-1s sizing trick and Base/Limit routing, played out on a live tree.
+
+    [Animation page](../animations/enum-routing.md) · [open full-screen ↗](../animations/files/enum_routing.html)
+
+    <iframe src="../../animations/files/enum_routing.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Enumeration & Routing Explorer"></iframe>
+
+
 **Config space (p. 28–29, Figs 5-27/5-28).** Every PCIe device has a standardized **configuration space** — a set of registers whose layout is fixed by the spec (so any vendor's device is readable the same way). PCI's config space was 256 B (a 64 B Header + 192 B of Capabilities); **PCIe extended it to 4 KB**, keeping the first 256 B backward-compatible.
 
 **The Config Header (p. 29–30, Fig 5-29).** The 64 B Header comes in **Type 0** (Endpoint) and **Type 1** (Switch). Read-only registers like **Device ID, Vendor ID, Class Code, Revision ID** let the device tell the host "I'm this vendor's device, this ID, this type (NIC/GPU/bridge)." The important part is the **BAR**.
@@ -162,6 +189,15 @@ How does a TLP reach its destination? **Three routing methods** *(p. 37–38, Ta
 ---
 
 ## 5.8 Data Link Layer — pp. 47–54 ⭐
+
+??? example "🎬 Animate this — The Packet Dresser & ACK/NAK Lab"
+
+    Dress a TLP layer by layer, then let the Jammer corrupt the wire and watch ACK/NAK recover.
+
+    [Animation page](../animations/packet-dresser.md) · [open full-screen ↗](../animations/files/packet_dresser.html)
+
+    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
+
 
 A TLP is born and dies at the Transaction Layer, but between sender and receiver it passes *through* the Data Link and Physical Layers on each side. The Data Link Layer's jobs *(p. 47–48)*:
 - **Sender:** add **Sequence Number** + **LCRC** to each TLP, hand to Physical Layer.
@@ -244,6 +280,15 @@ Both live in the **Device Control Register** *(p. 67, Fig 5-66)*.
 ---
 
 ## 5.13 PCIe link performance-loss analysis — pp. 70–74 ⭐ *why you never get the theoretical number*
+
+??? example "🎬 Animate this — The SSD Calculator Bundle"
+
+    This section's formulas as live sliders — move an input and watch the answer (and the curve) recompute.
+
+    [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
+
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+
 
 Six sources of overhead between raw link rate and real throughput:
 

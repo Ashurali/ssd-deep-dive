@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power-Loss Rebuild &amp; Snapshots — the timestamp duel</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
+button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{background:rgba(77,208,196,.12)}
+button.amber{color:var(--amber);border-color:var(--amber)}
+button.red{color:var(--red);border-color:var(--red);font-size:15px}
+button.tgl.on{background:var(--cyan);color:var(--bg)}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.meter{font-family:"IBM Plex Mono";font-size:15px;color:var(--amber)}
+.note{color:var(--dim);font-size:13px;margin-top:6px}
+svg{display:block;width:100%;height:auto}
+#glog{font:12px "IBM Plex Mono";color:var(--dim);max-height:110px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>Power-loss <span class="a">rebuild</span> &amp; snapshots</h1>
+<p class="sub">The map table lives in RAM. RAM dies with the power. What saves you is that every flash page secretly carries its own passport.</p>
+
+<div class="panel">
+  <div class="row">
+    <button id="write5">write 5 pages</button>
+    <button class="tgl" id="autoW">auto-write</button>
+    <button class="tgl" id="snapTgl">snapshots every 12 writes</button>
+    <button class="red" id="yank">⚡ YANK POWER</button>
+    <button class="amber" id="boot" disabled>power on → rebuild</button>
+    <button id="reset">reset</button>
+    <span class="meter" id="rbTime"></span>
+  </div>
+  <svg id="stage" viewBox="0 0 1000 380"></svg>
+  <div id="glog"></div>
+  <p class="note">Each written page carries metadata: <b>its LBA + a timestamp</b> (Fig 4-43). After a crash, a full-scan rebuild crawls <em>every</em> page re-deriving the map; when the same LBA appears twice, the <b>timestamp duel</b> keeps the newer one (Fig 4-44). Snapshots (Fig 4-45) persist the map periodically — the next rebuild loads the snapshot and scans only the tail written after it (Fig 4-46). Try yanking mid-run with snapshots on and off and compare the rebuild times.</p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 4-33, 4-43→4-46 (CH4 pp. 41, 53–56); twin of the Ch7 power-loss-testing addendum — Cluster G of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS="http://www.w3.org/2000/svg";
+const NPAGE=60, NLBA=24;
+let S;
+function init(){
+  S={pages:[],map:{},ram:true,ts:0,snap:null,snapAt:-1,snapOn:false,dead:false,rebuilding:false,auto:null,cursor:-1,rbMap:{},duel:null};
+  $("boot").disabled=true;$("rbTime").textContent="";$("glog").innerHTML="";
+  draw();
+}
+function log(m){const el=$("glog");el.innerHTML="<div>"+m+"</div>"+el.innerHTML;}
+function writeOne(){
+  if(S.dead||S.pages.length>=NPAGE)return false;
+  const lba=Math.floor(Math.random()*NLBA);
+  S.ts++;
+  S.pages.push({lba,ts:S.ts});
+  S.map[lba]=S.pages.length-1;
+  if(S.snapOn && S.ts%12===0){
+    S.snap=JSON.parse(JSON.stringify(S.map)); S.snapAt=S.pages.length-1;
+    log("📸 snapshot persisted at page "+S.snapAt+" (map has "+Object.keys(S.snap).length+" entries)");
+  }
+  return true;
+}
+function yank(){
+  if(S.dead)return;
+  S.dead=true;S.map={};S.ram=false;
+  if(S.auto){clearInterval(S.auto);S.auto=null;$("autoW").classList.remove("on");}
+  $("boot").disabled=false;
+  log("⚡ POWER LOST — RAM map gone. "+S.pages.length+" pages of flash still hold their metadata tags.");
+  draw();
+}
+function boot(){
+  if(!S.dead||S.rebuilding)return;
+  S.rebuilding=true;S.rbMap={};
+  const start = (S.snapOn && S.snap)? S.snapAt+1 : 0;
+  if(start>0){ S.rbMap=JSON.parse(JSON.stringify(S.snap)); log("loaded snapshot — skipping pages 0…"+S.snapAt+", scanning only the tail"); }
+  else log("no snapshot — full scan of all "+S.pages.length+" pages begins");
+  let i=start;
+  const t0=performance.now();
+  const iv=setInterval(()=>{
+    if(i>=S.pages.length){
+      clearInterval(iv);
+      S.map=S.rbMap;S.ram=true;S.dead=false;S.rebuilding=false;S.cursor=-1;S.duel=null;
+      const scanned=S.pages.length-start;
+      $("rbTime").textContent="rebuilt: scanned "+scanned+"/"+S.pages.length+" pages";
+      log("✅ map rebuilt from "+scanned+" pages"+(start>0?" (snapshot saved "+start+" pages of scanning)":""));
+      $("boot").disabled=true;
+      draw();return;
+    }
+    S.cursor=i;
+    const p=S.pages[i];
+    const prev=S.rbMap[p.lba];
+    if(prev!==undefined){
+      const keep=S.pages[prev].ts>p.ts?prev:i;
+      S.duel={a:prev,b:i,winner:keep};
+      log("duel: LBA "+p.lba+" at page "+prev+" (ts "+S.pages[prev].ts+") vs page "+i+" (ts "+p.ts+") → newer wins");
+      S.rbMap[p.lba]=keep;
+    } else { S.rbMap[p.lba]=i; S.duel=null; }
+    i++;draw();
+  },RM?10:120);
+}
+function draw(){
+  const svg=$("stage");svg.innerHTML="";
+  const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
+  const txt=(x,y,s,c,sz,anch)=>{const e=mk("text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"start"});e.textContent=s;return e;};
+  // RAM map pane
+  mk("rect",{x:10,y:10,width:310,height:360,rx:12,fill:"none",stroke:S.ram?"#26304d":"#ef6a6a"});
+  txt(165,32,S.ram?"RAM — map table":"RAM — ☠ lost",S.ram?"#8ea0c9":"#ef6a6a",13,"middle");
+  const m=S.rebuilding?S.rbMap:S.map;
+  const ent=Object.entries(m).sort((a,b)=>a[0]-b[0]).slice(0,24);
+  ent.forEach(([lba,pi],i)=>{
+    const x=24+(i%3)*100,y=48+Math.floor(i/3)*38;
+    mk("rect",{x,y,width:92,height:30,rx:5,fill:"#0e1530",stroke:S.rebuilding?"#f2b13c":"#26304d"});
+    txt(x+46,y+19,"L"+lba+"→p"+pi,"#4dd0c4",11,"middle");
+  });
+  if(S.snapOn&&S.snap) txt(165,358,"📸 snapshot @ page "+S.snapAt,"#a78bfa",11,"middle");
+  // flash pane
+  mk("rect",{x:340,y:10,width:650,height:360,rx:12,fill:"none",stroke:"#26304d"});
+  txt(665,32,"FLASH — every page carries (LBA, timestamp)","#8ea0c9",13,"middle");
+  for(let i=0;i<NPAGE;i++){
+    const x=356+(i%10)*63,y=46+Math.floor(i/10)*52;
+    const p=S.pages[i];
+    const isCur=S.rebuilding&&i===S.cursor;
+    const isDuel=S.duel&&(i===S.duel.a||i===S.duel.b);
+    const isSnap=S.snapOn&&i===S.snapAt;
+    mk("rect",{x,y,width:56,height:44,rx:5,
+      fill:p?(isDuel?(i===S.duel.winner?"#173a2d":"#4d1720"):"#173a4d"):"#0e1530",
+      stroke:isCur?"#e8eeff":(isSnap?"#a78bfa":(p?"#4dd0c4":"#26304d")),"stroke-width":isCur?2.5:1.2});
+    if(p){ txt(x+28,y+18,"L"+p.lba,"#4dd0c4",11,"middle"); txt(x+28,y+34,"ts"+p.ts,"#8ea0c9",9,"middle"); }
+  }
+  if(S.rebuilding&&S.cursor>=0){
+    txt(665,362,"scan cursor at page "+S.cursor,"#f2b13c",12,"middle");
+  }
+}
+$("write5").onclick=()=>{for(let i=0;i<5;i++)writeOne();draw();};
+$("autoW").onclick=e=>{
+  if(S.auto){clearInterval(S.auto);S.auto=null;e.target.classList.remove("on");return;}
+  if(S.dead)return;
+  e.target.classList.add("on");
+  S.auto=setInterval(()=>{ if(!writeOne()){clearInterval(S.auto);S.auto=null;$("autoW").classList.remove("on");} draw(); },RM?800:350);
+};
+$("snapTgl").onclick=e=>{S.snapOn=!S.snapOn;e.target.classList.toggle("on",S.snapOn);};
+$("yank").onclick=yank;
+$("boot").onclick=boot;
+$("reset").onclick=()=>{if(S.auto)clearInterval(S.auto);init();};
+init();
+</script>
+</body>
+</html>

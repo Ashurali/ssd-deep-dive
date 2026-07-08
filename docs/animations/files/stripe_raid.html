@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stripe RAID inside the SSD — XOR rebuild and the chained warships</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
+button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{background:rgba(77,208,196,.12)}
+button.amber{color:var(--amber);border-color:var(--amber)}
+button.red{color:var(--red);border-color:var(--red)}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.meter{font-family:"IBM Plex Mono";font-size:14px;color:var(--amber)}
+.note{color:var(--dim);font-size:13px;margin-top:6px}
+svg{display:block;width:100%;height:auto}
+#hlog{font:12px "IBM Plex Mono";color:var(--dim);max-height:110px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>Stripe <span class="a">RAID</span> &amp; the chained warships</h1>
+<p class="sub">Four data dies + one XOR parity die. Losing a die is survivable — but the stripes are chained together like the warships at Red Cliffs, and GC feels the chain.</p>
+
+<div class="panel">
+  <div class="row">
+    <button class="red" id="poison">☠ UECC — kill one die's block</button>
+    <button class="amber" id="rebuild" disabled>rebuild from XOR</button>
+    <button id="gcTrap">try to GC just ONE block of a stripe</button>
+    <button id="padDemo">"sleep now" — close a half-empty stripe</button>
+    <button id="reset">reset</button>
+    <span class="meter" id="waBlip"></span>
+  </div>
+  <svg id="stage" viewBox="0 0 1000 330"></svg>
+  <div id="hlog"></div>
+  <p class="note">Every stripe: <span class="mono">D0 ⊕ D1 ⊕ D2 ⊕ D3 = P</span>, so any one member can be recomputed from the other four — watch the XOR run bit by bit. But that equation is also a <em>chain</em>: garbage-collect one member and the parity no longer covers the stripe, so the FTL must move (or re-parity) the <em>whole stripe together</em>. And when a half-filled stripe must close, the gap is padded with dummy data — write amplification you paid purely for protection. (Figs 3-58/3-59)</p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 3-58 and 3-59 (CH3 pp. 65–66) — Cluster H of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS="http://www.w3.org/2000/svg";
+const DIES=5, STRIPES=3;
+let S;
+function rnd(){return Math.floor(Math.random()*256);}
+function init(){
+  S={stripes:[],dead:null,rebuilt:false,busy:false,trapStripe:null,pad:false};
+  for(let s=0;s<STRIPES;s++){
+    const d=[rnd(),rnd(),rnd(),rnd()];
+    S.stripes.push({d,p:d[0]^d[1]^d[2]^d[3],garb:false});
+  }
+  $("rebuild").disabled=true;$("waBlip").textContent="";$("hlog").innerHTML="";
+  draw();
+}
+function log(m){const el=$("hlog");el.innerHTML="<div>"+m+"</div>"+el.innerHTML;}
+const b8=v=>v.toString(2).padStart(8,"0");
+function draw(hi){
+  const svg=$("stage");svg.innerHTML="";
+  const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
+  const txt=(x,y,s,c,sz,anch)=>{const e=mk("text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;};
+  for(let d=0;d<DIES;d++){
+    const x=90+d*185;
+    txt(x+70,26,d<4?("die "+d+" (data)"):"die 4 (XOR parity)",d<4?"#8ea0c9":"#f2b13c",13);
+  }
+  S.stripes.forEach((st,si)=>{
+    const y=44+si*88;
+    txt(34,y+38,"stripe "+si,"#8ea0c9",11);
+    const chain=S.trapStripe===si;
+    if(chain) mk("rect",{x:76,y:y-4,width:5*185-30,height:76,rx:10,fill:"rgba(239,106,106,0.08)",stroke:"#ef6a6a","stroke-dasharray":"6 4"});
+    for(let d=0;d<DIES;d++){
+      const x=90+d*185, val=d<4?st.d[d]:st.p;
+      const dead=S.dead&&S.dead.s===si&&S.dead.d===d&&!S.rebuilt;
+      const hiCell=hi&&hi.s===si&&hi.d===d;
+      const isPad=st.padded&&d>=2&&d<4;
+      mk("rect",{x,y,width:140,height:64,rx:8,
+        fill:dead?"#4d1720":(isPad?"#2a2342":(d<4?"#173a4d":"#4d3a17")),
+        stroke:hiCell?"#e8eeff":(dead?"#ef6a6a":(st.garb&&d===st.garbDie?"#3a4468":(d<4?"#4dd0c4":"#f2b13c"))),
+        "stroke-width":hiCell?2.5:1.4});
+      txt(x+70,y+28,dead?"UECC ✖":(isPad?"PAD (junk)":b8(val)),dead?"#ef6a6a":(isPad?"#a78bfa":(d<4?"#4dd0c4":"#f2b13c")),13);
+      if(st.garb&&d===st.garbDie&&!dead) txt(x+70,y+48,"(mostly garbage)","#8ea0c9",10);
+      else txt(x+70,y+48,d<4?"data":"parity","#3a4468",9);
+    }
+  });
+}
+$("poison").onclick=()=>{
+  if(S.busy||S.dead)return;
+  S.dead={s:Math.floor(Math.random()*STRIPES),d:Math.floor(Math.random()*4)};
+  S.rebuilt=false;$("rebuild").disabled=false;
+  log("die "+S.dead.d+" returned an uncorrectable ECC error on stripe "+S.dead.s+" — beyond LDPC's reach. RAID is the last line.");
+  draw();
+};
+$("rebuild").onclick=()=>{
+  if(S.busy||!S.dead||S.rebuilt)return;
+  S.busy=true;
+  const {s,d}=S.dead, st=S.stripes[s];
+  const members=[0,1,2,3,4].filter(i=>i!==d);
+  let acc=0,i=0;
+  log("rebuild: XOR the four survivors…");
+  const iv=setInterval(()=>{
+    if(i<members.length){
+      const m=members[i], v=m<4?st.d[m]:st.p;
+      acc^=v;
+      log("  acc "+b8(acc)+"  (⊕ "+(m<4?"D"+m:"P")+" = "+b8(v)+")");
+      draw({s,d:m});
+      i++;return;
+    }
+    clearInterval(iv);
+    const expect=d<4?st.d[d]:st.p;
+    log("  result "+b8(acc)+(acc===expect?" ✓ — matches the lost data exactly.":" ✗ (bug!)"));
+    S.rebuilt=true;S.busy=false;$("rebuild").disabled=true;S.dead=null;
+    draw();
+  },RM?60:800);
+};
+$("gcTrap").onclick=()=>{
+  if(S.busy)return;
+  const si=1, st=S.stripes[si];
+  st.garb=true; st.garbDie=Math.floor(Math.random()*4);
+  S.trapStripe=si;
+  log("GC wants to reclaim die "+st.garbDie+"'s block in stripe "+si+" alone…");
+  setTimeout(()=>{
+    log("⛔ can't: D0⊕D1⊕D2⊕D3=P would no longer hold — the parity covers members that just moved.");
+    log("→ the WHOLE stripe must migrate together (read all, re-XOR, write a new full stripe). The warships are chained.");
+    $("waBlip").textContent="stripe-wide move: 5 blocks touched to reclaim 1";
+    setTimeout(()=>{S.trapStripe=null;st.garb=false;draw();},RM?800:2600);
+    draw();
+  },RM?300:1200);
+  draw();
+};
+$("padDemo").onclick=()=>{
+  const st=S.stripes[2];
+  st.padded=true;
+  log("power-down request: stripe 2 is half-full → padded with dummy data so the parity equation closes.");
+  $("waBlip").textContent="WA blip: 2 junk pages written purely to close the stripe";
+  draw();
+};
+$("reset").onclick=init;
+init();
+</script>
+</body>
+</html>

@@ -87,6 +87,15 @@ A condensed timeline (much of it sourced from StorageSearch.com). Worth skimming
 
 ## 1.4 How an SSD actually works — pp. 19–22 ⭐ *the most important section*
 
+??? example "🎬 Animate this — The Toy SSD Sandbox"
+
+    This section's walkthrough as a live simulation — write, overwrite, collect, and watch WA respond to the OP slider.
+
+    [Animation page](../animations/toy-ssd-sandbox.md) · [open full-screen ↗](../animations/files/toy_ssd_sandbox.html)
+
+    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Toy SSD Sandbox"></iframe>
+
+
 From the host's perspective an SSD looks exactly like an HDD: the OS/file system sends standardized read/write **commands**; the drive returns **data and status**. Internally *(p. 20, Fig 1-13)*, an SSD has three functional blocks:
 
 1. **Front end (前端)** — speaks the host protocol. Interface ↔ protocol pairs *(p. 20, Table 1-5)*: **SATA → ATA/AHCI**, **SAS → SCSI**, **PCIe → NVMe**.
@@ -170,6 +179,15 @@ The book's trick: you can identify whether a drive is consumer or enterprise-gra
 One more subtlety (p. 33): quoted latencies are measured **cache-on** — the command completes when data reaches the SSD's RAM buffer, not flash. Writing through to flash (FUA) would take hundreds of microseconds even on SLC.
 
 ### 1.5.3 Endurance (壽命) — pp. 34–37
+
+??? example "🎬 Animate this — The SSD Calculator Bundle"
+
+    This section's formulas as live sliders — move an input and watch the answer (and the curve) recompute.
+
+    [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
+
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+
 
 Two interchangeable lifespan metrics:
 

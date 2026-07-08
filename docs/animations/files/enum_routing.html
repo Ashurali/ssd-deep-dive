@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enumeration &amp; Routing Explorer — BAR sizing and TLP routing</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
+button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{background:rgba(77,208,196,.12)}
+button.amber{color:var(--amber);border-color:var(--amber)}
+select{font:13px "IBM Plex Mono";background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.note{color:var(--dim);font-size:13px;margin-top:6px}
+svg{display:block;width:100%;height:auto}
+#elog{font:12px "IBM Plex Mono";color:var(--dim);max-height:140px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}
+#elog b{color:var(--amber)}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+h2{font-family:"Space Grotesk";font-size:17px;margin:4px 0 8px;color:var(--tx)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>Enumeration &amp; <span class="a">routing</span> explorer</h1>
+<p class="sub">How software discovers a PCIe tree (the all-1s BAR trick), and how a TLP finds its way through it.</p>
+
+<div class="panel">
+  <div class="row">
+    <button class="amber" id="enumStep">▶ enumeration: next step</button>
+    <span class="mono" id="enumState">boot: nothing mapped yet</span>
+  </div>
+  <div class="row">
+    <label class="mono">fire a MemWr at:</label>
+    <select id="target">
+      <option value="0x8000_1000">0x8000_1000 (inside SSD's window)</option>
+      <option value="0x8010_2000">0x8010_2000 (inside NIC's window)</option>
+      <option value="0x8020_0044">0x8020_0044 (inside GPU's window)</option>
+      <option value="0x9999_0000">0x9999_0000 (nobody's window!)</option>
+    </select>
+    <button id="fire">fire TLP</button>
+  </div>
+  <svg id="stage" viewBox="0 0 1000 360"></svg>
+  <div id="elog"></div>
+  <p class="note">Enumeration: for each BAR, software reads, <b>writes all-1s</b>, reads back — the bits that <em>stayed zero</em> are hardwired, and they spell out the region size. Then it allocates host addresses and writes the base in. Routing: every switch port owns a <b>[Base, Limit]</b> address window (shaded); a TLP descends the tree only where its address fits — aim outside every window and it's rejected as an Unsupported Request. (Figs 5-30→5-48)</p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 5-6→5-10, 5-27→5-48 (CH5 pp. 7–10, 29–46) — Cluster I of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS="http://www.w3.org/2000/svg";
+function log(m){const el=$("elog");el.innerHTML="<div>"+m+"</div>"+el.innerHTML;}
+
+const EPS=[
+  {name:"SSD",size:0x10000,sizeTxt:"64 KB",base:null,x:290},
+  {name:"NIC",size:0x8000,sizeTxt:"32 KB",base:null,x:560},
+  {name:"GPU",size:0x100000,sizeTxt:"1 MB",base:null,x:830},
+];
+const BASES=[0x80000000,0x80100000,0x80200000];
+let phase=0; // 3 devices × 4 sub-steps, then done
+let flyer=null, flyPath=null;
+
+function hex(v){return "0x"+(v>>>0).toString(16).toUpperCase().padStart(8,"0").replace(/^(.{4})/,"$1_");}
+function draw(){
+  const svg=$("stage");svg.innerHTML="";
+  const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
+  const txt=(x,y,s,c,sz,anch)=>{const e=mk("text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;};
+  // RC
+  mk("rect",{x:420,y:16,width:160,height:50,rx:10,fill:"#0e1530",stroke:"#26304d"});
+  txt(500,38,"Root Complex","#e8eeff",13); txt(500,56,"(CPU + memory map)","#8ea0c9",10);
+  // switch
+  mk("rect",{x:420,y:120,width:160,height:50,rx:10,fill:"#0e1530",stroke:"#26304d"});
+  txt(500,142,"Switch","#e8eeff",13);
+  const covered=EPS.filter(e=>e.base!=null);
+  txt(500,160,covered.length?("window "+hex(Math.min(...covered.map(e=>e.base)))+" – "+hex(Math.max(...covered.map(e=>e.base+e.size))-1)):"window: (not programmed)",covered.length?"#a78bfa":"#3a4468",9);
+  mk("line",{x1:500,x2:500,y1:66,y2:120,stroke:"#26304d","stroke-width":3});
+  // EPs
+  EPS.forEach((ep,i)=>{
+    mk("line",{x1:500,x2:ep.x,y1:170,y2:230,stroke:"#26304d","stroke-width":3});
+    mk("rect",{x:ep.x-85,y:230,width:170,height:64,rx:10,fill:"#0e1530",stroke:ep.base!=null?"#4dd0c4":"#26304d"});
+    txt(ep.x,252,ep.name+"  (BAR0: "+ep.sizeTxt+")","#e8eeff",12);
+    txt(ep.x,272,ep.base!=null?hex(ep.base)+" – "+hex(ep.base+ep.size-1):"unmapped","#4dd0c4",10);
+    if(ep.base!=null){
+      // shaded window on the link
+      mk("rect",{x:(500+ep.x)/2-38,y:192,width:76,height:16,rx:4,fill:"rgba(167,139,250,0.18)"});
+      txt((500+ep.x)/2,204,"[B,L]","#a78bfa",9);
+    }
+  });
+  // memory-map side pane
+  mk("rect",{x:10,y:16,width:170,height:330,rx:10,fill:"none",stroke:"#26304d"});
+  txt(95,36,"host memory map","#8ea0c9",11);
+  EPS.filter(e=>e.base!=null).sort((a,b)=>a.base-b.base).forEach((e,i)=>{
+    mk("rect",{x:24,y:52+i*54,width:142,height:44,rx:6,fill:"#173a4d",stroke:"#4dd0c4"});
+    txt(95,70+i*54,e.name,"#4dd0c4",11);
+    txt(95,86+i*54,hex(e.base),"#8ea0c9",9);
+  });
+  if(flyer){
+    mk("circle",{cx:flyer.x,cy:flyer.y,r:9,fill:flyer.bad?"#ef6a6a":"#f2b13c"});
+    txt(flyer.x,flyer.y-14,"TLP","#f2b13c",10);
+  }
+}
+$("enumStep").onclick=()=>{
+  const dev=Math.floor(phase/4), sub=phase%4;
+  if(dev>=EPS.length){ $("enumState").textContent="enumeration complete — all BARs sized and mapped."; return; }
+  const ep=EPS[dev];
+  if(sub===0) log("CfgRd "+ep.name+" BAR0 → 0x00000000 (nothing there yet)");
+  if(sub===1) log("CfgWr "+ep.name+" BAR0 ← <b>0xFFFF_FFFF</b> (the all-1s probe)");
+  if(sub===2){
+    const mask=~(ep.size-1)>>>0;
+    log("CfgRd "+ep.name+" BAR0 → "+hex(mask)+" — low bits stuck at 0 ⇒ size = 2^"+Math.log2(ep.size)+" = "+ep.sizeTxt);
+  }
+  if(sub===3){
+    ep.base=BASES[dev];
+    log("CfgWr "+ep.name+" BAR0 ← "+hex(ep.base)+" — region allocated; the device now answers to those addresses");
+  }
+  phase++;
+  $("enumState").textContent="enumerating "+ep.name+" — step "+(sub+1)+"/4"+(phase>=12?" — done":"");
+  draw();
+};
+$("fire").onclick=()=>{
+  if(flyer)return;
+  const sel=$("target").value;
+  const addr=parseInt(sel.replace(/_/g,"").replace("0x",""),16);
+  const hit=EPS.find(e=>e.base!=null&&addr>=e.base&&addr<e.base+e.size);
+  const inSwitch=EPS.some(e=>e.base!=null)&&hit;
+  log("RC emits MemWr @ "+sel);
+  const path=[[500,66],[500,120]];
+  if(hit) path.push([500,170],[hit.x,230]);
+  let leg=0,t=0;
+  flyer={x:500,y:66,bad:false};
+  const iv=setInterval(()=>{
+    t+=RM?1:0.07;
+    if(t>=1){
+      t=0;leg++;
+      if(leg===1){
+        if(!inSwitch){
+          flyer.bad=true;
+          log("switch: address "+sel+" fits NO downstream [Base,Limit] window → <b>Unsupported Request</b>, TLP rejected.");
+          setTimeout(()=>{flyer=null;draw();},RM?400:1200);
+          clearInterval(iv);draw();return;
+        }
+        log("switch: "+sel+" ∈ "+hit.name+"'s window → route down that port");
+      }
+      if(leg>=path.length-1){
+        log(hit.name+" accepts the write. Address decoded, done.");
+        clearInterval(iv);setTimeout(()=>{flyer=null;draw();},RM?300:900);return;
+      }
+    }
+    const [x0,y0]=path[leg],[x1,y1]=path[leg+1];
+    flyer.x=x0+(x1-x0)*t; flyer.y=y0+(y1-y0)*t;
+    draw();
+  },RM?250:25);
+};
+draw();
+log("press ▶ to start enumeration — 4 steps per device, watch the memory map fill in");
+</script>
+</body>
+</html>

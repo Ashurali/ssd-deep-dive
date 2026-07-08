@@ -99,6 +99,15 @@ SSD front ends fall into two protocol families: **SATA/SAS** and **PCIe**. An **
 
 ### 7.3.3 Jammer (p. 24–27) ⭐ *the robustness tool*
 
+??? example "🎬 Animate this — The Packet Dresser & ACK/NAK Lab"
+
+    Dress a TLP layer by layer, then let the Jammer corrupt the wire and watch ACK/NAK recover.
+
+    [Animation page](../animations/packet-dresser.md) · [open full-screen ↗](../animations/files/packet_dresser.html)
+
+    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
+
+
 The motivation (p. 25): an SSD ships to countless customers with unknown hosts, OSes, drivers, and environments. Someday one host will send a malformed FIS/primitive. The book's memorable vignette: the SSD lovingly reads data from flash, ECC-decodes it, checks it, hands the host an `X_RDY`, hopefully awaits an `R_RDY` — and the host coldly replies `R_ERR`, rejecting it. The requirement — *"however many times the host abuses you, treat it like your first love"* — is called **Robustness**, and it demands extensive **error handling** in RTL and firmware. The problem: these error paths might not trigger once in a week of normal lab testing, and no engineer can foresee every error.
 
 **Solution: the Jammer.** If an Analyzer is a *wiretap*, a Jammer is a *mail carrier* — **all traffic passes through it, and it can open, modify, or replace the contents**, then forward *(Figs 7-15/7-16)*. So you can deliberately turn a normal `R_RDY` into `R_ERR`, or inject a **CRC error into a Data FIS**, and check the SSD handles it correctly. It's also a *scenario explorer* — e.g., if the device sets an Error bit in its SDB, or never sends the SDB, does the host resend? How many times? Does the driver start OOB? Does the app error out? *"Better to make trouble for yourself than let others find it."*
@@ -144,6 +153,15 @@ The practical tip: in internal testing this is trivial — just ask the firmware
 ---
 
 ## 7.8 Endurance testing — pp. 37–46 ⭐⭐ *the formula-heavy core*
+
+??? example "🎬 Animate this — The SSD Calculator Bundle"
+
+    This section's formulas as live sliders — move an input and watch the answer (and the curve) recompute.
+
+    [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
+
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+
 
 Every SSD must pass strict **endurance** testing before shipping. **JEDEC** provides two specs: **JESD218A** (the *method*) and **JESD219** (the *workload*). *(p. 37–38)*
 
@@ -198,6 +216,15 @@ Beyond internal testing, SSDs go out for third-party certification:
 ---
 
 ## 7.10 SSD Performance testing — pp. 50–54 ⭐⭐ *the SNIA methodology*
+
+??? example "🎬 Animate this — The Toy SSD Sandbox"
+
+    This section's walkthrough as a live simulation — write, overwrite, collect, and watch WA respond to the OP slider.
+
+    [Animation page](../animations/toy-ssd-sandbox.md) · [open full-screen ↗](../animations/files/toy_ssd_sandbox.html)
+
+    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Toy SSD Sandbox"></iframe>
+
 
 **SNIA** publishes performance-test specs for both client and enterprise SSDs. The whole methodology rests on one truth from Chapter 1: **SSD performance changes as the drive is used**, so you must measure in a controlled, repeatable state.
 

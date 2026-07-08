@@ -74,6 +74,15 @@ So designing a good code = **packing codewords as far apart as possible** while 
 
 ### 7.3.2 Parity check — the cornerstone of linear codes ⭐
 
+??? example "🎬 Animate this — How ECC finds and fixes a bit — Hamming visualizer"
+
+    Flip a bit and watch the parity checks announce its location — the syndrome idea made tangible.
+
+    [Animation page](../animations/ecc-bit-correction.md) · [open full-screen ↗](../animations/files/ecc_bit_correction.html)
+
+    <iframe src="../../animations/files/ecc_bit_correction.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="How ECC finds and fixes a bit — Hamming visualizer"></iframe>
+
+
 Start with the simplest possible code: **one parity bit.** Take k data bits and append one bit chosen so the total number of 1s is even (**even parity**). Example: data `1011` has three 1s (odd), so append `1` → codeword `10111` (four 1s, even).
 
 - **Detection:** if any *single* bit flips, the parity becomes odd → error detected. dmin = 2, so it detects 1 error.
@@ -209,6 +218,15 @@ Every bit touches exactly 2 checks; every check ties together exactly 3 bits. Th
 ---
 
 ## 7.5 LDPC decoding ⭐⭐ *the heart of the whole topic*
+
+??? example "🎬 Animate this — Stronger ECC in action — BCH & LDPC"
+
+    BCH's algebraic error hunt and an LDPC Tanner graph converging by message passing, side by side.
+
+    [Animation page](../animations/ecc-bch-ldpc.md) · [open full-screen ↗](../animations/files/ecc_bch_ldpc.html)
+
+    <iframe src="../../animations/files/ecc_bch_ldpc.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Stronger ECC in action — BCH & LDPC"></iframe>
+
 
 Decoding runs on the Tanner graph by **message passing** (a.k.a. belief propagation): nodes exchange messages along edges, iteratively refining their belief about each bit until all parity checks are satisfied. There are two flavors — **hard-decision** (bit-flipping, simple) and **soft-decision** (sum-product, powerful). Both are 🔬 patent-dense; the specific message-update rules and their approximations are what most LDPC patents optimize.
 

@@ -48,6 +48,15 @@ The basic storage unit is a **cell (Cell)** — an NMOS-like transistor with a *
 
 ### 3.1.2 SLC / MLC / TLC — the voltage picture (p. 3–5) ⭐
 
+??? example "🎬 Animate this — The Vt Distribution Playground"
+
+    SLC/MLC/TLC bells in one window — drag wear, retention and read count and watch every Ch 3 failure mode happen.
+
+    [Animation page](../animations/vt-playground.md) · [open full-screen ↗](../animations/files/vt_playground.html)
+
+    <iframe src="../../animations/files/vt_playground.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Vt Distribution Playground"></iframe>
+
+
 The names describe **how many bits one cell stores**, which physically means **how finely you subdivide the electron count** in the floating gate:
 
 The key diagram to understand is the **threshold-voltage distribution** *(p. 3–5, Figs 3-3/3-4/3-5)*: the x-axis is threshold voltage, the y-axis is the number of cells. Cells storing the same value don't all sit at exactly one voltage — they form a *bell curve* centered on a target. Reading means checking which range the cell's voltage falls into.
@@ -59,6 +68,15 @@ The key diagram to understand is the **threshold-voltage distribution** *(p. 3�
 **The fundamental trade-off (p. 5, Table 3-2):** on the same silicon area, SLC→MLC→TLC store 1→2→3 bits, so capacity rises. But more bands means (a) writing must control electron count more precisely → **slower writes**, (b) reading must try more reference voltages → **slower reads**, and (c) the bands sit closer together → **less margin for error → shorter endurance**. So performance and lifespan go **SLC > MLC > TLC**, while capacity-per-area and cheapness go the other way. 3D TLC is now mainstream; QLC (4 bits) was arriving — slower and less reliable still.
 
 ### 3.1.3 Flash chip architecture — the hierarchy (p. 5–9) ⭐ *memorize this*
+
+??? example "🎬 Animate this — Why SSDs need an FTL — NAND flash, animated"
+
+    Pages, blocks and the no-overwrite rule — the hierarchy this section describes, animated stage by stage.
+
+    [Animation page](../animations/nand-flash-animation.md) · [open full-screen ↗](../animations/files/nand-flash-animation.html)
+
+    <iframe src="../../animations/files/nand-flash-animation.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Why SSDs need an FTL — NAND flash, animated"></iframe>
+
 
 A flash chip is millions of cells organized in a strict nesting *(p. 6–7, Figs 3-6/3-7)*. From smallest to largest:
 
@@ -141,6 +159,15 @@ The controller drives flash via a command set (ONFI 2.3 example). Commands you'l
 Flash uses a **Row Address** and a **Column Address**. The **column address is the offset within a page.** The **row address**, high bits to low, is **LUN → Block → Page**. Where's the plane? It sits in the **lowest bit(s) of the block address** — so multi-plane operations tend to split into odd/even planes. A vendor quirk: for multi-plane, all planes must share the same *page* address; Intel/Micron and Toshiba allow different *blocks*, but Samsung requires the same block address.
 
 ### 3.2.5 Read / write / erase timing (p. 40–41, Figs 3-39/3-40/3-41)
+
+??? example "🎬 Animate this — The Flash Timing & Parallelism Lab"
+
+    The bus, the registers and the planes on one timeline — toggle pipelining and AIPR and watch the bars move.
+
+    [Animation page](../animations/flash-timing-lab.md) · [open full-screen ↗](../animations/files/flash_timing_lab.html)
+
+    <iframe src="../../animations/files/flash_timing_lab.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>
+
 
 - **Read:** send 00h, then 2 column + 3 row address bytes, then 30h; the status bit SR[6] goes Busy, then Ready, then data can be read.
 - **Write:** send 80h, then the address (**column is usually 0 — you must fill a whole page from the start, or you risk data errors**), then data into the register, then 10h to commit; SR[6] Busy→Ready.
@@ -230,15 +257,42 @@ Five causes, each shown as a threshold-voltage distribution shift *(Figs 3-53 to
 
 ### 3.4.2 Read Retry (p. 63–64, Fig 3-57)
 
+??? example "🎬 Animate this — The Vt Distribution Playground"
+
+    SLC/MLC/TLC bells in one window — drag wear, retention and read count and watch every Ch 3 failure mode happen.
+
+    [Animation page](../animations/vt-playground.md) · [open full-screen ↗](../animations/files/vt_playground.html)
+
+    <iframe src="../../animations/files/vt_playground.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Vt Distribution Playground"></iframe>
+
+
 For the *distribution-shift* problems (retention, read disturb), data is still cleanly separated — just misread with the old reference voltage. **Read Retry keeps changing the reference voltage** until it finds a point that reads the data correctly. As long as the states haven't *overlapped*, retry can recover the data. A fancier variant, **Advanced Read Retry**, first reads nearby cells to determine their states, then reads the target twice with different references, choosing based on the neighbors.
 
 ### 3.4.3 ECC — error-correcting codes (p. 64–65) ⭐
+
+??? example "🎬 Animate this — Stronger ECC in action — BCH & LDPC"
+
+    BCH's algebraic error hunt and an LDPC Tanner graph converging by message passing, side by side.
+
+    [Animation page](../animations/ecc-bch-ldpc.md) · [open full-screen ↗](../animations/files/ecc_bch_ldpc.html)
+
+    <iframe src="../../animations/files/ecc_bch_ldpc.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Stronger ECC in action — BCH & LDPC"></iframe>
+
 
 Every SSD controller (and some flash chips) has an **ECC** module. The common algorithms are **BCH** (named for Bose, Ray-Chaudhuri, Hocquenghem) and **LDPC** (Low-Density Parity Check) — **LDPC is the growing trend** (BCH still common today). ECC parity is stored in each page's **spare/reserved area**; stronger correction needs more parity, so **correction strength is limited by that spare space** — more spare = stronger ECC.
 
 **Static vs dynamic ECC.** Most drives use **static** ECC — fixed user-data-size and parity-size for the whole drive life, so correction strength never changes. But since young flash flips few bits and old flash flips many, some drives use **dynamic ECC**: start with *less* parity (fitting more user data per page), then strengthen correction as the drive ages. Benefits: early on, more user data per page = effectively more **OP** (lower write amplification) and better channel-bandwidth utilization. Dynamic ECC can also **vary by location** — good dies/Lower Pages get weaker ECC, weak dies/Upper Pages get stronger ECC.
 
 ### 3.4.4 RAID inside the SSD (p. 65–67) ⭐ *harder than it looks*
+
+??? example "🎬 Animate this — Stripe RAID & the Chained Warships"
+
+    A real XOR rebuild, then the GC trap: one block can't move alone when a parity equation chains the stripe.
+
+    [Animation page](../animations/stripe-raid.md) · [open full-screen ↗](../animations/files/stripe_raid.html)
+
+    <iframe src="../../animations/files/stripe_raid.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Stripe RAID & the Chained Warships"></iframe>
+
 
 When bit-flips exceed ECC's power, ECC fails — so many drives add **RAID** (typically **RAID 5**) *across dies*, treating the internal flash array like a disk array *(p. 65, Fig 3-58)*. Example: 5 dies, Die 0–3 hold user data, Die P holds their **XOR** parity; if Die 1 becomes ECC-uncorrectable, XOR the others to rebuild it. (RAID 5 recovers only a *single* uncorrectable failure; costs user space for parity — "no free lunch.")
 

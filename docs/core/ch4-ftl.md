@@ -47,6 +47,15 @@ source_anchor: "CH4 file, pp. 1–72"
 
 ## 4.2 Mapping management — pp. 4–15 ⭐
 
+??? example "🎬 Animate this — Mapping Lookup Paths"
+
+    DRAM vs DRAM-less vs HMB vs HPB racing the same read — the two-flash-access penalty as two long bars.
+
+    [Animation page](../animations/mapping-paths.md) · [open full-screen ↗](../animations/files/mapping_paths.html)
+
+    <iframe src="../../animations/files/mapping_paths.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Mapping Lookup Paths"></iframe>
+
+
 ### 4.2.1 Mapping granularity (p. 4–8, Figs 4-3/4-4/4-5, Table 4-1)
 
 Three schemes, trading table size against performance:
@@ -79,6 +88,15 @@ The table must be written to flash before power-off, and reloaded on power-up. B
 
 ## 4.3 Garbage collection — pp. 16–43 ⭐⭐ *the conceptual heart of the book*
 
+??? example "🎬 Animate this — The Toy SSD Sandbox"
+
+    This section's walkthrough as a live simulation — write, overwrite, collect, and watch WA respond to the OP slider.
+
+    [Animation page](../animations/toy-ssd-sandbox.md) · [open full-screen ↗](../animations/files/toy_ssd_sandbox.html)
+
+    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Toy SSD Sandbox"></iframe>
+
+
 This is the single most important section. It introduces **GC** and the two concepts welded to it: **Write Amplification (WA)** and **Over-Provisioning (OP)**.
 
 ### 4.3.1 GC principle, via a toy SSD (p. 16–26, Figs 4-14 to 4-22)
@@ -101,6 +119,15 @@ The walk-through:
 - The folk wisdom "SSDs slow down with use" is real science: early on there's free space so **no GC runs** (fast); once full, **every write triggers GC** (slower). Performance depends on your write pattern.
 
 ### 4.3.2 Write Amplification (p. 27–30, Figs 4-23 to 4-25) ⭐ *know this cold*
+
+??? example "🎬 Animate this — The SSD Calculator Bundle"
+
+    This section's formulas as live sliders — move an input and watch the answer (and the curve) recompute.
+
+    [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
+
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+
 
 Because GC does extra internal writes, the SSD writes **more** to flash than the host sent. That ratio is **Write Amplification (WA)**:
 
@@ -167,6 +194,15 @@ So **bigger OP → lower WA** (more garbage per block → less valid data to mov
 ---
 
 ## 4.6 Power-loss recovery — pp. 51–56, Figs 4-43 to 4-46 ⭐⭐ *know this cold*
+
+??? example "🎬 Animate this — Power-Loss Rebuild & Snapshots"
+
+    Yank the power, then watch the map rebuild from metadata tags — and the timestamp duel resolve stale copies.
+
+    [Animation page](../animations/power-loss-rebuild.md) · [open full-screen ↗](../animations/files/power_loss_rebuild.html)
+
+    <iframe src="../../animations/files/power_loss_rebuild.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Power-Loss Rebuild & Snapshots"></iframe>
+
 
 Two kinds of power loss, and the SSD must recover from both.
 

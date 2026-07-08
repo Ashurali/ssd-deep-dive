@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapping Lookup Paths — DRAM vs DRAM-less vs HMB vs HPB</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
+button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{background:rgba(77,208,196,.12)}
+button.amber{color:var(--amber);border-color:var(--amber)}
+button.tgl.on{background:var(--cyan);color:var(--bg)}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.note{color:var(--dim);font-size:13px;margin-top:6px}
+svg{display:block;width:100%;height:auto}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+h2{font-family:"Space Grotesk";font-size:17px;margin:4px 0 8px;color:var(--tx)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>Mapping <span class="a">lookup paths</span></h1>
+<p class="sub">Where does the map table live — and what does that cost on every single read? Four architectures race the same 4 KB request.</p>
+
+<div class="panel">
+  <h2>Warm-up: why page mapping exists at all</h2>
+  <div class="row">
+    <button class="amber" id="rmwGo">update ONE page on a block-mapped drive</button>
+    <span class="mono" id="rmwOut"></span>
+  </div>
+  <svg id="rmwSvg" viewBox="0 0 960 120"></svg>
+  <p class="note">Block mapping can't point at a single page — updating one page means read the whole block, modify, write the whole block elsewhere. That's the ten-second explanation of USB-stick random-write tragedy, and why SSDs pay for page-granularity tables. (Figs 4-3→4-5)</p>
+</div>
+
+<div class="panel">
+  <h2>The race</h2>
+  <div class="row">
+    <button class="amber" id="raceRnd">random 4K read</button>
+    <button id="raceSeq">sequential read (map already cached)</button>
+    <button class="tgl" id="hpbTgl">+ HPB lane (UFS)</button>
+  </div>
+  <svg id="raceSvg" viewBox="0 0 960 300"></svg>
+  <p class="note" id="raceNote">
+    <b>DRAM drive:</b> lookup in onboard DRAM (~0.1 µs) → one flash read. <b>DRAM-less:</b> the second-level map lives in flash — a random read misses the tiny SRAM cache, so the drive does a <em>flash read to fetch the mapping, then a flash read for the data</em>: two long bars, half the effective speed (Fig 4-13). <b>HMB:</b> the map sits in borrowed host RAM — a PCIe hop (~1 µs) is slower than DRAM but ~40× faster than a flash read. Switch to <b>sequential</b> and DRAM-less catches up: one cached map chunk serves many neighboring pages. <b>HPB</b> goes further — the host sends the physical address with the command, and the device skips its lookup entirely.
+  </p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 4-3→4-13 (CH4 pp. 5–14) plus the HPB epilogue from Supplement B — Cluster F of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS="http://www.w3.org/2000/svg";
+function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
+function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"start"});e.textContent=s;return e;}
+
+/* ---------- warm-up: block-map RMW ---------- */
+$("rmwGo").onclick=()=>{
+  const svg=$("rmwSvg");svg.innerHTML="";
+  const steps=[
+    {t0:0,t1:8,color:"#3a4468",label:"read ALL 8 pages of the block"},
+    {t0:8,t1:9,color:"#4dd0c4",label:"modify 1"},
+    {t0:9,t1:17,color:"#f2b13c",label:"write ALL 8 pages to a fresh block"},
+  ];
+  const X0=20,W=920,T=17;
+  txt(svg,X0,20,"host asked to write 1 page — the drive did 16 pages of work (WA=16× before GC even exists)","#8ea0c9",12);
+  let until=0;
+  const iv=setInterval(()=>{
+    until+=RM?T:T/60;
+    svg.innerHTML="";
+    txt(svg,X0,20,"host asked to write 1 page — the drive did 16 pages of work","#8ea0c9",12);
+    steps.forEach(s=>{
+      if(s.t0>=until)return;
+      const t1=Math.min(s.t1,until);
+      mk(svg,"rect",{x:X0+s.t0/T*W,y:44,width:(t1-s.t0)/T*W,height:34,rx:5,fill:s.color,opacity:.9});
+      if(t1-s.t0>1.5)txt(svg,X0+(s.t0+t1)/2/T*W,66,s.label,"#0b1020",11,"middle");
+    });
+    if(until>=T){clearInterval(iv);$("rmwOut").textContent="page mapping: would have been 1 write.";}
+  },30);
+};
+$("rmwGo").click();
+
+/* ---------- the race ---------- */
+const FLASH=40, PCIE=1, DRAM=0.12;
+function lanes(seq,hpb){
+  const L=[
+    {name:"DRAM drive",steps:[
+      {d:DRAM,c:"#4dd0c4",l:"map in DRAM"},
+      {d:FLASH,c:"#3a4468",l:"flash read (data)"}]},
+    {name:"DRAM-less",steps: seq
+      ? [{d:DRAM,c:"#4dd0c4",l:"map chunk cached in SRAM ✓"},{d:FLASH,c:"#3a4468",l:"flash read (data)"}]
+      : [{d:FLASH,c:"#ef6a6a",l:"flash read (the MAPPING)"},{d:FLASH,c:"#3a4468",l:"flash read (data)"}]},
+    {name:"HMB",steps:[
+      {d:PCIE,c:"#a78bfa",l:"map over PCIe (host RAM)"},
+      {d:FLASH,c:"#3a4468",l:"flash read (data)"}]},
+  ];
+  if(hpb) L.push({name:"HPB (UFS)",steps:[
+    {d:0.05,c:"#f2b13c",l:"host already sent the PA"},
+    {d:FLASH,c:"#3a4468",l:"flash read (data)"}]});
+  return L;
+}
+function runRace(seq){
+  const hpb=$("hpbTgl").classList.contains("on");
+  const L=lanes(seq,hpb);
+  const svg=$("raceSvg");
+  const T=85,X0=150,W=780,rh=54;
+  let until=0;
+  const iv=setInterval(()=>{
+    until+=RM?T:T/70;
+    svg.innerHTML="";
+    txt(svg,X0,18,seq?"sequential read — map chunk already cached":"random 4K read — cold map","#8ea0c9",12);
+    L.forEach((lane,i)=>{
+      const y=36+i*rh;
+      txt(svg,10,y+22,lane.name,"#e8eeff",13);
+      mk(svg,"line",{x1:X0,x2:X0+W,y1:y+30,y2:y+30,stroke:"#1a2342"});
+      let t=0,fin=0;
+      lane.steps.forEach(s=>{
+        const t0=t,t1=t+s.d;t=t1;fin=t1;
+        if(t0>=until)return;
+        const tt=Math.min(t1,until);
+        mk(svg,"rect",{x:X0+t0/T*W,y:y+6,width:Math.max(2,(tt-t0)/T*W),height:24,rx:4,fill:s.c,opacity:.9});
+        if((tt-t0)/T*W>90)txt(svg,X0+(t0+tt)/2/T*W,y+22,s.l,"#0b1020",10,"middle");
+      });
+      if(until>=fin){
+        txt(svg,X0+fin/T*W+8,y+23,fin.toFixed(1)+" µs","#f2b13c",12);
+      }
+    });
+    if(until>=T)clearInterval(iv);
+  },28);
+}
+$("raceRnd").onclick=()=>runRace(false);
+$("raceSeq").onclick=()=>runRace(true);
+$("hpbTgl").onclick=e=>{e.target.classList.toggle("on");};
+runRace(false);
+</script>
+</body>
+</html>

@@ -103,6 +103,16 @@ nav:
       - supplements/e-aerospace-storage.md
   - Animations:
       - animations/index.md
+      - animations/vt-playground.md
+      - animations/toy-ssd-sandbox.md
+      - animations/nvme-ring-machine.md
+      - animations/packet-dresser.md
+      - animations/flash-timing-lab.md
+      - animations/mapping-paths.md
+      - animations/power-loss-rebuild.md
+      - animations/stripe-raid.md
+      - animations/enum-routing.md
+      - animations/ssd-calculators.md
       - animations/nand-flash-animation.md
       - animations/ecc-bit-correction.md
       - animations/ecc-bch-ldpc.md

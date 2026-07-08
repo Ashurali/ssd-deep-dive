@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The NVMe Ring Machine — SQ, CQ, doorbells, phase tag</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1020px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:6px 0}
+label{color:var(--dim);font-size:13px}
+button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{background:rgba(77,208,196,.12)}
+button.amber{color:var(--amber);border-color:var(--amber)}
+button.tgl.on{background:var(--cyan);color:var(--bg)}
+input[type=range]{accent-color:var(--cyan);width:130px}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.note{color:var(--dim);font-size:13px;margin-top:6px}
+svg{display:block;width:100%;height:auto}
+#wire{font:12px "IBM Plex Mono";color:var(--dim);max-height:130px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}
+#wire .tlp{color:var(--amber)}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>The <span class="a">NVMe ring</span> machine</h1>
+<p class="sub">Submission queue, completion queue, doorbells — the whole 8-step dance, with the two details everyone gets wrong: the phase-tag flip and the piggybacked SQ head.</p>
+
+<div class="panel">
+  <div class="row">
+    <button id="submit">① submit a command</button>
+    <button class="amber" id="step">step ⏯</button>
+    <button class="tgl" id="autoTgl">auto</button>
+    <label>queue depth limit <span class="mono" id="qdLab">4</span></label>
+    <input type="range" id="qd" min="1" max="8" value="4">
+    <button class="tgl" id="wireTgl">wire view (TLPs)</button>
+    <span class="mono">completed: <span id="doneN" style="color:var(--amber)">0</span></span>
+  </div>
+  <svg id="stage" viewBox="0 0 1000 430" aria-label="NVMe queues and doorbells"></svg>
+  <div id="wire" hidden></div>
+  <p class="note" id="stepNote">Submit puts a command in the SQ (host memory) and advances the tail; the tail value is then written to the SSD's doorbell register — that write <em>is</em> the doorbell. Watch CQ entries carry a colored <b>phase bit</b>: the host finds new completions by color, and the expected color <b>flips every ring wrap</b> (Fig 6-20). Each completion also carries the current <b>SQ head</b> home (Fig 6-19) so the host knows how far the SSD has consumed.</p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 6-9→6-20 (ring walkthrough), 6-29/6-30 and the 6-31→6-39 PCIe trace as the wire view (CH6 pp. 11–22, 33–40) — Cluster C of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const N=8;                       // ring slots
+const S={
+  sq:new Array(N).fill(null),    // {id}
+  cq:new Array(N).fill(null),    // {id,phase,sqhead}
+  sqTail:0,sqHead:0,cqTail:0,cqHead:0,
+  cqPhase:1,                     // phase the SSD writes this lap
+  hostPhase:1,                   // phase the host expects
+  inflight:[],                   // {id,progress}
+  nextId:1,done:0,qd:4,auto:null,wire:false,
+};
+const busy=()=>S.inflight.length + ringCount(S.sqHead,S.sqTail);
+const ringCount=(h,t)=>(t-h+2*N)%(2*N)>N?N:(t-h+N)%N||((t!==h)?N:0);
+
+function wireLog(msg,tlp){
+  if(!S.wire)return;
+  const el=$("wire");
+  el.innerHTML="<div>"+(tlp?'<span class="tlp">'+tlp+"</span> ":"")+msg+"</div>"+el.innerHTML;
+}
+
+/* ---------- actions ---------- */
+function submit(){
+  if(ringCount(S.sqHead,S.sqTail)>=N-1){ note("SQ full — the host must wait (tail+1 == head)."); return; }
+  const id=S.nextId++;
+  S.sq[S.sqTail%N]={id};
+  S.sqTail=(S.sqTail+1)%N;
+  wireLog("host → SSD: doorbell SQ-tail="+S.sqTail,"MemWr32 (4B to BAR0 doorbell)");
+  note("② host rings the SQ tail doorbell (a plain memory write into the controller's BAR space).");
+  draw();
+}
+function step(){
+  // ③ SSD fetches if capacity
+  if(S.inflight.length<S.qd && S.sqHead!==S.sqTail && S.sq[S.sqHead%N]){
+    const c=S.sq[S.sqHead%N]; S.sq[S.sqHead%N]=null;
+    S.sqHead=(S.sqHead+1)%N;
+    S.inflight.push({id:c.id,progress:0,need:1+Math.floor(Math.random()*3)});
+    wireLog("SSD fetches command #"+c.id+" from SQ","MemRd + CplD (64B command)");
+    note("③ controller fetches the command from host memory — a MemRd it initiates itself.");
+    draw(); return;
+  }
+  // ④⑤ progress / complete (out-of-order allowed: random pick)
+  if(S.inflight.length){
+    const i=Math.floor(Math.random()*S.inflight.length);
+    const job=S.inflight[i];
+    job.progress++;
+    if(job.progress>=job.need){
+      S.inflight.splice(i,1);
+      if((S.cqTail+1)%N===S.cqHead){ note("CQ full — completion stalls."); draw(); return; }
+      S.cq[S.cqTail%N]={id:job.id,phase:S.cqPhase,sqhead:S.sqHead};
+      S.cqTail=(S.cqTail+1)%N;
+      if(S.cqTail===0){ S.cqPhase^=1; wireLog("CQ wrapped — SSD now writes phase="+S.cqPhase); }
+      wireLog("SSD → host: completion for #"+job.id+" (P="+S.cq[(S.cqTail+N-1)%N].phase+", SQhead="+S.sqHead+")","MemWr (16B CQ entry)");
+      wireLog("SSD → host: interrupt","MemWr (MSI-X)");
+      note("⑤ data moved, ⑥ completion written to CQ with phase bit + piggybacked SQ head, ⑦ MSI-X fires.");
+      draw(); return;
+    }
+    wireLog("executing #"+job.id+" — data transfer chunk","MemWr ×4 (4KB data)");
+    note("④ command executes; for a read, the SSD pushes data into host buffers with plain MemWr TLPs.");
+    draw(); return;
+  }
+  // ⑧ host consumes completions
+  if(S.cqHead!==S.cqTail){
+    const e=S.cq[S.cqHead%N];
+    if(e.phase!==S.hostPhase){ note("host scans CQ: phase bit doesn't match expected — nothing new."); return; }
+    S.cq[S.cqHead%N]=null;
+    S.cqHead=(S.cqHead+1)%N;
+    if(S.cqHead===0){ S.hostPhase^=1; wireLog("host wrapped CQ — now expects phase="+S.hostPhase); }
+    S.done++;
+    wireLog("host → SSD: doorbell CQ-head="+S.cqHead,"MemWr32 (doorbell)");
+    note("⑧ host processes completion #"+e.id+" (found by phase color!) and rings the CQ head doorbell.");
+    draw(); return;
+  }
+  note("idle — submit more commands.");
+}
+function note(m){ $("stepNote").innerHTML=m; }
+
+/* ---------- rendering ---------- */
+function ringSlots(cx,cy,r){
+  const out=[];
+  for(let i=0;i<N;i++){
+    const a=-Math.PI/2 + i*2*Math.PI/N;
+    out.push([cx+r*Math.cos(a), cy+r*Math.sin(a)]);
+  }
+  return out;
+}
+function draw(){
+  const svg=$("stage"); svg.innerHTML="";
+  const mk=(t,a)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
+  const txt=(x,y,s,c,sz,anch)=>{const e=mk("text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;};
+
+  // panes
+  mk("rect",{x:10,y:10,width:560,height:410,rx:12,fill:"none",stroke:"#26304d"});
+  txt(290,32,"HOST MEMORY","#8ea0c9",14);
+  mk("rect",{x:600,y:10,width:390,height:410,rx:12,fill:"none",stroke:"#26304d"});
+  txt(795,32,"SSD CONTROLLER","#8ea0c9",14);
+
+  // SQ ring
+  txt(160,66,"Submission Queue","#4dd0c4",13);
+  ringSlots(160,180,86).forEach(([x,y],i)=>{
+    const e=S.sq[i];
+    mk("circle",{cx:x,cy:y,r:20,fill:e?"#173a4d":"#0e1530",stroke:e?"#4dd0c4":"#26304d","stroke-width":1.6});
+    if(e) txt(x,y+4,"#"+e.id,"#4dd0c4",12);
+    if(i===S.sqHead%N) txt(x,y-27,"H","#f2b13c",11);
+    if(i===S.sqTail%N) txt(x,y+33,"T","#a78bfa",11);
+  });
+
+  // CQ ring — slots colored by phase bit
+  txt(430,66,"Completion Queue","#f2b13c",13);
+  ringSlots(430,180,86).forEach(([x,y],i)=>{
+    const e=S.cq[i];
+    mk("circle",{cx:x,cy:y,r:20,
+      fill:e?(e.phase?"#4d3a17":"#17304d"):"#0e1530",
+      stroke:e?(e.phase?"#f2b13c":"#93c5fd"):"#26304d","stroke-width":1.6});
+    if(e){ txt(x,y+1,"#"+e.id,e.phase?"#f2b13c":"#93c5fd",11); txt(x,y+13,"P"+e.phase+"·h"+e.sqhead,"#8ea0c9",8); }
+    if(i===S.cqHead%N) txt(x,y-27,"H","#f2b13c",11);
+    if(i===S.cqTail%N) txt(x,y+33,"T","#a78bfa",11);
+  });
+  txt(430,300,"host expects phase = "+S.hostPhase,"#8ea0c9",12);
+  txt(160,300,"head H · tail T","#8ea0c9",11);
+
+  // doorbells
+  mk("rect",{x:630,y:66,width:150,height:56,rx:8,fill:"#0e1530",stroke:"#26304d"});
+  txt(705,86,"SQ tail doorbell","#8ea0c9",11); txt(705,108,String(S.sqTail),"#a78bfa",18);
+  mk("rect",{x:810,y:66,width:150,height:56,rx:8,fill:"#0e1530",stroke:"#26304d"});
+  txt(885,86,"CQ head doorbell","#8ea0c9",11); txt(885,108,String(S.cqHead),"#f2b13c",18);
+
+  // execution units
+  txt(795,160,"execution (out-of-order allowed)","#8ea0c9",12);
+  S.inflight.forEach((j,i)=>{
+    const y=180+i*36;
+    mk("rect",{x:640,y,width:300,height:24,rx:6,fill:"#0e1530",stroke:"#26304d"});
+    mk("rect",{x:640,y,width:300*j.progress/j.need,height:24,rx:6,fill:"rgba(77,208,196,.35)"});
+    txt(655,y+16,"#"+j.id,"#4dd0c4",12,"start");
+  });
+  txt(795,400,"in flight: "+S.inflight.length+" / QD "+S.qd,"#8ea0c9",12);
+  $("doneN").textContent=S.done;
+
+  // wires between panes
+  mk("line",{x1:570,x2:600,y1:95,y2:95,stroke:"#a78bfa","stroke-dasharray":"4 4"});
+  mk("line",{x1:570,x2:600,y1:110,y2:110,stroke:"#f2b13c","stroke-dasharray":"4 4"});
+  txt(585,86,"PCIe","#8ea0c9",9);
+}
+
+/* ---------- controls ---------- */
+$("submit").onclick=submit;
+$("step").onclick=step;
+$("qd").oninput=e=>{S.qd=+e.target.value;$("qdLab").textContent=S.qd;draw();};
+$("wireTgl").onclick=e=>{S.wire=!S.wire;e.target.classList.toggle("on",S.wire);$("wire").hidden=!S.wire;
+  if(S.wire) wireLog("wire view ON — every arrow below is just MemRd / MemWr. That's the punchline: the whole protocol is two TLP types.");};
+$("autoTgl").onclick=e=>{
+  if(S.auto){clearInterval(S.auto);S.auto=null;e.target.classList.remove("on");return;}
+  e.target.classList.add("on");
+  S.auto=setInterval(()=>{ if(Math.random()<0.45) submit(); step(); },RM?900:450);
+};
+draw();
+</script>
+</body>
+</html>

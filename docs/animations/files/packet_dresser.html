@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Packet Dresser — PCIe layers, ACK/NAK, and a Jammer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{font:600 14px "Space Grotesk";background:var(--panel);color:var(--dim);border:1px solid var(--line);border-radius:9px;padding:8px 14px;cursor:pointer}
+.tabs button.on{color:var(--bg);background:var(--cyan);border-color:var(--cyan)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
+button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{background:rgba(77,208,196,.12)}
+button.amber{color:var(--amber);border-color:var(--amber)}
+button.red{color:var(--red);border-color:var(--red)}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.note{color:var(--dim);font-size:13px;margin-top:6px}
+svg{display:block;width:100%;height:auto}
+.hidden{display:none}
+#dlog,#jlog{font:12px "IBM Plex Mono";color:var(--dim);max-height:120px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>The <span class="a">packet dresser</span> &amp; ACK/NAK lab</h1>
+<p class="sub">A TLP gets dressed by three layers, undressed by three layers — and between them sits a hostile wire. Includes Ch7's Jammer as a resident gremlin.</p>
+
+<div class="tabs">
+  <button id="t0" class="on">1 · Dressing room</button>
+  <button id="t1">2 · Through a switch</button>
+  <button id="t2">3 · ACK/NAK + Jammer</button>
+  <button id="t3">4 · Flow-control credits</button>
+</div>
+
+<!-- Scene 1: dressing -->
+<div class="panel" id="s0">
+  <div class="row">
+    <button id="dress">dress next layer</button>
+    <button class="amber" id="send0">send across the link</button>
+    <button id="reset0">reset</button>
+  </div>
+  <svg id="dressSvg" viewBox="0 0 960 250"></svg>
+  <div id="dlog"></div>
+  <p class="note">Transaction layer adds <b style="color:var(--cyan)">Header + ECRC</b>, Data Link adds <b style="color:var(--amber)">Seq# + LCRC</b>, Physical adds <b style="color:var(--violet)">framing</b>. The receiver undresses in reverse — each layer <em>checks</em> before it strips. (Figs 5-11→5-14, 5-19/5-20)</p>
+</div>
+
+<!-- Scene 2: switch -->
+<div class="panel hidden" id="s1">
+  <div class="row"><button class="amber" id="route">route RC → switch → endpoint</button></div>
+  <svg id="swSvg" viewBox="0 0 960 200"></svg>
+  <p class="note" id="swNote">Why does a mere forwarder implement all three layers? Because to <em>route</em>, the switch must undress the packet all the way to the Transaction layer to read the address — then dress it again for the next hop. (Figs 5-15/5-16)</p>
+</div>
+
+<!-- Scene 3: ACK/NAK + jammer -->
+<div class="panel hidden" id="s2">
+  <div class="row">
+    <button id="tx">send next TLP</button>
+    <span class="mono">Jammer 👹:</span>
+    <button class="red" id="jCrc">corrupt LCRC</button>
+    <button class="red" id="jDrop">drop a TLP</button>
+    <button class="red" id="jAck">delay the ACK</button>
+  </div>
+  <svg id="akSvg" viewBox="0 0 960 210"></svg>
+  <div id="jlog"></div>
+  <p class="note">The sender keeps every unacknowledged TLP in its <b>Replay Buffer</b>. Corrupt → NAK → replay. Dropped → receiver sees the sequence jump → NAK → replay. Delayed ACK → sender times out and re-sends → receiver sees a <em>lower-than-expected</em> seq → silently discards the duplicate and ACKs. Three faults = the whole §5.8 state machine. (Figs 5-49→5-53; Jammer = Figs 7-15/7-16)</p>
+</div>
+
+<!-- Scene 4: credits -->
+<div class="panel hidden" id="s3">
+  <div class="row">
+    <button id="cSend">send TLP (spends 1 credit)</button>
+    <button class="amber" id="cDrain">receiver processes one (returns credit)</button>
+  </div>
+  <svg id="crSvg" viewBox="0 0 960 130"></svg>
+  <p class="note" id="crNote">The receiver advertises buffer credits via FC DLLPs; the sender's gate closes when credits hit zero. That's why a sender can't "just blast". (Figs 5-54/5-55)</p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 5-11→5-20, 5-49→5-55, 5-3/5-5, and Ch7's Jammer concept (Figs 7-15/7-16) — CH5 pp. 11–27, 47–54; CH7 pp. 25–26 — Cluster D of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS="http://www.w3.org/2000/svg";
+function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
+function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;}
+
+/* tabs */
+const scn=["s0","s1","s2","s3"],tb=["t0","t1","t2","t3"];
+tb.forEach((t,i)=>$(t).onclick=()=>{scn.forEach((s,j)=>$(s).classList.toggle("hidden",i!==j));tb.forEach((u,j)=>$(u).classList.toggle("on",i===j));});
+
+/* ---------- scene 1: dressing ---------- */
+const LAYERS=[
+ {name:"Header + ECRC",who:"Transaction layer",color:"#4dd0c4"},
+ {name:"Seq# + LCRC",who:"Data Link layer",color:"#f2b13c"},
+ {name:"STP … END framing",who:"Physical layer",color:"#a78bfa"},
+];
+let dressed=0,pos=0,sending=false,undress=0;
+function dlog(m){const el=$("dlog");el.innerHTML="<div>"+m+"</div>"+el.innerHTML;}
+function drawDress(){
+  const svg=$("dressSvg");svg.innerHTML="";
+  txt(svg,120,20,"SENDER — dresses","#8ea0c9",13);
+  txt(svg,840,20,"RECEIVER — undresses & checks","#8ea0c9",13);
+  mk(svg,"line",{x1:250,x2:710,y1:130,y2:130,stroke:"#26304d","stroke-width":3});
+  txt(svg,480,150,"the link","#8ea0c9",11);
+  const x=sending?250+(710-250-120)*pos:60, y=70;
+  // nested wrappers (outermost drawn first)
+  const layersToDraw = sending? (pos>=1? 3-undress : dressed) : dressed;
+  for(let i=layersToDraw-1;i>=0;i--){
+    const pad=(i+1)*14;
+    mk(svg,"rect",{x:x-pad,y:y-pad,width:120+2*pad,height:60+2*pad,rx:8,fill:"none",stroke:LAYERS[i].color,"stroke-width":2});
+    txt(svg,x+60,y-pad+11,LAYERS[i].name,LAYERS[i].color,10);
+  }
+  mk(svg,"rect",{x,y,width:120,height:60,rx:8,fill:"#173a4d",stroke:"#4dd0c4"});
+  txt(svg,x+60,y+35,"payload","#e8eeff",13);
+}
+$("dress").onclick=()=>{
+  if(sending||dressed>=3)return;
+  dlog(LAYERS[dressed].who+" wraps: "+LAYERS[dressed].name);
+  dressed++;drawDress();
+};
+$("send0").onclick=()=>{
+  if(sending||dressed<3){ if(dressed<3)dlog("not fully dressed — a naked TLP never touches the wire."); return; }
+  sending=true;pos=0;undress=0;
+  const iv=setInterval(()=>{
+    pos+=RM?1:0.04;
+    if(pos>=1){
+      pos=1;
+      if(undress<3){
+        const L=LAYERS[2-undress];
+        dlog("receiver "+L.who+" checks "+(undress===0?"framing":undress===1?"LCRC & sequence":"ECRC")+" ✓ then strips "+L.name);
+        undress++;drawDress();
+        if(undress===3){clearInterval(iv);dlog("payload delivered intact.");}
+        return;
+      }
+    }
+    drawDress();
+  },RM?400:30);
+};
+$("reset0").onclick=()=>{dressed=0;pos=0;sending=false;undress=0;$("dlog").innerHTML="";drawDress();};
+drawDress();
+
+/* ---------- scene 2: switch ---------- */
+let swBusy=false;
+function drawSwitch(px,phase){
+  const svg=$("swSvg");svg.innerHTML="";
+  const nodes=[["Root Complex",100],["Switch",480],["Endpoint (SSD)",860]];
+  nodes.forEach(([n,x])=>{mk(svg,"rect",{x:x-80,y:60,width:160,height:56,rx:10,fill:"#0e1530",stroke:"#26304d"});txt(svg,x,92,n,"#e8eeff",13);});
+  mk(svg,"line",{x1:180,x2:400,y1:88,y2:88,stroke:"#26304d","stroke-width":3});
+  mk(svg,"line",{x1:560,x2:780,y1:88,y2:88,stroke:"#26304d","stroke-width":3});
+  if(px!=null){
+    mk(svg,"circle",{cx:px,cy:88,r:10,fill:phase==="strip"?"#4dd0c4":"#a78bfa"});
+    if(phase==="strip") txt(svg,480,140,"switch undresses to Transaction layer → reads address → routes → re-dresses","#f2b13c",12);
+  }
+}
+$("route").onclick=()=>{
+  if(swBusy)return;swBusy=true;
+  let x=180,leg=1;
+  const iv=setInterval(()=>{
+    x+=RM?110:6;
+    if(leg===1&&x>=400){leg=2;drawSwitch(480,"strip");setTimeout(()=>{leg=3;x=560;},RM?300:900);return;}
+    if(leg===3&&x>=780){clearInterval(iv);swBusy=false;drawSwitch(null);$("swNote").innerHTML="Delivered. The switch had to peel down to the Transaction layer — the address lives in the TLP header, and only the Transaction layer can read it.";return;}
+    if(leg!==2)drawSwitch(x,leg===1?"go":"go2");
+  },RM?200:25);
+};
+drawSwitch(null);
+
+/* ---------- scene 3: ACK/NAK + jammer ---------- */
+const AK={next:1,buffer:[],rxExpect:1,fault:null,busy:false};
+function jlog(m){const el=$("jlog");el.innerHTML="<div>"+m+"</div>"+el.innerHTML;}
+function drawAk(flyer){
+  const svg=$("akSvg");svg.innerHTML="";
+  mk(svg,"rect",{x:20,y:30,width:220,height:150,rx:10,fill:"none",stroke:"#26304d"});
+  txt(svg,130,50,"SENDER","#8ea0c9",12);
+  txt(svg,130,70,"Replay Buffer:","#8ea0c9",11);
+  AK.buffer.slice(-5).forEach((s,i)=>{
+    mk(svg,"rect",{x:35+i*40,y:82,width:34,height:24,rx:5,fill:"#173a4d",stroke:"#4dd0c4"});
+    txt(svg,52+i*40,98,"S"+s,"#4dd0c4",11);
+  });
+  mk(svg,"rect",{x:720,y:30,width:220,height:150,rx:10,fill:"none",stroke:"#26304d"});
+  txt(svg,830,50,"RECEIVER","#8ea0c9",12);
+  txt(svg,830,72,"expects seq "+AK.rxExpect,"#f2b13c",12);
+  mk(svg,"line",{x1:240,x2:720,y1:110,y2:110,stroke:"#26304d","stroke-width":3});
+  if(AK.fault) txt(svg,480,90,"👹","#ef6a6a",22);
+  if(flyer){
+    mk(svg,"rect",{x:flyer.x-22,y:98,width:44,height:24,rx:5,fill:flyer.bad?"#4d1720":"#173a4d",stroke:flyer.bad?"#ef6a6a":(flyer.kind==="ack"?"#f2b13c":"#4dd0c4")});
+    txt(svg,flyer.x,114,flyer.label,flyer.bad?"#ef6a6a":(flyer.kind==="ack"?"#f2b13c":"#4dd0c4"),11);
+  }
+}
+function fly(label,kind,dir,bad,cb){
+  let x=dir>0?265:695;
+  const iv=setInterval(()=>{
+    x+=dir*(RM?430:8);
+    if((dir>0&&x>=695)||(dir<0&&x<=265)){clearInterval(iv);drawAk(null);cb&&cb();return;}
+    drawAk({x,label,kind,bad});
+  },RM?200:20);
+}
+function sendTLP(seq,isReplay){
+  AK.busy=true;
+  const fault=AK.fault; AK.fault=null;
+  if(fault==="drop"&&!isReplay){
+    jlog("👹 dropped TLP S"+seq+" on the wire.");
+    // next send will show seq jump; simulate by immediately sending the following seq
+    AK.busy=false; return;
+  }
+  const bad=fault==="crc"&&!isReplay;
+  fly("S"+seq,"tlp",1,bad,()=>{
+    if(bad){
+      jlog("receiver: LCRC check FAILED on S"+seq+" → NAK "+(AK.rxExpect-1));
+      fly("NAK","ack",-1,true,()=>{
+        jlog("sender: NAK → replay everything from S"+AK.rxExpect+" out of the Replay Buffer");
+        replayFrom(AK.rxExpect);
+      });
+      return;
+    }
+    if(seq>AK.rxExpect){
+      jlog("receiver: expected S"+AK.rxExpect+" but got S"+seq+" — a TLP went missing → NAK "+(AK.rxExpect-1));
+      fly("NAK","ack",-1,true,()=>{jlog("sender replays from S"+AK.rxExpect);replayFrom(AK.rxExpect);});
+      return;
+    }
+    if(seq<AK.rxExpect){
+      jlog("receiver: seq S"+seq+" is LOWER than expected ("+AK.rxExpect+") — duplicate from a timeout → silently discard, re-ACK");
+      fly("ACK "+(AK.rxExpect-1),"ack",-1,false,()=>{ackUpTo(AK.rxExpect-1);AK.busy=false;});
+      return;
+    }
+    AK.rxExpect++;
+    if(fault==="ackDelay"){
+      jlog("receiver ACKs … but 👹 delays it. Sender's replay timer expires → re-send S"+seq);
+      setTimeout(()=>fly("S"+seq,"tlp",1,false,()=>{
+        jlog("receiver: duplicate S"+seq+" (lower than expected "+AK.rxExpect+") → discard, ACK");
+        fly("ACK "+seq,"ack",-1,false,()=>{ackUpTo(seq);AK.busy=false;});
+      }),RM?400:900);
+      return;
+    }
+    fly("ACK "+seq,"ack",-1,false,()=>{ackUpTo(seq);AK.busy=false;});
+  });
+}
+function ackUpTo(seq){ AK.buffer=AK.buffer.filter(s=>s>seq); jlog("ACK "+seq+" → Replay Buffer drains up to S"+seq); drawAk(null); }
+function replayFrom(seq){
+  const list=AK.buffer.filter(s=>s>=seq);
+  if(!list.length){AK.busy=false;return;}
+  let i=0;
+  (function nxt(){ if(i>=list.length){AK.busy=false;return;} const s=list[i++]; jlog("replay S"+s); sendTLPReplay(s,nxt); })();
+}
+function sendTLPReplay(seq,cb){
+  fly("S"+seq,"tlp",1,false,()=>{
+    if(seq===AK.rxExpect)AK.rxExpect++;
+    fly("ACK "+seq,"ack",-1,false,()=>{ackUpTo(seq);cb();});
+  });
+}
+$("tx").onclick=()=>{ if(AK.busy)return; const s=AK.next++; AK.buffer.push(s); drawAk(null); sendTLP(s,false); };
+$("jCrc").onclick=()=>{AK.fault="crc";jlog("👹 armed: will corrupt the next TLP's LCRC");drawAk(null);};
+$("jDrop").onclick=()=>{AK.fault="drop";jlog("👹 armed: will eat the next TLP whole");drawAk(null);};
+$("jAck").onclick=()=>{AK.fault="ackDelay";jlog("👹 armed: will sit on the next ACK");drawAk(null);};
+drawAk(null);
+
+/* ---------- scene 4: credits ---------- */
+const CR={max:6,avail:6,queued:0};
+function drawCr(){
+  const svg=$("crSvg");svg.innerHTML="";
+  txt(svg,120,26,"sender gate","#8ea0c9",12);
+  const open=CR.avail>0;
+  mk(svg,"rect",{x:60,y:40,width:120,height:44,rx:8,fill:open?"#173a3d":"#4d1720",stroke:open?"#4dd0c4":"#ef6a6a"});
+  txt(svg,120,67,open?"OPEN":"CLOSED",open?"#4dd0c4":"#ef6a6a",13);
+  txt(svg,480,26,"credits available: "+CR.avail+" / "+CR.max,"#f2b13c",13);
+  for(let i=0;i<CR.max;i++){
+    mk(svg,"rect",{x:330+i*52,y:44,width:44,height:36,rx:6,
+      fill:i<CR.avail?"#4d3a17":"#0e1530",stroke:i<CR.avail?"#f2b13c":"#26304d"});
+  }
+  txt(svg,830,26,"receiver buffer ("+CR.queued+" queued)","#8ea0c9",12);
+  mk(svg,"rect",{x:760,y:40,width:140,height:44,rx:8,fill:"#0e1530",stroke:"#26304d"});
+  txt(svg,830,67,"🗄 ×"+CR.queued,"#e8eeff",13);
+}
+$("cSend").onclick=()=>{
+  if(CR.avail===0){$("crNote").innerHTML="<b style='color:var(--red)'>Gate closed.</b> No credits — the sender physically cannot transmit until the receiver returns some.";return;}
+  CR.avail--;CR.queued++;drawCr();
+};
+$("cDrain").onclick=()=>{
+  if(CR.queued===0)return;
+  CR.queued--;CR.avail=Math.min(CR.max,CR.avail+1);drawCr();
+  $("crNote").innerHTML="Receiver processed a TLP and returned the credit via an <b>UpdateFC DLLP</b> — the gate reopens.";
+};
+drawCr();
+</script>
+</body>
+</html>

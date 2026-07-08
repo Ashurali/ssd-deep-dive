@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Vt Distribution Playground — SLC/MLC/TLC, wear, retention, read retry</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:980px;margin-inline:auto}
+h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
+h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{font:600 14px "Space Grotesk";background:var(--panel);color:var(--dim);border:1px solid var(--line);border-radius:9px;padding:8px 14px;cursor:pointer}
+.tabs button.on{color:var(--bg);background:var(--cyan);border-color:var(--cyan)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:8px 0}
+label{color:var(--dim);font-size:13px}
+input[type=range]{accent-color:var(--cyan);width:170px;vertical-align:middle}
+button.act{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
+button.act:hover{background:rgba(77,208,196,.12)}
+button.act.amber{color:var(--amber);border-color:var(--amber)} button.act.amber:hover{background:rgba(242,177,60,.12)}
+.mono{font-family:"IBM Plex Mono";font-size:13px}
+.meter{font-family:"IBM Plex Mono";font-size:15px;color:var(--amber)}
+.note{color:var(--dim);font-size:13px;margin-top:8px}
+svg{display:block;width:100%;height:auto}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.hidden{display:none}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<h1>The <span class="a">V<sub>t</sub> distribution</span> playground</h1>
+<p class="sub">Every Chapter 3 failure mode is "the bells move"; every fix is "cope with the bells moving." Drag the physics and watch.</p>
+
+<div class="tabs">
+  <button id="tb0" class="on">1 · The cell</button>
+  <button id="tb1">2 · Cells → bells</button>
+  <button id="tb2">3 · Bells, stress &amp; read retry</button>
+</div>
+
+<!-- ============ Scene 0: one floating-gate cell ============ -->
+<div class="panel" id="sc0">
+  <div class="row">
+    <button class="act" id="btnProg">Program (electrons in)</button>
+    <button class="act amber" id="btnErase">Erase (electrons out)</button>
+    <span class="mono" id="cellState">state: erased (Vt low → reads as "1")</span>
+  </div>
+  <svg viewBox="0 0 900 300" aria-label="Floating-gate cell">
+    <!-- substrate -->
+    <rect x="60" y="215" width="360" height="40" fill="#1a2342" stroke="#26304d"/>
+    <text x="240" y="240" fill="#8ea0c9" font-size="13" text-anchor="middle">substrate (channel)</text>
+    <!-- tunnel oxide -->
+    <rect x="130" y="200" width="220" height="15" fill="#0e1530" stroke="#26304d"/>
+    <text x="360" y="212" fill="#8ea0c9" font-size="11">tunnel oxide</text>
+    <!-- floating gate -->
+    <rect id="fg" x="150" y="160" width="180" height="38" rx="6" fill="#111832" stroke="#4dd0c4" stroke-width="2"/>
+    <text x="240" y="152" fill="#4dd0c4" font-size="13" text-anchor="middle">floating gate (charge trapped here)</text>
+    <!-- control gate -->
+    <rect x="130" y="105" width="220" height="30" rx="6" fill="#1a2342" stroke="#26304d"/>
+    <text x="240" y="125" fill="#8ea0c9" font-size="13" text-anchor="middle">control gate</text>
+    <g id="electrons"></g>
+    <!-- Vt axis -->
+    <line x1="500" y1="235" x2="860" y2="235" stroke="#26304d" stroke-width="2"/>
+    <text x="680" y="262" fill="#8ea0c9" font-size="13" text-anchor="middle">threshold voltage Vt →</text>
+    <text x="520" y="225" fill="#4dd0c4" font-size="12">erased "1"</text>
+    <text x="790" y="225" fill="#f2b13c" font-size="12">programmed "0"</text>
+    <circle id="vtMark" cx="540" cy="235" r="8" fill="#4dd0c4"/>
+  </svg>
+  <p class="note">Program pushes electrons through the oxide into the floating gate (Fowler–Nordheim tunneling) — trapped charge raises the cell's threshold voltage. Erase pulls them back out, block-wide. Each pass slightly damages the oxide: that damage is <em>endurance</em>, and scene 3's P/E slider is this scene repeated 3,000 times. <span class="mono">(Figs 3-1 / 3-2 / 1-9)</span></p>
+</div>
+
+<!-- ============ Scene 1: population → histogram ============ -->
+<div class="panel hidden" id="sc1">
+  <div class="row">
+    <button class="act" id="btnSpawn">Program 4,000 cells</button>
+    <span class="mono" id="popMsg">each cell lands slightly differently — watch the bell emerge</span>
+  </div>
+  <svg id="histSvg" viewBox="0 0 900 300" aria-label="Histogram of cell threshold voltages"></svg>
+  <p class="note">The distribution isn't drawn — it <em>emerges</em>. Programming is a statistical process (ISPP pulses, cell variation), so a population of identically-programmed cells lands in a bell around the target Vt. Every "distribution diagram" in the book is population statistics, not a curve someone chose. <span class="mono">(Fig 3-3's real meaning)</span></p>
+</div>
+
+<!-- ============ Scene 2: bells + stress + read references ============ -->
+<div class="panel hidden" id="sc2">
+  <div class="row">
+    <label>cell type:</label>
+    <button class="act" id="mSLC">SLC (2 bells)</button>
+    <button class="act" id="mMLC">MLC (4)</button>
+    <button class="act" id="mTLC">TLC (8)</button>
+  </div>
+  <div class="row">
+    <label>P/E cycles <span class="mono" id="peV">0</span></label><input type="range" id="pe" min="0" max="5000" value="0" step="100">
+    <label>retention <span class="mono" id="retV">0 mo</span></label><input type="range" id="ret" min="0" max="36" value="0">
+    <label>read count <span class="mono" id="rdV">0</span></label><input type="range" id="rd" min="0" max="100000" value="0" step="1000">
+  </div>
+  <div class="row">
+    <button class="act amber" id="btnRetry">Read Retry (re-center references)</button>
+    <label><input type="checkbox" id="softChk"> soft reads (LLR shading)</label>
+    <span class="meter">RBER ≈ <span id="rber">0.0e-0</span></span>
+  </div>
+  <svg id="bellSvg" viewBox="0 0 900 320" aria-label="Threshold voltage distributions"></svg>
+  <p class="note">
+    <b>P/E cycles</b> widen and drift the bells (oxide wear — Figs 3-46/3-48/3-53). <b>Retention</b> leaks charge: bells drift <em>left</em> (Fig 3-54). <b>Reads</b> nudge neighbors: bells drift <em>right</em> (Figs 3-44/3-55). Red glow = overlap = cells that misread against the fixed dashed references. <b>Read Retry</b> (Fig 3-57) walks the references to the new valleys — errors collapse <em>as long as the bells haven't merged</em>: that clause is the entire limit of hard-decision reading. Soft reads add extra strobes in the overlap and give each cell a confidence (LLR) — the gray zone is exactly what LDPC consumes.
+  </p>
+</div>
+
+<footer><b>Book anchor:</b> realizes Figs 3-1→3-5, 3-9→3-11, 3-44→3-48, 3-50→3-57, 3-60, and 1-24→1-27 (CH3 pp. 1–13, 44–63; CH1 pp. 38–40) — Cluster A of the figure atlas.</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- tabs ---------- */
+const scenes=["sc0","sc1","sc2"],tabs=["tb0","tb1","tb2"];
+tabs.forEach((t,i)=>$(t).onclick=()=>{
+  scenes.forEach((s,j)=>$(s).classList.toggle("hidden",i!==j));
+  tabs.forEach((u,j)=>$(u).classList.toggle("on",i===j));
+});
+
+/* ---------- scene 0: cell ---------- */
+let programmed=false, animTimer=null;
+function electronDots(n,intoGate){
+  const g=$("electrons"); g.innerHTML="";
+  const dots=[];
+  for(let i=0;i<n;i++){
+    const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("r",4); c.setAttribute("fill","#4dd0c4");
+    c.setAttribute("cx",170+ i*22); c.setAttribute("cy", intoGate?235:180);
+    g.appendChild(c); dots.push(c);
+  }
+  return dots;
+}
+function animateCell(toProgrammed){
+  clearInterval(animTimer);
+  const dots=electronDots(8,toProgrammed);
+  const y0=toProgrammed?235:180, y1=toProgrammed?180:235;
+  const mark=$("vtMark"), x0=+mark.getAttribute("cx"), x1=toProgrammed?800:540;
+  if(RM){ dots.forEach(d=>d.setAttribute("cy",y1)); mark.setAttribute("cx",x1); finish(); return; }
+  let t=0;
+  animTimer=setInterval(()=>{
+    t+=0.06;
+    const k=Math.min(1,t);
+    dots.forEach((d,i)=>{ const kk=Math.min(1,Math.max(0,k*1.4-i*0.05)); d.setAttribute("cy",y0+(y1-y0)*kk); });
+    mark.setAttribute("cx",x0+(x1-x0)*k);
+    if(k>=1){ clearInterval(animTimer); finish(); }
+  },30);
+  function finish(){
+    mark.setAttribute("fill",toProgrammed?"#f2b13c":"#4dd0c4");
+    $("fg").setAttribute("stroke",toProgrammed?"#f2b13c":"#4dd0c4");
+    $("cellState").textContent = toProgrammed
+      ? 'state: programmed (Vt high → reads as "0")'
+      : 'state: erased (Vt low → reads as "1")';
+    if(!toProgrammed) $("electrons").innerHTML="";
+  }
+}
+$("btnProg").onclick=()=>{ if(!programmed){programmed=true; animateCell(true);} };
+$("btnErase").onclick=()=>{ if(programmed){programmed=false; animateCell(false);} };
+
+/* ---------- gaussian helpers ---------- */
+function erf(x){ // Abramowitz–Stegun 7.1.26
+  const s=x<0?-1:1; x=Math.abs(x);
+  const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+  return s*y;
+}
+const phi=(x,mu,s)=>0.5*(1+erf((x-mu)/(s*Math.SQRT2)));
+function gaussPath(mu,s,amp,W,H,base){
+  let d="";
+  for(let px=0;px<=W;px+=4){
+    const x=px/W*8;               // Vt axis 0..8 V
+    const y=base - amp*Math.exp(-0.5*((x-mu)/s)**2)/(s*Math.sqrt(2*Math.PI));
+    d+=(px?"L":"M")+px+","+y.toFixed(1);
+  }
+  return d;
+}
+
+/* ---------- scene 1: histogram build ---------- */
+let histTimer=null;
+$("btnSpawn").onclick=()=>{
+  clearInterval(histTimer);
+  const svg=$("histSvg"); svg.innerHTML="";
+  const W=900,H=300,bins=new Array(90).fill(0),target=4.5,sig=0.45;
+  const rects=[];
+  for(let b=0;b<90;b++){
+    const r=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    r.setAttribute("x",b*10); r.setAttribute("width",9);
+    r.setAttribute("y",H-30); r.setAttribute("height",0); r.setAttribute("fill","#4dd0c4");
+    svg.appendChild(r); rects.push(r);
+  }
+  const ax=document.createElementNS("http://www.w3.org/2000/svg","line");
+  ax.setAttribute("x1",0);ax.setAttribute("x2",W);ax.setAttribute("y1",H-30);ax.setAttribute("y2",H-30);
+  ax.setAttribute("stroke","#26304d");ax.setAttribute("stroke-width",2); svg.appendChild(ax);
+  let n=0,total=4000, batch=RM?total:80;
+  histTimer=setInterval(()=>{
+    for(let i=0;i<batch&&n<total;i++,n++){
+      // Box–Muller
+      const u=Math.random(),v=Math.random();
+      const z=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+      const vt=target+sig*z, b=Math.max(0,Math.min(89,Math.floor(vt/8*90)));
+      bins[b]++;
+    }
+    const peak=Math.max(...bins,1);
+    bins.forEach((c,b)=>{ const h=c/peak*(H-70); rects[b].setAttribute("y",H-30-h); rects[b].setAttribute("height",h); });
+    $("popMsg").textContent=n+" / "+total+" cells programmed";
+    if(n>=total){ clearInterval(histTimer); $("popMsg").textContent="4,000 cells — the bell wasn't drawn, it emerged."; }
+  },RM?0:40);
+};
+
+/* ---------- scene 2: bells & stress ---------- */
+const S={bits:1,pe:0,ret:0,rd:0,soft:false,refs:null};
+const COLORS=["#4dd0c4","#f2b13c","#a78bfa","#6ee7b7","#f9a8d4","#93c5fd","#fbbf24","#fca5a5"];
+function levels(){
+  const n=2**S.bits, mus=[], base=1.0, span=6.0;
+  for(let i=0;i<n;i++) mus.push(base+span*i/(n-1||1));
+  // stress transforms (illustrative, monotone in the right directions)
+  const widen=1+S.pe/5000*0.75;
+  const driftL=S.ret/36*0.55;
+  const driftR=S.rd/100000*0.45;
+  const sig0=S.bits===1?0.42:S.bits===2?0.30:0.20;
+  return mus.map((mu,i)=>({
+    mu: mu + (i===0? driftR*1.2 : driftR) - (i>0? driftL*(0.6+0.4*i/(n-1)) : 0),
+    s: sig0*widen*(i===0?1.15:1),
+    c: COLORS[i]
+  }));
+}
+function midRefs(ls){ const r=[]; for(let i=0;i<ls.length-1;i++) r.push((ls[i].mu+ls[i+1].mu)/2); return r; }
+function valleyRefs(ls){ // Read Retry: re-center each reference at the true minimum between bells
+  return ls.slice(0,-1).map((a,i)=>{
+    const b=ls[i+1]; let best=a.mu,bv=1e9;
+    for(let x=a.mu;x<=b.mu;x+=0.01){
+      const v=Math.exp(-0.5*((x-a.mu)/a.s)**2)/a.s + Math.exp(-0.5*((x-b.mu)/b.s)**2)/b.s;
+      if(v<bv){bv=v;best=x;}
+    }
+    return best;
+  });
+}
+function rber(ls,refs){ // fraction of cells landing on the wrong side of their references
+  let err=0;
+  ls.forEach((l,i)=>{
+    const lo=i>0?refs[i-1]:-1e9, hi=i<ls.length-1?refs[i]:1e9;
+    err += 1 - (phi(hi,l.mu,l.s)-phi(lo,l.mu,l.s));
+  });
+  return err/ls.length;
+}
+function drawBells(){
+  const ls=levels();
+  if(!S.refs || S.refs.length!==ls.length-1) S.refs=midRefs(levels().map(l=>({...l})));
+  const svg=$("bellSvg"); svg.innerHTML="";
+  const W=900,H=320,base=H-40;
+  const mk=(tag,attrs)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const k in attrs)e.setAttribute(k,attrs[k]);svg.appendChild(e);return e;};
+  // overlap shading: sample x, where two densities both significant
+  for(let px=0;px<W;px+=6){
+    const x=px/W*8;
+    let cnt=0;
+    ls.forEach(l=>{ if(Math.exp(-0.5*((x-l.mu)/l.s)**2)/l.s>0.12) cnt++; });
+    if(cnt>1) mk("rect",{x:px,y:40,width:6,height:base-40,fill:"rgba(239,106,106,0.14)"});
+  }
+  // soft-read LLR shading around each reference
+  if(S.soft) S.refs.forEach(r=>{
+    const px=r/8*W;
+    mk("rect",{x:px-28,y:40,width:56,height:base-40,fill:"rgba(142,160,201,0.16)"});
+    [-18,18].forEach(dx=>mk("line",{x1:px+dx,x2:px+dx,y1:40,y2:base,stroke:"#8ea0c9","stroke-dasharray":"2 4"}));
+  });
+  mk("line",{x1:0,x2:W,y1:base,y2:base,stroke:"#26304d","stroke-width":2});
+  ls.forEach((l,i)=>{
+    mk("path",{d:gaussPath(l.mu,l.s,110,W,H,base),fill:"none",stroke:l.c,"stroke-width":2.5});
+    mk("text",{x:l.mu/8*W,y:base+22,fill:l.c,"font-size":12,"text-anchor":"middle"}).textContent=
+      S.bits===1?(i?"0":"1"):i.toString(2).padStart(S.bits,"0");
+  });
+  S.refs.forEach(r=>{
+    const px=r/8*W;
+    mk("line",{x1:px,x2:px,y1:34,y2:base,stroke:"#e8eeff","stroke-width":1.5,"stroke-dasharray":"5 4"});
+    mk("text",{x:px,y:28,fill:"#e8eeff","font-size":11,"text-anchor":"middle"}).textContent="Vref";
+  });
+  const e=rber(ls,S.refs);
+  $("rber").textContent=e<1e-12?"~0":e.toExponential(1);
+  $("rber").style.color=e>1e-3?"#ef6a6a":"#f2b13c";
+}
+function setBits(b,btn){ S.bits=b; S.refs=null; ["mSLC","mMLC","mTLC"].forEach(id=>$(id).classList.remove("amber")); btn.classList.add("amber"); drawBells(); }
+$("mSLC").onclick=e=>setBits(1,e.target); $("mMLC").onclick=e=>setBits(2,e.target); $("mTLC").onclick=e=>setBits(3,e.target);
+[["pe","peV",v=>v],["ret","retV",v=>v+" mo"],["rd","rdV",v=>(+v).toLocaleString()]].forEach(([id,lab,f])=>{
+  $(id).oninput=e=>{ S[id]=+e.target.value; $(lab).textContent=f(e.target.value); drawBells(); };
+});
+$("btnRetry").onclick=()=>{ S.refs=valleyRefs(levels()); drawBells(); };
+$("softChk").onchange=e=>{ S.soft=e.target.checked; drawBells(); };
+setBits(3,$("mTLC"));
+</script>
+</body>
+</html>

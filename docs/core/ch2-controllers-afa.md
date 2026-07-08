@@ -65,6 +65,15 @@ Peripheral blocks include UART/GPIO/JTAG (essential debug ports), timers, DMA, t
 
 ### 2.1.3 Back end (后端) — pp. 8–11
 
+??? example "🎬 Animate this — The Flash Timing & Parallelism Lab"
+
+    The bus, the registers and the planes on one timeline — toggle pipelining and AIPR and watch the bars move.
+
+    [Animation page](../animations/flash-timing-lab.md) · [open full-screen ↗](../animations/files/flash_timing_lab.html)
+
+    <iframe src="../../animations/files/flash_timing_lab.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>
+
+
 Two big blocks: the **ECC module** and the **flash controller** *(p. 8–9, Fig 2-7)*.
 
 **ECC module (data codec).** Because flash has an inherent bit-error rate, every write gets ECC parity added (encoding); every read gets checked and corrected (decoding). If errors exceed the ECC's correcting power, the data is returned to the host flagged "uncorrectable." The main algorithms are **BCH** and **LDPC** — and **LDPC is becoming mainstream** (it corrects more errors for the same data, which matters as flash moves to denser 3D/TLC/QLC).
