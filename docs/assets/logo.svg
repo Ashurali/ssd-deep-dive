@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="SSD Deep Dive logo">
+  <!-- minimal NAND-block mark: a die outline with a 3x3 page grid, one page 'hot' -->
+  <rect x="4" y="4" width="40" height="40" rx="9" fill="none" stroke="#4dd0c4" stroke-width="3"/>
+  <g fill="#4dd0c4" opacity="0.85">
+    <rect x="12" y="12" width="7" height="7" rx="1.5"/>
+    <rect x="20.5" y="12" width="7" height="7" rx="1.5"/>
+    <rect x="29" y="12" width="7" height="7" rx="1.5"/>
+    <rect x="12" y="20.5" width="7" height="7" rx="1.5"/>
+    <rect x="29" y="20.5" width="7" height="7" rx="1.5"/>
+    <rect x="12" y="29" width="7" height="7" rx="1.5"/>
+    <rect x="20.5" y="29" width="7" height="7" rx="1.5"/>
+    <rect x="29" y="29" width="7" height="7" rx="1.5"/>
+  </g>
+  <rect x="20.5" y="20.5" width="7" height="7" rx="1.5" fill="#f2b13c"/>
+</svg>

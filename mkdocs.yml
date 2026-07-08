@@ -1,0 +1,99 @@
+# SSD Deep Dive — MkDocs configuration (see SITE_SPECIFICATION.md)
+site_name: SSD Deep Dive
+site_description: >-
+  A searchable, indexed knowledge base for the《深入淺出SSD》study corpus —
+  chapter study guides, supplements, and interactive animations.
+# TODO(owner): update to the real Pages URL after creating the GitHub repo
+site_url: https://lolikeano.github.io/ssd-deep-dive/
+
+# Broken section anchors (glossary/formulas/quiz links) fail the strict build
+validation:
+  links:
+    anchors: warn
+
+theme:
+  name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  palette:
+    scheme: slate
+    primary: custom
+    accent: custom
+  font:
+    text: IBM Plex Sans
+    code: IBM Plex Mono
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+plugins:
+  - search:
+      lang:
+        - en
+        - zh
+  - tags
+  - git-revision-date-localized:
+      type: date
+      fallback_to_build_date: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  # KaTeX. Inline math is \( ... \) only — single-$ is disabled because the
+  # guides use "$" for prices ("$370M") throughout.
+  - pymdownx.arithmatex:
+      generic: true
+      inline_syntax: ['round']
+      block_syntax: ['square', 'dollar']
+
+extra_css:
+  - https://unpkg.com/katex@0.16.11/dist/katex.min.css
+  - assets/extra.css
+
+extra_javascript:
+  - assets/javascripts/katex.js
+  - https://unpkg.com/katex@0.16.11/dist/katex.min.js
+  - https://unpkg.com/katex@0.16.11/dist/contrib/auto-render.min.js
+
+nav:
+  - Home: index.md
+  - Core Chapters:
+      - core/ch1-overview.md
+      - core/ch2-controllers-afa.md
+      - core/ch3-nand-flash.md
+      - core/ch4-ftl.md
+      - core/ch5-pcie.md
+      - core/ch6-nvme.md
+      - core/ch7-testing.md
+  - Supplements:
+      - supplements/a-ecc-coding-theory.md
+      - supplements/b-ufs.md
+      - supplements/c-flash-file-systems.md
+      - supplements/d-power-management.md
+      - supplements/e-aerospace-storage.md
+  - Animations:
+      - animations/index.md
+      - animations/nand-flash-animation.md
+      - animations/ecc-bit-correction.md
+      - animations/ecc-bch-ldpc.md
+  - Atlas:
+      - atlas/figure-atlas-animation-roadmap.md
+  - Reference:
+      - reference/glossary.md
+      - reference/formulas.md
+      - reference/quizzes.md
+      - reference/tags.md
