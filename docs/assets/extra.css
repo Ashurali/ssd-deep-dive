@@ -54,23 +54,61 @@
 }
 
 /* ---- long vocab tables: subtle row striping ---- */
-.md-typeset table:not([class]) tbody tr:nth-child(even) {
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(even) {
   background-color: rgba(255, 255, 255, 0.028);
 }
-.md-typeset table:not([class]) {
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) {
   border: 1px solid var(--sdd-line);
 }
 
 /* ---- tag chips in violet ---- */
-.md-typeset .md-tag,
-.md-tag {
+[data-md-color-scheme="slate"] .md-typeset .md-tag,
+[data-md-color-scheme="slate"] .md-tag {
   background-color: rgba(167, 139, 250, 0.14);
   color: var(--sdd-violet);
 }
-.md-typeset .md-tag:hover,
-.md-tag:hover {
+[data-md-color-scheme="slate"] .md-typeset .md-tag:hover,
+[data-md-color-scheme="slate"] .md-tag:hover {
   background-color: rgba(167, 139, 250, 0.28);
   color: var(--sdd-violet);
+}
+
+/* ---- light scheme (follows system; same brand, AA-contrast variants) ---- */
+[data-md-color-scheme="default"] {
+  /* keep the dark navy header/tabs so the brand carries across themes */
+  --md-primary-fg-color: #0a0e1c;
+  --md-primary-fg-color--dark: #080c18;
+  --md-primary-bg-color: rgba(232, 238, 255, 0.95);
+  --md-primary-bg-color--light: rgba(232, 238, 255, 0.68);
+
+  /* cyan family darkened for contrast on white (≥4.5:1) */
+  --md-accent-fg-color: #0b7f76;
+  --md-accent-fg-color--transparent: rgba(11, 127, 118, 0.12);
+  --md-typeset-a-color: #0b7f76;
+
+  --md-typeset-mark-color: rgba(242, 177, 60, 0.45);
+}
+
+[data-md-color-scheme="default"] .md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: rgba(10, 14, 28, 0.03);
+}
+[data-md-color-scheme="default"] .md-typeset table:not([class]) {
+  border: 1px solid rgba(10, 14, 28, 0.16);
+}
+
+[data-md-color-scheme="default"] .md-typeset .md-tag,
+[data-md-color-scheme="default"] .md-tag {
+  background-color: rgba(109, 79, 196, 0.12);
+  color: #5b3fc0;
+}
+[data-md-color-scheme="default"] .md-typeset .md-tag:hover,
+[data-md-color-scheme="default"] .md-tag:hover {
+  background-color: rgba(109, 79, 196, 0.24);
+  color: #5b3fc0;
+}
+
+[data-md-color-scheme="default"] .md-typeset h1 {
+  color: #0a0e1c;
 }
 
 /* ---- reduced motion: kill smooth scrolling / transitions ---- */

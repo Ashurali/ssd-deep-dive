@@ -15,10 +15,22 @@ theme:
   name: material
   logo: assets/logo.svg
   favicon: assets/logo.svg
+  # Follows the OS theme on first visit; the toggle stores a manual override
   palette:
-    scheme: slate
-    primary: custom
-    accent: custom
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
   font:
     text: IBM Plex Sans
     code: IBM Plex Mono
@@ -69,6 +81,7 @@ extra_css:
 
 extra_javascript:
   - assets/javascripts/katex.js
+  - assets/javascripts/iframe-resize.js
   - https://unpkg.com/katex@0.16.11/dist/katex.min.js
   - https://unpkg.com/katex@0.16.11/dist/contrib/auto-render.min.js
 
