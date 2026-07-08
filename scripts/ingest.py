@@ -177,7 +177,8 @@ tags: {tags}
 
 [Open full-screen ↗](files/{html_name}){{ .md-button }}
 
-<iframe src="files/{html_name}" width="100%" height="720"
+<!-- ../ because directory URLs render this page one level deeper -->
+<iframe src="../files/{html_name}" width="100%" height="720"
         style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
         loading="lazy" title="{title}"></iframe>
 """

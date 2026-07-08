@@ -11,6 +11,7 @@ A tabbed visualizer for the two production SSD codes: watch a BCH(15,7) decoder 
 
 [Open full-screen ↗](files/ecc_bch_ldpc.html){ .md-button }
 
-<iframe src="files/ecc_bch_ldpc.html" width="100%" height="720"
+<!-- ../ because directory URLs render this page one level deeper -->
+<iframe src="../files/ecc_bch_ldpc.html" width="100%" height="720"
         style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
         loading="lazy" title="Stronger ECC in action — BCH & LDPC"></iframe>

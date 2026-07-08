@@ -37,6 +37,9 @@ plugins:
       lang:
         - en
         - zh
+      # jieba segments CJK with zero-width spaces (U+200B) at build time;
+      # the client must split tokens on them for 垃圾回收-style queries
+      separator: '[\s​\-]+'
   - tags
   - git-revision-date-localized:
       type: date
