@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stronger ECC in action — BCH &amp; LDPC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0b1020; --bg-1:#0e1428;
+    --panel:#141b31; --panel-2:#182142;
+    --line:#26314f; --line-soft:#1c2540;
+    --text:#e8ecf5; --muted:#8b95ad; --muted-2:#5f6a84;
+    --data:#4dd0c4; --data-dim:#1f3f3d;
+    --parity:#f2b13c; --parity-dim:#3d3018;
+    --pass:#56d364; --fail:#ff6b6b;
+    --pass-dim:#193723; --fail-dim:#3a1c1f;
+    --violet:#a78bfa; --violet-dim:#2a2350;
+    --radius:10px;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --sans:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --display:'Space Grotesk',var(--sans);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--text);line-height:1.5;
+    background:radial-gradient(1200px 600px at 80% -10%, #16204012 0%, transparent 60%),linear-gradient(180deg,var(--bg-0),var(--bg-1));
+    -webkit-font-smoothing:antialiased;padding:32px 20px 56px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+
+  header{margin-bottom:20px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted-2);margin:0 0 10px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(25px,4.2vw,38px);line-height:1.06;letter-spacing:-.01em;margin:0 0 12px}
+  h1 .a{color:var(--parity)} h1 .b{color:var(--violet)}
+  .thesis{font-size:clamp(15px,2vw,17px);color:var(--muted);max-width:66ch;margin:0}
+  .thesis b{color:var(--text);font-weight:600}
+
+  /* escalation strip */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0 26px}
+  .steps .s{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:13px 15px}
+  .steps .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;color:var(--muted-2)}
+  .steps .s.h .k{color:var(--muted)} .steps .s.b1 .k{color:var(--parity)} .steps .s.b2 .k{color:var(--violet)}
+  .steps .t{font-size:13px;color:var(--muted)} .steps .t b{color:var(--text);font-weight:600}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;margin-bottom:0;position:relative;z-index:2}
+  .tab{
+    font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.01em;
+    padding:11px 20px;border:1px solid var(--line);border-bottom:none;
+    border-radius:12px 12px 0 0;background:#0f1526;color:var(--muted);cursor:pointer;
+    transition:color .18s,background .18s;
+  }
+  .tab .sub{font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.06em;color:var(--muted-2);display:block;margin-top:1px}
+  .tab.active{color:var(--text);background:var(--panel)}
+  .tab.active.bch{border-top:2px solid var(--parity)}
+  .tab.active.ldpc{border-top:2px solid var(--violet)}
+  .tab:focus-visible{outline:2px solid #6ea8ff;outline-offset:2px}
+
+  .panel{background:linear-gradient(180deg,var(--panel),#121930);border:1px solid var(--line);border-radius:0 14px 14px 14px;padding:20px 20px 22px;box-shadow:0 18px 50px -30px #000}
+  .intro{font-size:14px;color:var(--muted);margin:0 0 18px;max-width:74ch}
+  .intro b{color:var(--text)} .intro .amp{color:var(--parity)} .intro .vio{color:var(--violet)}
+
+  .legend{display:flex;gap:15px;flex-wrap:wrap;margin-bottom:16px}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .sw{width:13px;height:13px;border-radius:4px;display:inline-block;border:1.5px solid}
+  .sw.data{background:var(--data-dim);border-color:var(--data)} .sw.parity{background:var(--parity-dim);border-color:var(--parity)}
+  .sw.pass{background:var(--pass-dim);border-color:var(--pass)} .sw.fail{background:var(--fail-dim);border-color:var(--fail)}
+  .sw.root{background:#3a2f12;border-color:var(--parity);box-shadow:0 0 8px -2px var(--parity)}
+  .sw.circ{border-radius:50%}
+
+  /* ===== BCH codeword row ===== */
+  .cw-scroll{overflow-x:auto;padding-bottom:6px;margin:0 -4px}
+  .cw{display:flex;gap:6px;min-width:660px;padding:0 4px}
+  .cell{width:40px;flex:0 0 40px;text-align:center}
+  .cell .pnum{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-bottom:3px}
+  .cell .afld{font-family:var(--mono);font-size:9px;color:#4a5570;margin-bottom:3px;height:11px}
+  .bit{
+    height:44px;border-radius:9px;border:1.6px solid var(--line);background:#0e1428;
+    display:flex;align-items:center;justify-content:center;position:relative;
+    font-family:var(--mono);font-weight:600;font-size:18px;color:var(--muted-2);
+    transition:transform .16s,border-color .2s,background .2s,box-shadow .2s;cursor:default;
+  }
+  .bit .role{position:absolute;top:2px;left:4px;font-size:8px;color:var(--muted-2)}
+  .bit.data{border-color:#2a4d4a;color:var(--data)} .bit.parity{border-color:#4a3c1e;color:var(--parity)}
+  .bit.data.on{background:linear-gradient(180deg,#123734,#0f2b29);border-color:var(--data);box-shadow:0 0 12px -6px var(--data)}
+  .bit.parity.on{background:linear-gradient(180deg,#3a2e12,#2a220e);border-color:var(--parity);box-shadow:0 0 12px -6px var(--parity)}
+  .bit.clickable{cursor:pointer} .bit.clickable:hover{transform:translateY(-2px)}
+  .bit.contrib{border-color:#7f8db3;box-shadow:0 0 0 2px #7f8db344}
+  .bit.err{border-color:var(--fail)!important;color:var(--fail)!important;background:linear-gradient(180deg,#3a1c1f,#2a1416)!important;box-shadow:0 0 0 2px var(--fail),0 0 20px -6px var(--fail)!important}
+  .bit.scan{border-color:var(--violet);box-shadow:0 0 0 2px var(--violet),0 0 16px -5px var(--violet)}
+  .bit.root{animation:ring .5s ease}
+  .bit.fixed{animation:fixp .7s ease}
+  @keyframes ring{0%{box-shadow:0 0 0 2px var(--parity),0 0 22px -3px var(--parity)}100%{box-shadow:0 0 0 2px var(--parity)}}
+  @keyframes fixp{0%{box-shadow:0 0 0 2px var(--pass),0 0 24px -3px var(--pass)}100%{box-shadow:0 0 0 0 transparent}}
+  .bit:focus-visible{outline:2px solid #6ea8ff;outline-offset:2px}
+
+  .stagerow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+  .box{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+  .box h3{margin:0 0 12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);font-weight:600}
+
+  .synd-meters{display:flex;gap:8px;flex-wrap:wrap}
+  .meter{flex:1;min-width:56px;border:1.5px solid var(--line);border-radius:9px;background:#0d1226;padding:8px 6px;text-align:center;transition:all .2s}
+  .meter .lab{font-family:var(--mono);font-size:10px;color:var(--muted-2)}
+  .meter .val{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--muted-2);margin-top:3px}
+  .meter.zero{border-color:var(--pass);background:var(--pass-dim)} .meter.zero .val{color:var(--pass)}
+  .meter.nz{border-color:var(--parity);background:var(--parity-dim)} .meter.nz .val{color:var(--parity)}
+  .meter.active{box-shadow:0 0 0 2px #7f8db355}
+
+  .sigma{font-family:var(--mono);font-size:16px;color:var(--muted);margin-top:6px;min-height:24px;line-height:1.6}
+  .sigma b{color:var(--text)} .sigma .c{color:var(--parity)}
+  .chien-out{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
+  .chien-out b{color:var(--text)} .chien-out .r{color:var(--parity);font-weight:600}
+
+  .narr{font-size:14px;color:var(--text);min-height:104px}
+  .narr .st{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .narr.bchn .st{color:var(--parity)} .narr.ldpcn .st{color:var(--violet)}
+  .narr p{margin:0 0 8px} .narr .sub{color:var(--muted);font-size:13px}
+  .narr code{font-family:var(--mono);background:#0d1226;border:1px solid var(--line-soft);padding:1px 5px;border-radius:5px;font-size:12.5px;color:var(--data)}
+
+  .controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px;align-items:center}
+  button.btn{font-family:var(--sans);font-size:13.5px;font-weight:600;border-radius:9px;padding:9px 15px;cursor:pointer;border:1px solid var(--line);background:var(--panel-2);color:var(--text);transition:transform .12s,background .18s,border-color .18s,opacity .18s}
+  button.btn:hover:not(:disabled){transform:translateY(-1px);border-color:#3a4a6f}
+  button.btn:focus-visible{outline:2px solid #6ea8ff;outline-offset:2px}
+  button.btn:disabled{opacity:.36;cursor:not-allowed}
+  button.btn.amber{background:linear-gradient(180deg,#f2b13c,#e19f2a);color:#231a06;border-color:#f2b13c}
+  button.btn.vio{background:linear-gradient(180deg,#a78bfa,#8f72ec);color:#150f2e;border-color:#a78bfa}
+  button.btn.ghost{background:transparent}
+  .hint{font-size:12px;color:var(--muted-2);font-family:var(--mono);margin-left:2px}
+  .divider{flex-basis:100%;height:0}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{font-family:var(--mono);font-size:12px;padding:8px 11px;border:none;background:transparent;color:var(--muted);cursor:pointer}
+  .seg button.on{background:var(--panel-2);color:var(--text)}
+  .code-tag{font-family:var(--mono);font-size:12px;color:var(--muted-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+  .phrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .phrow h2{font-family:var(--display);font-weight:600;font-size:17px;margin:0;letter-spacing:-.01em}
+
+  /* ===== LDPC tanner graph ===== */
+  .tanner-wrap{background:#0b1120;border:1px solid var(--line-soft);border-radius:12px;padding:8px 6px;overflow-x:auto}
+  svg.tanner{display:block;width:100%;min-width:600px;height:auto}
+  .vnode{cursor:pointer}
+  .vnode .vc{fill:#0e1428;stroke:var(--line);stroke-width:1.6;transition:fill .2s,stroke .2s}
+  .vnode.on .vc{fill:#123734;stroke:var(--data)}
+  .vnode.err .vc{stroke:var(--fail);stroke-width:2.4;filter:drop-shadow(0 0 5px #ff6b6b88)}
+  .vnode.flip .vc{stroke:var(--violet);stroke-width:2.6}
+  .vnode .vt{font-family:var(--mono);font-size:15px;font-weight:600;fill:var(--muted-2);text-anchor:middle;dominant-baseline:central}
+  .vnode.on .vt{fill:var(--data)}
+  .vnode .vlbl{font-family:var(--mono);font-size:9px;fill:#4a5570;text-anchor:middle}
+  .cnode .cc{fill:#0d1226;stroke:var(--line);stroke-width:1.6;transition:fill .2s,stroke .2s,filter .2s}
+  .cnode.sat .cc{fill:var(--pass-dim);stroke:var(--pass)}
+  .cnode.unsat .cc{fill:var(--fail-dim);stroke:var(--fail);filter:drop-shadow(0 0 5px #ff6b6b66)}
+  .cnode .ct{font-family:var(--mono);font-size:10px;fill:var(--muted-2);text-anchor:middle;dominant-baseline:central}
+  .cnode.sat .ct{fill:var(--pass)} .cnode.unsat .ct{fill:var(--fail)}
+  .edge{stroke:#26314f;stroke-width:1.2;fill:none;transition:stroke .2s,stroke-width .2s,opacity .2s;opacity:.5}
+  .edge.pulseR{stroke:var(--fail);stroke-width:2.4;opacity:1}
+  .edge.pulseG{stroke:var(--pass);stroke-width:2;opacity:.9}
+  .edge.pulseV{stroke:var(--violet);stroke-width:2.4;opacity:1}
+  .glabel{font-family:var(--mono);font-size:10px;fill:var(--muted-2)}
+  .status{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .status .pill{border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+  .status .pill b{color:var(--text)}
+  .status .pill.bad{border-color:var(--fail);color:var(--fail)} .status .pill.good{border-color:var(--pass);color:var(--pass)}
+
+  /* footer real-world */
+  .real{margin-top:30px}
+  .real .lead{font-size:14px;color:var(--muted);max-width:76ch;margin:0 0 16px}
+  .real .lead b{color:var(--text)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .rc{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:15px 16px}
+  .rc .name{font-family:var(--display);font-weight:600;font-size:15px;margin:0 0 4px}
+  .rc .tl{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin:0 0 10px;letter-spacing:.04em}
+  .rc p{margin:0;font-size:13px;color:var(--muted)}
+  .rc.h{border-color:#2f3a58} .rc.b1{border-color:#4a3c1e} .rc.b1 .name{color:var(--parity)}
+  .rc.b2{border-color:#3a3170} .rc.b2 .name{color:var(--violet)}
+  footer.foot{margin-top:26px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+
+  .hidden{display:none}
+  @media (max-width:760px){ .steps{grid-template-columns:1fr} .stagerow{grid-template-columns:1fr} .grid3{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">SSD back-end · error-correcting codes · part 2</p>
+    <h1>Stronger codes in action: <span class="a">BCH</span> &amp; <span class="b">LDPC</span></h1>
+    <p class="thesis">Hamming pointed at <b>one</b> error because its syndrome literally spelled the address. Real flash flips many bits at once, so drives use codes that either <b>solve for several error positions algebraically</b> (BCH) or <b>let bits and checks gossip until they agree</b> (LDPC). Both are running live below.</p>
+  </header>
+
+  <div class="steps">
+    <div class="s h"><div class="k">Hamming · 1 error</div><div class="t">Syndrome = the error's position, in binary. One shot, one bit. <b>The foundation.</b></div></div>
+    <div class="s b1"><div class="k">BCH · t errors</div><div class="t">Several syndromes → solve for an <b>error-locator polynomial</b> → search for its roots. Fixes many bits at once.</div></div>
+    <div class="s b2"><div class="k">LDPC · many errors</div><div class="t">A sparse graph where checks and bits <b>pass messages</b> and iterate to a valid word. Scales to huge codewords + soft info.</div></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab bch active" id="tabBch" role="tab" aria-selected="true">BCH<span class="sub">solve &amp; search</span></button>
+    <button class="tab ldpc" id="tabLdpc" role="tab" aria-selected="false">LDPC<span class="sub">message passing</span></button>
+  </div>
+
+  <!-- ================= BCH PANEL ================= -->
+  <div class="panel" id="bchPanel" role="tabpanel">
+    <div class="phrow">
+      <h2>BCH(15, 7) over GF(2⁴) — corrects up to 2 errors</h2>
+      <span class="code-tag" id="bchTag">phase: set data</span>
+    </div>
+    <p class="intro">Hamming got one syndrome. BCH computes <b>four</b> — it evaluates the received word at <code>α¹, α², α³, α⁴</code>, effectively <span class="amp">sampling the error at four "frequencies."</span> Four equations are enough to solve for two unknown error <em>positions</em>. Then a <span class="amp">Chien search</span> hunts down exactly where they are.</p>
+
+    <div class="legend">
+      <span><i class="sw data"></i>data bit (×7)</span>
+      <span><i class="sw parity"></i>parity bit (×8)</span>
+      <span><i class="sw fail"></i>flipped in flash</span>
+      <span><i class="sw root"></i>root found → error located</span>
+    </div>
+
+    <div class="cw-scroll"><div class="cw" id="bchCw"></div></div>
+
+    <div class="stagerow">
+      <div class="box">
+        <h3>1 · Syndromes — sampling the error</h3>
+        <div class="synd-meters">
+          <div class="meter" id="S1"><div class="lab">S₁ = r(α¹)</div><div class="val">–</div></div>
+          <div class="meter" id="S2"><div class="lab">S₂ = r(α²)</div><div class="val">–</div></div>
+          <div class="meter" id="S3"><div class="lab">S₃ = r(α³)</div><div class="val">–</div></div>
+          <div class="meter" id="S4"><div class="lab">S₄ = r(α⁴)</div><div class="val">–</div></div>
+        </div>
+        <h3 style="margin-top:16px">2 · Error-locator σ(x)</h3>
+        <div class="sigma" id="sigmaOut">Berlekamp–Massey solves the syndromes for σ(x)…</div>
+        <div class="chien-out" id="chienOut"></div>
+      </div>
+      <div class="box narr bchn" id="bchNarr">
+        <span class="st">Step · setup</span>
+        <p>Set the 7 <span style="color:var(--data)">data</span> bits, press <b>Encode</b>, then flip <b>one or two</b> bits and watch BCH find them.</p>
+        <p class="sub">All-zero syndromes mean a clean read; any non-zero syndrome means the error hunt begins.</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="bchRandom">Randomize data</button>
+      <button class="btn amber" id="bchEncode">Encode →</button>
+      <span class="divider"></span>
+      <span class="hint">errors:</span>
+      <div class="seg" id="bchErrSeg"><button data-n="1" class="on">1 bit</button><button data-n="2">2 bits</button></div>
+      <button class="btn" id="bchInject" disabled>Flip randomly</button>
+      <button class="btn amber" id="bchDecode" disabled>Decode →</button>
+      <button class="btn ghost" id="bchStep" disabled>Step ▸</button>
+      <button class="btn ghost" id="bchReset">Reset</button>
+      <span class="hint" id="bchHint"></span>
+    </div>
+  </div>
+
+  <!-- ================= LDPC PANEL ================= -->
+  <div class="panel hidden" id="ldpcPanel" role="tabpanel">
+    <div class="phrow">
+      <h2>LDPC — message passing on a Tanner graph</h2>
+      <span class="code-tag" id="ldpcTag">phase: ready</span>
+    </div>
+    <p class="intro">No single formula. <span class="vio">12 bit-nodes</span> (circles) connect to <span class="vio">9 check-nodes</span> (squares); each check watches a handful of bits. A check goes <b style="color:var(--fail)">red</b> when its bits have odd parity. Every round, bits look at how many of their checks are unhappy and <b>flip if outvoted</b> — the graph gossips its way back to a valid codeword. (This 12-bit graph is a scaled-down stand-in; real LDPC codes are thousands of bits.)</p>
+
+    <div class="legend">
+      <span><i class="sw data circ"></i>bit-node (value 0/1)</span>
+      <span><i class="sw fail circ"></i>flipped bit</span>
+      <span><i class="sw pass"></i>check satisfied (even)</span>
+      <span><i class="sw fail"></i>check unsatisfied (odd)</span>
+    </div>
+
+    <div class="tanner-wrap"><svg class="tanner" id="tanner" viewBox="0 0 680 300" preserveAspectRatio="xMidYMid meet"></svg></div>
+
+    <div class="status" id="ldpcStatus">
+      <span class="pill">round <b id="ldRound">0</b></span>
+      <span class="pill" id="ldUnsat">unsatisfied checks: <b>0</b> / 9</span>
+      <span class="pill" id="ldState">–</span>
+    </div>
+
+    <div class="stagerow">
+      <div class="box narr ldpcn" id="ldpcNarr" style="grid-column:1 / -1">
+        <span class="st">Step · ready</span>
+        <p>The all-zero word is a valid codeword. Flip a bit (click a circle or use the button) and press <b>Run decoding</b> — watch the red checks vote it back.</p>
+        <p class="sub">Each round has two half-steps: <span style="color:var(--fail)">checks report</span> which bits look wrong, then <span style="color:var(--violet)">bits flip</span> if enough checks complain.</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="ldRandom">Randomize codeword</button>
+      <span class="divider"></span>
+      <span class="hint">errors:</span>
+      <div class="seg" id="ldErrSeg"><button data-n="1" class="on">1 bit</button><button data-n="2">2 bits</button></div>
+      <button class="btn" id="ldInject">Flip randomly</button>
+      <button class="btn vio" id="ldRun">Run decoding →</button>
+      <button class="btn ghost" id="ldStep">Step round ▸</button>
+      <button class="btn ghost" id="ldReset">Reset</button>
+      <span class="hint" id="ldHint"></span>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="real">
+    <div class="phrow"><h2 style="font-family:var(--display);font-weight:600;font-size:17px;margin:0">How the toys scale to a real drive</h2></div>
+    <p class="lead">Same ideas, far bigger. A production ECC codeword is <b>~1–4 KB</b>, not 12–15 bits, and each parity check touches only a handful of them — that's the "low density" in LDPC. The scaled-up machines correct <b>tens of bit-flips per codeword</b>, and that headroom is exactly what lets flash keep shrinking cells (MLC → TLC → QLC), where the raw error rate climbs.</p>
+    <div class="grid3">
+      <div class="rc h"><p class="name">Hamming</p><p class="tl">1 error · part 1</p><p>Syndrome <em>is</em> the address. The clean idea every stronger code inherits.</p></div>
+      <div class="rc b1"><p class="name">BCH</p><p class="tl">t errors · solve + search</p><p>Real BCH works in fields like GF(2¹³⁺) over KB-sized words. The Chien search you watched above runs as dedicated silicon, testing every position in parallel. Long the SSD workhorse for its predictable, guaranteed <em>t</em>-bit correction.</p></div>
+      <div class="rc b2"><p class="name">LDPC</p><p class="tl">many errors · soft messages</p><p>The real win: production LDPC passes <em>probabilities</em> (how confident is each bit?), not hard 0/1 votes — it reads the analog voltage margin the flash reports. That soft belief-propagation corrects far more than the hard bit-flipping shown here, getting close to the theoretical limit. Why it's now mainstream for dense TLC/QLC.</p></div>
+    </div>
+  </div>
+
+  <footer class="foot">SSD Deep Dive study set · Ch. 2 · back-end / ECC · BCH(15,7) &amp; a (3,4)-regular LDPC from the AG(2,3) plane</footer>
+</div>
+
+<script>
+"use strict";
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+const sup = n => { const map={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'}; return String(n).split('').map(c=>map[c]||c).join(''); };
+let timers=[];
+const wait = ms => new Promise(res=>{ if(reduceMotion){res();return;} const t=setTimeout(res,ms); timers.push(t); });
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+
+/* =========================================================
+   GF(2^4), primitive poly x^4+x+1  — verified field tables
+   ========================================================= */
+const GF={M:4,N:15,PRIM:0b10011,exp:new Array(15),log:new Array(16).fill(0)};
+(function(){ let x=1; for(let i=0;i<GF.N;i++){ GF.exp[i]=x; GF.log[x]=i; x<<=1; if(x&(1<<GF.M)) x^=GF.PRIM; } })();
+const gadd=(a,b)=>a^b;
+const gmul=(a,b)=>(a===0||b===0)?0:GF.exp[(GF.log[a]+GF.log[b])%GF.N];
+const ginv=a=>GF.exp[(GF.N-GF.log[a])%GF.N];
+const gpow=(a,e)=>a===0?0:GF.exp[(((GF.log[a]*e)%GF.N)+GF.N)%GF.N];
+const gfstr=a=> a===0?'0':(a===1?'1':'α'+sup(GF.log[a]));
+
+/* ---- BCH(15,7) codec (verified: corrects all 1&2-bit errors) ---- */
+const BCH={N:15,K:7,NK:8, g:[1,0,0,0,1,0,1,1,1]}; // g(x) LSB..MSB
+function bchEncode(msg){ // msg length 7 -> positions 8..14
+  const cw=new Array(BCH.N).fill(0);
+  for(let i=0;i<BCH.K;i++) cw[BCH.NK+i]=msg[i];
+  const rem=cw.slice();
+  for(let i=BCH.N-1;i>=BCH.NK;i--){ if(rem[i]) for(let j=0;j<=BCH.NK;j++) rem[i-BCH.NK+j]^=BCH.g[j]; }
+  const out=cw.slice(); for(let i=0;i<BCH.NK;i++) out[i]=rem[i];
+  return out;
+}
+function bchSynd(cw){ const S=[]; for(let j=1;j<=4;j++){ let s=0; for(let i=0;i<BCH.N;i++) if(cw[i]) s=gadd(s,gpow(GF.exp[1],j*i)); S.push(s);} return S; }
+function berlekamp(S){
+  let C=[1],B=[1],L=0,m=1,b=1;
+  for(let n=0;n<S.length;n++){
+    let d=S[n]; for(let i=1;i<=L;i++) d=gadd(d,gmul(C[i]||0,S[n-i]));
+    if(d===0){ m++; }
+    else if(2*L<=n){ const T=C.slice(); const cf=gmul(d,ginv(b)); const sh=new Array(m).fill(0).concat(B.map(x=>gmul(cf,x))); const len=Math.max(C.length,sh.length),nc=new Array(len).fill(0); for(let i=0;i<len;i++) nc[i]=gadd(C[i]||0,sh[i]||0); C=nc; L=n+1-L; B=T; b=d; m=1; }
+    else { const cf=gmul(d,ginv(b)); const sh=new Array(m).fill(0).concat(B.map(x=>gmul(cf,x))); const len=Math.max(C.length,sh.length),nc=new Array(len).fill(0); for(let i=0;i<len;i++) nc[i]=gadd(C[i]||0,sh[i]||0); C=nc; m++; }
+  }
+  return C;
+}
+function chienValue(sigma,p){ const x=GF.exp[(GF.N-p)%GF.N]; let v=0; for(let i=0;i<sigma.length;i++) v=gadd(v,gmul(sigma[i],gpow(x,i))); return v; }
+
+/* =========================================================
+   BCH interactive module
+   ========================================================= */
+const B=(function(){
+  const N=BCH.N;
+  let dataBits=[1,0,1,1,0,1,0];
+  let bits=new Array(N).fill(0);
+  let cleanBits=null, phase='setup', busy=false, errN=1;
+  let stage=0, sigmaCache=null, syndCache=null;
+  const cells={};
+
+  function build(){
+    const cw=$('bchCw'); cw.innerHTML='';
+    for(let p=0;p<N;p++){
+      const isData=p>=BCH.NK;
+      const wrap=document.createElement('div'); wrap.className='cell';
+      wrap.innerHTML='<div class="pnum">'+p+'</div><div class="afld">α'+sup(p)+'</div>';
+      const b=document.createElement('button');
+      b.className='bit '+(isData?'data':'parity');
+      b.setAttribute('data-p',p);
+      b.innerHTML='<span class="role">'+(isData?'D':'P')+'</span><span class="v">0</span>';
+      b.addEventListener('click',()=>onClick(p));
+      cells[p]=b; wrap.appendChild(b); cw.appendChild(wrap);
+    }
+  }
+  function render(){ for(let p=0;p<N;p++){ cells[p].querySelector('.v').textContent=bits[p]; cells[p].classList.toggle('on',bits[p]===1);} }
+  function tag(t){ $('bchTag').textContent='phase: '+t; }
+  function narr(step,html){ $('bchNarr').innerHTML='<span class="st">'+step+'</span>'+html; }
+  function clearFx(){ for(let p=0;p<N;p++) cells[p].classList.remove('contrib','scan','root','fixed'); }
+  function resetMeters(){ ['S1','S2','S3','S4'].forEach(id=>{ const m=$(id); m.className='meter'; m.querySelector('.val').textContent='–'; }); $('sigmaOut').innerHTML='Berlekamp–Massey solves the syndromes for σ(x)…'; $('chienOut').innerHTML=''; }
+
+  function onClick(p){
+    if(busy) return;
+    if(phase==='setup'){
+      if(p>=BCH.NK){ const i=p-BCH.NK; dataBits[i]^=1; bits[p]=dataBits[i]; render(); }
+      else flash('positions 0–7 are parity, set on encode');
+    } else if(phase==='ready'||phase==='error'){ bits[p]^=1; render(); markErr(); }
+  }
+  function flash(msg){ const h=$('bchHint'); h.textContent=msg; setTimeout(()=>{if(h.textContent===msg)h.textContent='';},2400); }
+  function markErr(){
+    const diffs=[]; for(let p=0;p<N;p++){ const e=cleanBits&&bits[p]!==cleanBits[p]; cells[p].classList.toggle('err',!!e); if(e)diffs.push(p); }
+    if(diffs.length){ phase='error'; tag('error injected'); $('bchDecode').disabled=false; $('bchStep').disabled=false;
+      narr('Step · error','<p>Flipped <b>'+diffs.length+'</b> bit'+(diffs.length>1?'s':'')+' — position'+(diffs.length>1?'s':'')+' <code>'+diffs.join(', ')+'</code>.</p><p class="sub">The stored word is corrupt. Decode to watch BCH pinpoint the damage.</p>'); }
+    else { phase='ready'; tag('encoded · clean'); narr('Step · clean','<p>No bits differ from the encoded word.</p><p class="sub">Flip one or two and decode.</p>'); }
+  }
+  function doEncode(){
+    if(busy) return;
+    bits=bchEncode(dataBits); cleanBits=bits.slice(); render();
+    for(let p=0;p<N;p++){ cells[p].classList.remove('err'); cells[p].classList.add('clickable'); }
+    phase='ready'; tag('encoded · clean');
+    $('bchEncode').disabled=true; $('bchRandom').disabled=true; $('bchInject').disabled=false; $('bchDecode').disabled=false; $('bchStep').disabled=false;
+    narr('Step · encode','<p>Encoded. Parity was chosen so all four syndromes are <b>zero</b> — a clean codeword.</p><p class="sub">Now flip a bit (click any cell) to corrupt it.</p>');
+    flash('click any bit to corrupt it');
+  }
+  function doRandom(){ if(busy||phase!=='setup')return; dataBits=dataBits.map(()=>Math.random()<.5?1:0); for(let i=0;i<BCH.K;i++)bits[BCH.NK+i]=dataBits[i]; render(); }
+  function doInject(){
+    if(busy||!(phase==='ready'||phase==='error'))return;
+    // reset to clean then flip errN distinct positions
+    bits=cleanBits.slice();
+    const pos=[]; while(pos.length<errN){ const p=Math.floor(Math.random()*N); if(!pos.includes(p))pos.push(p);} pos.forEach(p=>bits[p]^=1);
+    render(); markErr();
+  }
+
+  async function startDecode(auto){
+    if(busy||!(phase==='error'||phase==='ready'))return;
+    phase='decoding'; tag('decoding'); resetMeters(); clearFx();
+    $('bchInject').disabled=true; $('bchDecode').disabled=true;
+    stage=0; sigmaCache=null; syndCache=null;
+    if(auto){ busy=true; $('bchStep').disabled=true;
+      await stageSyndrome(); await wait(600);
+      await stageLocator(); await wait(600);
+      await stageChien(); await wait(500);
+      await stageResult(); busy=false;
+    } else { $('bchStep').disabled=false; await nextStage(); }
+  }
+  async function nextStage(){
+    if(busy) return; busy=true;
+    if(stage===0){ await stageSyndrome(); stage=1; }
+    else if(stage===1){ await stageLocator(); stage=2; }
+    else if(stage===2){ await stageChien(); stage=3; }
+    else if(stage===3){ await stageResult(); stage=4; }
+    busy=false;
+  }
+
+  async function stageSyndrome(){
+    const S=bchSynd(bits); syndCache=S;
+    narr('Step · syndromes','<p>Evaluating the received word at <code>α¹…α⁴</code> — four independent "samples" of the error.</p><p class="sub">Hamming had just one of these. Four is what makes locating <b>two</b> errors possible.</p>');
+    // reveal contributors (set bits) then each meter
+    for(let p=0;p<N;p++) cells[p].classList.toggle('contrib',bits[p]===1);
+    await wait(450);
+    for(let j=0;j<4;j++){ const id='S'+(j+1),m=$(id); m.classList.add('active'); m.querySelector('.val').textContent=gfstr(S[j]); m.classList.remove('active'); m.classList.add(S[j]===0?'zero':'nz'); await wait(260); }
+    for(let p=0;p<N;p++) cells[p].classList.remove('contrib');
+    if(S.every(s=>s===0)){ narr('Step · clean ✓','<p>All four syndromes are <b style="color:var(--pass)">zero</b> → the read is clean, nothing to fix.</p><p class="sub">Data: <code>'+bits.slice(BCH.NK).join('')+'</code></p>'); phase='ready'; finish(true,true); stage=4; }
+  }
+  async function stageLocator(){
+    if(phase!=='decoding'){ return; }
+    const S=syndCache||bchSynd(bits);
+    if(S.every(s=>s===0)) return;
+    const sigma=berlekamp(S); sigmaCache=sigma;
+    const deg=sigma.length-1;
+    let terms=['1'];
+    for(let i=1;i<sigma.length;i++){ if(sigma[i]!==0) terms.push('<span class="c">'+gfstr(sigma[i])+'</span>·x'+(i>1?sup(i):'')); }
+    $('sigmaOut').innerHTML='σ(x) = '+terms.join(' + ');
+    narr('Step · locator','<p>From the four syndromes, <b>Berlekamp–Massey</b> solves for the error-locator polynomial σ(x).</p><p class="sub">Its degree (<b>'+deg+'</b>) is the number of errors, and its <b>roots</b> mark where they are. Next we hunt those roots.</p>');
+  }
+  async function stageChien(){
+    if(phase!=='decoding') return;
+    const sigma=sigmaCache||berlekamp(syndCache);
+    $('chienOut').innerHTML='<b>Chien search:</b> testing every position…';
+    const roots=[];
+    for(let p=0;p<N;p++){
+      cells[p].classList.add('scan');
+      const v=chienValue(sigma,p);
+      $('chienOut').innerHTML='<b>Chien search:</b> position <code>'+p+'</code> → σ(α'+sup('-'+p)+') = '+gfstr(v)+(v===0?'  ✓ root!':'')+(roots.length?'   &nbsp; found: <span class="r">'+roots.join(', ')+'</span>':'');
+      await wait(reduceMotion?0:150);
+      cells[p].classList.remove('scan');
+      if(v===0){ roots.push(p); cells[p].classList.add('root'); }
+    }
+    $('chienOut').innerHTML='<b>Chien search complete.</b> Roots at position'+(roots.length>1?'s':'')+' <span class="r">'+roots.join(', ')+'</span> → error location'+(roots.length>1?'s':'')+'.';
+    narr('Step · Chien search','<p>Sweeping all 15 positions, evaluating σ at each. Where it hits <b>zero</b>, a root — that position holds an error.</p><p class="sub">Found <b>'+roots.length+'</b>: <code>'+roots.join(', ')+'</code>. This parallel search is literally built into SSD controller silicon.</p>');
+    sigmaCache._roots=roots;
+  }
+  async function stageResult(){
+    if(phase!=='decoding') return;
+    const roots=(sigmaCache&&sigmaCache._roots)||[];
+    for(const p of roots){ bits[p]^=1; cells[p].classList.remove('err','root'); cells[p].classList.add('fixed'); render(); await wait(180); }
+    const good=cleanBits&&bits.every((b,i)=>b===cleanBits[i]);
+    if(good){ narr('Step · done ✓','<p>Flipped position'+(roots.length>1?'s':'')+' <code>'+roots.join(', ')+'</code> back. <b style="color:var(--pass)">Data recovered.</b></p><p class="sub">Returned to host: <code>'+bits.slice(BCH.NK).join('')+'</code> — bit-for-bit what was written.</p>'); finish(true); }
+    else { narr('Step · limit ⚠','<p>More than two errors — beyond this code\'s t=2 guarantee, so the correction missed.</p><p class="sub">A real drive uses a higher-t BCH (or LDPC) with far more parity. Reset and try ≤2 errors.</p>'); finish(false); }
+  }
+  function finish(ok,silent){
+    phase='ready'; tag(ok?'corrected · clean':'needs stronger code');
+    if(ok) cleanBits=bits.slice();
+    for(let p=0;p<N;p++) cells[p].classList.toggle('err',cleanBits&&bits[p]!==cleanBits[p]);
+    $('bchInject').disabled=false; $('bchDecode').disabled=false; $('bchStep').disabled=true; busy=false;
+  }
+  function reset(){
+    clearTimers(); busy=false; bits=new Array(N).fill(0); dataBits=[1,0,1,1,0,1,0]; cleanBits=null; phase='setup'; stage=0;
+    build(); for(let i=0;i<BCH.K;i++)bits[BCH.NK+i]=dataBits[i]; render(); resetMeters(); tag('set data');
+    $('bchEncode').disabled=false; $('bchRandom').disabled=false; $('bchInject').disabled=true; $('bchDecode').disabled=true; $('bchStep').disabled=true;
+    narr('Step · setup','<p>Set the 7 <span style="color:var(--data)">data</span> bits, press <b>Encode</b>, then flip <b>one or two</b> bits and watch BCH find them.</p><p class="sub">All-zero syndromes mean a clean read; any non-zero syndrome means the error hunt begins.</p>');
+  }
+
+  // wire
+  $('bchRandom').onclick=doRandom; $('bchEncode').onclick=doEncode; $('bchInject').onclick=doInject;
+  $('bchDecode').onclick=()=>startDecode(true);
+  $('bchStep').onclick=()=>{ if(phase!=='decoding') startDecode(false); else nextStage(); };
+  $('bchReset').onclick=reset;
+  $('bchErrSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{ $('bchErrSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); errN=+b.dataset.n; });
+
+  build(); for(let i=0;i<BCH.K;i++)bits[BCH.NK+i]=dataBits[i]; render();
+  return {reset};
+})();
+
+/* =========================================================
+   LDPC interactive module — (3,4)-regular, AG(2,3), verified
+   ========================================================= */
+const L=(function(){
+  const n=12,m=9;
+  const varChecks=[[0,3,6],[1,4,7],[2,5,8],[0,1,2],[3,4,5],[6,7,8],[0,4,8],[1,5,6],[2,3,7],[0,5,7],[1,3,8],[2,4,6]];
+  const chkVars=[[0,3,6,9],[1,3,7,10],[2,3,8,11],[0,4,8,10],[1,4,6,11],[2,4,7,9],[0,5,7,11],[1,5,8,9],[2,5,6,10]];
+  const basis=[[1,1,1,1,1,1,0,0,0,0,0,0],[1,1,1,0,0,0,1,1,1,0,0,0],[1,1,1,0,0,0,0,0,0,1,1,1]];
+  const W=680,H=300, vY=64, cY=232;
+  const vX=i=> 40 + i*(600/(n-1));
+  const cX=j=> 76 + j*(528/(m-1));
+  let sent=new Array(n).fill(0);
+  let x=new Array(n).fill(0);
+  let busy=false, round=0, errN=1, converged=false, edges={}, vNodes={}, cNodes={};
+
+  function edgeId(v,c){ return 'e_'+v+'_'+c; }
+  function build(){
+    const svg=$('tanner'); svg.innerHTML=''; edges={}; vNodes={}; cNodes={};
+    const NS='http://www.w3.org/2000/svg';
+    // labels
+    const l1=document.createElementNS(NS,'text'); l1.setAttribute('x',8); l1.setAttribute('y',vY-30); l1.setAttribute('class','glabel'); l1.textContent='bit-nodes (codeword)'; svg.appendChild(l1);
+    const l2=document.createElementNS(NS,'text'); l2.setAttribute('x',8); l2.setAttribute('y',cY+40); l2.setAttribute('class','glabel'); l2.textContent='check-nodes (parity constraints)'; svg.appendChild(l2);
+    // edges first (under nodes)
+    varChecks.forEach((cs,v)=> cs.forEach(c=>{
+      const x1=vX(v),y1=vY+16,x2=cX(c),y2=cY-14;
+      const my=(y1+y2)/2;
+      const path=document.createElementNS(NS,'path');
+      path.setAttribute('d','M'+x1+','+y1+' C'+x1+','+my+' '+x2+','+my+' '+x2+','+y2);
+      path.setAttribute('class','edge'); path.setAttribute('id',edgeId(v,c));
+      svg.appendChild(path); edges[edgeId(v,c)]=path;
+    }));
+    // check nodes
+    for(let c=0;c<m;c++){
+      const g=document.createElementNS(NS,'g'); g.setAttribute('class','cnode'); g.setAttribute('id','c'+c);
+      const s=18, X=cX(c)-s/2, Y=cY-s/2;
+      const r=document.createElementNS(NS,'rect'); r.setAttribute('x',X); r.setAttribute('y',Y); r.setAttribute('width',s); r.setAttribute('height',s); r.setAttribute('rx',4); r.setAttribute('class','cc');
+      const t=document.createElementNS(NS,'text'); t.setAttribute('x',cX(c)); t.setAttribute('y',cY); t.setAttribute('class','ct'); t.textContent='c'+c;
+      g.appendChild(r); g.appendChild(t); svg.appendChild(g); cNodes[c]=g;
+    }
+    // variable nodes
+    for(let v=0;v<n;v++){
+      const g=document.createElementNS(NS,'g'); g.setAttribute('class','vnode'); g.setAttribute('id','v'+v);
+      const cc=document.createElementNS(NS,'circle'); cc.setAttribute('cx',vX(v)); cc.setAttribute('cy',vY); cc.setAttribute('r',15); cc.setAttribute('class','vc');
+      const t=document.createElementNS(NS,'text'); t.setAttribute('x',vX(v)); t.setAttribute('y',vY); t.setAttribute('class','vt'); t.textContent='0';
+      const lb=document.createElementNS(NS,'text'); lb.setAttribute('x',vX(v)); lb.setAttribute('y',vY-24); lb.setAttribute('class','vlbl'); lb.textContent='b'+v;
+      g.appendChild(cc); g.appendChild(t); g.appendChild(lb); svg.appendChild(g); vNodes[v]=g;
+      g.addEventListener('click',()=>onClick(v));
+    }
+    render();
+  }
+  function render(){
+    for(let v=0;v<n;v++){ const g=vNodes[v]; g.querySelector('.vt').textContent=x[v]; g.classList.toggle('on',x[v]===1); g.classList.toggle('err', sent&&x[v]!==sent[v]); g.classList.remove('flip'); }
+  }
+  function checksNow(){ return chkVars.map(vs=> vs.reduce((p,v)=>p^x[v],0)); }
+  function paintChecks(uns){ for(let c=0;c<m;c++){ cNodes[c].classList.toggle('unsat',uns[c]===1); cNodes[c].classList.toggle('sat',uns[c]===0);} }
+  function clearChecks(){ for(let c=0;c<m;c++) cNodes[c].classList.remove('unsat','sat'); }
+  function clearEdges(){ Object.values(edges).forEach(e=>e.classList.remove('pulseR','pulseG','pulseV')); }
+  function tag(t){ $('ldpcTag').textContent='phase: '+t; }
+  function narr(step,html){ $('ldpcNarr').innerHTML='<span class="st">'+step+'</span>'+html; }
+  function setStatus(uns,state,cls){
+    $('ldRound').textContent=round;
+    const nUn=uns?uns.reduce((a,b)=>a+b,0):0;
+    $('ldUnsat').innerHTML='unsatisfied checks: <b>'+nUn+'</b> / 9';
+    const st=$('ldState'); st.className='pill '+(cls||''); st.innerHTML=state;
+  }
+
+  function onClick(v){ if(busy)return; x[v]^=1; render();
+    const uns=checksNow(); const nUn=uns.reduce((a,b)=>a+b,0);
+    const diffs=[]; for(let i=0;i<n;i++) if(x[i]!==sent[i]) diffs.push(i);
+    tag(diffs.length?'error injected':'ready'); round=0; converged=false;
+    setStatus(uns, diffs.length? nUn+' checks unhappy' : 'valid codeword', diffs.length?'bad':'good');
+    if(diffs.length) narr('Step · error','<p>Flipped <b>'+diffs.length+'</b> bit'+(diffs.length>1?'s':'')+' (<code>'+diffs.map(i=>'b'+i).join(', ')+'</code>).</p><p class="sub">Press <b>Run decoding</b> — the unhappy checks will vote it back.</p>');
+    else narr('Step · ready','<p>Back to a valid codeword.</p><p class="sub">Flip a bit and run the decoder.</p>');
+  }
+  function flash(msg){ const h=$('ldHint'); h.textContent=msg; setTimeout(()=>{if(h.textContent===msg)h.textContent='';},2400); }
+
+  function doRandom(){ if(busy)return; const r=1+Math.floor(Math.random()*7); const cw=new Array(n).fill(0); for(let b=0;b<3;b++) if(r&(1<<b)) for(let i=0;i<n;i++) cw[i]^=basis[b][i]; sent=cw.slice(); x=cw.slice(); round=0; converged=false; render(); clearChecks(); clearEdges(); tag('ready'); setStatus(checksNow(),'valid codeword','good'); narr('Step · ready','<p>Sent a new valid codeword.</p><p class="sub">Flip a bit and run the decoder.</p>'); }
+  function doInject(){ if(busy)return; x=sent.slice(); const pos=[]; while(pos.length<errN){ const p=Math.floor(Math.random()*n); if(!pos.includes(p))pos.push(p);} pos.forEach(p=>x[p]^=1); render(); round=0; converged=false;
+    const uns=checksNow(); tag('error injected'); setStatus(uns, uns.reduce((a,b)=>a+b,0)+' checks unhappy','bad');
+    narr('Step · error','<p>Flipped <b>'+errN+'</b> bit'+(errN>1?'s':'')+' (<code>'+pos.map(p=>'b'+p).join(', ')+'</code>).</p><p class="sub">Run the decoder to watch message passing repair it.</p>'); }
+
+  async function oneRound(){
+    // Phase A: checks evaluate + report along edges
+    const uns=checksNow(); const nUn=uns.reduce((a,b)=>a+b,0);
+    if(nUn===0){ converged=true; return {done:true,uns}; }
+    round++;
+    paintChecks(uns);
+    // pulse edges from unsatisfied checks toward their bits (red = "you might be wrong")
+    clearEdges();
+    for(let c=0;c<m;c++) if(uns[c]) chkVars[c].forEach(v=> edges[edgeId(v,c)].classList.add('pulseR'));
+    narr('Round '+round+' · checks report','<p><b style="color:var(--fail)">'+nUn+'</b> check'+(nUn>1?'s are':' is')+' unsatisfied (odd parity). Each sends a complaint down its edges to the bits it watches.</p><p class="sub">A bit wired to several complaining checks is probably the culprit.</p>');
+    setStatus(uns, nUn+' unhappy → voting', 'bad');
+    await wait(900);
+    // Phase B: variables tally votes, flip the most-complained-about
+    const votes=x.map((_,v)=> varChecks[v].reduce((a,c)=>a+uns[c],0));
+    const maxV=Math.max(...votes);
+    const flippers=[]; for(let v=0;v<n;v++) if(votes[v]===maxV && maxV>0) flippers.push(v);
+    // highlight flippers + their edges violet
+    clearEdges();
+    flippers.forEach(v=>{ vNodes[v].classList.add('flip'); varChecks[v].forEach(c=> edges[edgeId(v,c)].classList.add('pulseV')); });
+    narr('Round '+round+' · bits vote','<p>Every bit counts its unhappy checks. The most-complained-about (<b>'+maxV+'</b> of 3) '+(flippers.length>1?'bits':'bit')+' <b style="color:var(--violet)">flip'+(flippers.length>1?'':'s')+'</b>: <code>'+flippers.map(v=>'b'+v).join(', ')+'</code>.</p><p class="sub">Then the checks re-evaluate.</p>');
+    await wait(950);
+    flippers.forEach(v=> x[v]^=1); render();
+    clearEdges();
+    const uns2=checksNow();
+    paintChecks(uns2);
+    setStatus(uns2, uns2.reduce((a,b)=>a+b,0)+' unhappy', uns2.reduce((a,b)=>a+b,0)?'bad':'good');
+    await wait(500);
+    return {done:false,uns:uns2};
+  }
+
+  async function run(auto){
+    if(busy)return;
+    const uns0=checksNow(); if(uns0.reduce((a,b)=>a+b,0)===0){ flash('no errors — flip a bit first'); return; }
+    busy=true; tag('decoding');
+    const MAX=10;
+    while(round<MAX){
+      const r=await oneRound();
+      if(r.done){ break; }
+      if(!auto){ break; } // step mode: one round then stop
+      await wait(250);
+    }
+    const uns=checksNow(); const nUn=uns.reduce((a,b)=>a+b,0);
+    if(nUn===0){
+      converged=true; tag('decoded · clean'); clearEdges(); paintChecks(uns);
+      const ok=x.every((b,i)=>b===sent[i]);
+      if(ok) narr('Decoded ✓','<p>Every check is <b style="color:var(--pass)">green</b> — the graph settled on a valid codeword in <b>'+round+'</b> round'+(round>1?'s':'')+'.</p><p class="sub">Bits recovered exactly. This local gossip is all LDPC decoding is — just at massive scale.</p>');
+      else narr('Decoded ✓ (nearest)','<p>All checks satisfied, but it landed on a <b>different</b> valid codeword than sent — the errors were too many for hard voting to place correctly.</p><p class="sub">This is exactly where <b>soft</b> belief-propagation (using voltage confidence) wins. See the note below.</p>');
+      setStatus(uns, ok?'converged ✓':'converged (nearest)', ok?'good':'bad'); busy=false;
+    } else if(round>=MAX){
+      tag('stalled'); clearEdges(); paintChecks(uns);
+      narr('Stalled ⚠','<p>Hard bit-flipping got stuck with <b>'+nUn+'</b> check'+(nUn>1?'s':'')+' still unhappy — it can oscillate on tougher multi-error patterns.</p><p class="sub">This is the limit of the <em>simple</em> decoder. Real drives pass <b>soft</b> probability messages (how sure is each bit?) using the analog voltage levels, which fixes far more. That\'s the LDPC edge the book highlights.</p>');
+      setStatus(uns, 'stalled — needs soft decoding','bad'); busy=false;
+    } else { busy=false; } // step-mode pause
+  }
+
+  function reset(){
+    clearTimers(); busy=false; sent=new Array(n).fill(0); x=new Array(n).fill(0); round=0; converged=false;
+    build(); clearChecks(); clearEdges(); tag('ready'); setStatus(checksNow(),'valid codeword','good');
+    narr('Step · ready','<p>The all-zero word is a valid codeword. Flip a bit (click a circle or use the button) and press <b>Run decoding</b> — watch the red checks vote it back.</p><p class="sub">Each round has two half-steps: <span style="color:var(--fail)">checks report</span> which bits look wrong, then <span style="color:var(--violet)">bits flip</span> if enough checks complain.</p>');
+  }
+
+  $('ldRandom').onclick=doRandom; $('ldInject').onclick=doInject;
+  $('ldRun').onclick=()=>run(true); $('ldStep').onclick=()=>run(false); $('ldReset').onclick=reset;
+  $('ldErrSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{ $('ldErrSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); errN=+b.dataset.n; });
+
+  build();
+  return {reset,build};
+})();
+
+/* ---------------- tabs ---------------- */
+function switchTab(which){
+  clearTimers();
+  const bch=which==='bch';
+  $('tabBch').classList.toggle('active',bch); $('tabBch').setAttribute('aria-selected',bch);
+  $('tabLdpc').classList.toggle('active',!bch); $('tabLdpc').setAttribute('aria-selected',!bch);
+  $('bchPanel').classList.toggle('hidden',!bch); $('ldpcPanel').classList.toggle('hidden',bch);
+}
+$('tabBch').onclick=()=>switchTab('bch');
+$('tabLdpc').onclick=()=>switchTab('ldpc');
+</script>
+</body>
+</html>

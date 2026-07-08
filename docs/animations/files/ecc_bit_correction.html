@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How ECC Finds and Fixes a Bit — Hamming Code Visualizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0b1020;
+    --bg-1:#0e1428;
+    --panel:#141b31;
+    --panel-2:#182142;
+    --line:#26314f;
+    --line-soft:#1c2540;
+    --text:#e8ecf5;
+    --muted:#8b95ad;
+    --muted-2:#5f6a84;
+    --data:#4dd0c4;      /* cool: data bits */
+    --data-dim:#1f3f3d;
+    --parity:#f2b13c;    /* warm: parity bits */
+    --parity-dim:#3d3018;
+    --pass:#56d364;      /* even / ok */
+    --fail:#ff6b6b;      /* odd / error */
+    --pass-dim:#193723;
+    --fail-dim:#3a1c1f;
+    --cell:#0f1526;
+    --radius:10px;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --display:'Space Grotesk',var(--sans);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);
+    color:var(--text);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #16204010 0%, transparent 60%),
+      linear-gradient(180deg,var(--bg-0),var(--bg-1));
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:32px 20px 56px;
+  }
+  .wrap{max-width:940px;margin:0 auto}
+
+  /* ---------- header ---------- */
+  header{margin-bottom:22px}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted-2);margin:0 0 10px;
+  }
+  h1{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(26px,4.4vw,40px);
+    line-height:1.05;
+    letter-spacing:-.01em;
+    margin:0 0 12px;
+  }
+  h1 .accent{color:var(--parity)}
+  .thesis{
+    font-size:clamp(15px,2vw,18px);
+    color:var(--muted);
+    max-width:60ch;margin:0;
+  }
+  .thesis b{color:var(--text);font-weight:600}
+
+  /* ---------- idea strip ---------- */
+  .idea{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+    margin:24px 0 28px;
+  }
+  .idea .card{
+    background:var(--panel);border:1px solid var(--line-soft);
+    border-radius:var(--radius);padding:14px 15px;
+  }
+  .idea .k{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted-2);margin-bottom:7px;
+  }
+  .idea .t{font-size:13.5px;color:var(--muted)}
+  .idea .t b{color:var(--text);font-weight:600}
+  .idea .card.hi .k{color:var(--parity)}
+
+  /* ---------- panel ---------- */
+  .panel{
+    background:linear-gradient(180deg,var(--panel),#121930);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px 20px 22px;
+    box-shadow:0 18px 50px -30px #000;
+  }
+  .panel-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    gap:12px;flex-wrap:wrap;margin-bottom:14px;
+  }
+  .panel-head h2{
+    font-family:var(--display);font-weight:600;font-size:17px;margin:0;
+    letter-spacing:-.01em;
+  }
+  .code-tag{
+    font-family:var(--mono);font-size:12px;color:var(--muted-2);
+    border:1px solid var(--line);border-radius:999px;padding:3px 10px;
+  }
+
+  /* ---------- legend ---------- */
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .legend span{display:inline-flex;align-items:center;gap:7px;
+    font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .sw{width:13px;height:13px;border-radius:4px;display:inline-block;border:1.5px solid}
+  .sw.data{background:var(--data-dim);border-color:var(--data)}
+  .sw.parity{background:var(--parity-dim);border-color:var(--parity)}
+  .sw.pass{background:var(--pass-dim);border-color:var(--pass)}
+  .sw.fail{background:var(--fail-dim);border-color:var(--fail)}
+  .dotk{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block}
+
+  /* ---------- the matrix ---------- */
+  .matrix-scroll{overflow-x:auto;padding-bottom:6px;margin:0 -4px}
+  .matrix{
+    display:grid;
+    grid-template-columns:96px repeat(12, minmax(38px,1fr)) 74px;
+    gap:6px;
+    min-width:640px;
+    padding:0 4px;
+    align-items:center;
+  }
+  .rlabel{
+    font-family:var(--mono);font-size:12px;color:var(--muted);
+    text-align:right;padding-right:6px;white-space:nowrap;
+  }
+  .rlabel small{display:block;color:var(--muted-2);font-size:10px;letter-spacing:.02em}
+
+  /* position header */
+  .pos{
+    text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted-2);
+    line-height:1.2;
+  }
+  .pos b{color:var(--muted);font-weight:600;font-size:13px;display:block}
+
+  /* codeword cell */
+  .bit{
+    height:46px;border-radius:9px;border:1.6px solid var(--line);
+    background:#0e1428;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-weight:600;font-size:18px;color:var(--muted-2);
+    cursor:default;position:relative;transition:transform .18s, border-color .2s, background .2s, box-shadow .2s;
+    user-select:none;padding:0;
+  }
+  .bit:focus-visible{outline:2px solid #6ea8ff;outline-offset:2px}
+  .bit .role{
+    position:absolute;top:3px;left:5px;font-size:9px;letter-spacing:.04em;
+    color:var(--muted-2);font-weight:500;
+  }
+  /* role tint */
+  .bit.data{border-color:#2a4d4a;color:var(--data)}
+  .bit.parity{border-color:#4a3c1e;color:var(--parity)}
+  .bit.data.on{background:linear-gradient(180deg,#123734,#0f2b29);border-color:var(--data);box-shadow:inset 0 0 0 1px #4dd0c433, 0 0 14px -6px var(--data)}
+  .bit.parity.on{background:linear-gradient(180deg,#3a2e12,#2a220e);border-color:var(--parity);box-shadow:inset 0 0 0 1px #f2b13c33, 0 0 14px -6px var(--parity)}
+  .bit.clickable{cursor:pointer}
+  .bit.clickable:hover{transform:translateY(-2px)}
+  .bit.scan{border-color:#7f8db3;box-shadow:0 0 0 2px #7f8db355, 0 0 18px -6px #9fb0dd}
+  .bit.err{border-color:var(--fail)!important;color:var(--fail)!important;
+    background:linear-gradient(180deg,#3a1c1f,#2a1416)!important;
+    box-shadow:0 0 0 2px var(--fail), 0 0 22px -6px var(--fail)!important}
+  .bit.located{animation:shake .4s ease}
+  .bit.fixed{animation:fixpulse .7s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+  @keyframes fixpulse{0%{box-shadow:0 0 0 2px var(--pass),0 0 26px -4px var(--pass)}100%{box-shadow:0 0 0 0 transparent}}
+
+  /* error flag marker */
+  .flag{
+    grid-row:2;align-self:end;justify-self:center;position:relative;height:0;
+    pointer-events:none;
+  }
+  .flag span{
+    position:absolute;bottom:52px;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:10px;color:var(--fail);white-space:nowrap;
+    background:var(--fail-dim);border:1px solid var(--fail);border-radius:6px;
+    padding:2px 6px;opacity:0;transition:opacity .25s;
+  }
+  .flag span::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:5px solid transparent;border-top-color:var(--fail)}
+  .flag.show span{opacity:1}
+
+  /* check dot cells */
+  .chk{
+    height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    background:#0c1226;
+    border:1px solid var(--line-soft);transition:background .2s,border-color .2s,box-shadow .2s;
+  }
+  .chk .dot{width:9px;height:9px;border-radius:50%;background:#33405f;transition:background .2s, box-shadow .2s}
+  .chk.cov .dot{background:var(--muted)}
+  .row-active .chk.cov{border-color:#7f8db3;background:#141d33}
+  .row-active .chk.cov .dot{background:#cdd6ee;box-shadow:0 0 8px -1px #cdd6ee}
+  .row-active .rlabel{color:var(--text)}
+  .row-active .bit.cov-hi{border-color:#7f8db3;box-shadow:0 0 0 2px #7f8db344}
+
+  /* result cell (parity outcome per row) */
+  .res{
+    height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:5px;
+    font-family:var(--mono);font-size:12px;color:var(--muted-2);
+    border:1px dashed var(--line);background:transparent;
+  }
+  .res.even{color:var(--pass);border:1px solid var(--pass);background:var(--pass-dim)}
+  .res.odd{color:var(--fail);border:1px solid var(--fail);background:var(--fail-dim)}
+
+  .cap{
+    font-size:12px;color:var(--muted-2);font-family:var(--mono);
+    margin:14px 2px 0;text-align:center;
+  }
+  .cap b{color:var(--muted)}
+
+  /* ---------- syndrome + narration ---------- */
+  .lower{display:grid;grid-template-columns:1.05fr 1fr;gap:14px;margin-top:20px}
+  .box{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+  .box h3{margin:0 0 12px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted-2);font-weight:600}
+
+  .synd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .weights{display:flex;gap:6px}
+  .wt{
+    width:42px;height:52px;border-radius:9px;border:1.5px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:var(--mono);background:#0d1226;transition:all .2s;
+  }
+  .wt .lab{font-size:9px;color:var(--muted-2);letter-spacing:.05em}
+  .wt .v{font-size:20px;font-weight:600;color:var(--muted-2);line-height:1.1}
+  .wt.on{border-color:var(--fail);background:var(--fail-dim)}
+  .wt.on .v{color:var(--fail)}
+  .wt.on .lab{color:var(--fail)}
+  .eq{font-family:var(--mono);font-size:22px;color:var(--muted)}
+  .synd-out{
+    font-family:var(--mono);font-size:15px;color:var(--muted);
+    margin-top:14px;min-height:22px;
+  }
+  .synd-out b{color:var(--text)}
+  .synd-out .big{color:var(--parity);font-size:20px;font-weight:600}
+  .synd-out .ok{color:var(--pass)}
+
+  .narr{font-size:14px;color:var(--text);min-height:96px}
+  .narr .step{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--parity);display:block;margin-bottom:8px}
+  .narr p{margin:0 0 8px}
+  .narr .sub{color:var(--muted);font-size:13px}
+  .narr code{font-family:var(--mono);background:#0d1226;border:1px solid var(--line-soft);
+    padding:1px 5px;border-radius:5px;font-size:12.5px;color:var(--data)}
+
+  /* ---------- controls ---------- */
+  .controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px;align-items:center}
+  button.btn{
+    font-family:var(--sans);font-size:13.5px;font-weight:600;
+    border-radius:9px;padding:9px 15px;cursor:pointer;
+    border:1px solid var(--line);background:var(--panel-2);color:var(--text);
+    transition:transform .12s, background .18s, border-color .18s, opacity .18s;
+  }
+  button.btn:hover:not(:disabled){transform:translateY(-1px);border-color:#3a4a6f}
+  button.btn:focus-visible{outline:2px solid #6ea8ff;outline-offset:2px}
+  button.btn:disabled{opacity:.38;cursor:not-allowed}
+  button.btn.primary{background:linear-gradient(180deg,#f2b13c,#e19f2a);color:#231a06;border-color:#f2b13c}
+  button.btn.primary:hover:not(:disabled){box-shadow:0 8px 22px -12px var(--parity)}
+  button.btn.go{background:linear-gradient(180deg,#4dd0c4,#3bb3a8);color:#062522;border-color:#4dd0c4}
+  button.btn.go:hover:not(:disabled){box-shadow:0 8px 22px -12px var(--data)}
+  button.btn.ghost{background:transparent}
+  .hint{font-size:12px;color:var(--muted-2);font-family:var(--mono);margin-left:2px}
+  .divider{flex-basis:100%;height:0}
+
+  /* ---------- footer: real codes ---------- */
+  .real{margin-top:30px}
+  .real .lead{font-size:14px;color:var(--muted);max-width:70ch;margin:0 0 16px}
+  .real .lead b{color:var(--text)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .rc{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:15px 16px}
+  .rc .name{font-family:var(--display);font-weight:600;font-size:15px;margin:0 0 4px}
+  .rc .tagline{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin:0 0 10px;letter-spacing:.04em}
+  .rc p{margin:0;font-size:13px;color:var(--muted)}
+  .rc.now{border-color:#4a3c1e}
+  .rc.now .name{color:var(--parity)}
+  .rc .badge{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--parity);border:1px solid #4a3c1e;background:var(--parity-dim);
+    border-radius:999px;padding:2px 8px;margin-top:10px}
+
+  footer.foot{margin-top:26px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+
+  @media (max-width:760px){
+    .idea{grid-template-columns:1fr}
+    .lower{grid-template-columns:1fr}
+    .grid3{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">SSD back-end · error-correcting codes</p>
+    <h1>A flipped bit <span class="accent">announces its own location</span></h1>
+    <p class="thesis">Flash storage silently corrupts bits. The trick of ECC isn't just noticing an error — it's arranging the extra "parity" bits so that <b>the pattern of failed checks spells out exactly where the error is</b>, in binary. Watch it happen below with a Hamming code.</p>
+  </header>
+
+  <div class="idea">
+    <div class="card">
+      <div class="k">1 · Detect</div>
+      <div class="t">One parity bit over everything tells you an odd number of bits flipped — but <b>not which one</b>. You can catch the error, not fix it.</div>
+    </div>
+    <div class="card">
+      <div class="k">2 · Locate</div>
+      <div class="t">Use several parity bits, each covering a <b>different overlapping group</b>. A single flip breaks a unique combination of checks — like coordinates for the error.</div>
+    </div>
+    <div class="card hi">
+      <div class="k">3 · The trick</div>
+      <div class="t">Choose the groups so the failing checks, read as a binary number, <b>equal the error's position</b>. No searching — the math points straight at it.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Hamming(12, 8) — 8 data bits, 4 parity bits</h2>
+      <span class="code-tag" id="phaseTag">phase: set data</span>
+    </div>
+
+    <div class="legend">
+      <span><i class="sw data"></i>data bit</span>
+      <span><i class="sw parity"></i>parity bit</span>
+      <span><i class="dotk"></i>covered by this check</span>
+      <span><i class="sw pass"></i>group is even ✓</span>
+      <span><i class="sw fail"></i>group is odd ✗</span>
+    </div>
+
+    <div class="matrix-scroll">
+      <div class="matrix" id="matrix"><!-- built by JS --></div>
+    </div>
+    <p class="cap">Read any column's dots top-to-bottom (<b>8·4·2·1</b>) and you get that column's position in binary. That's the whole idea — the check pattern <i>is</i> the address.</p>
+
+    <div class="lower">
+      <div class="box">
+        <h3>Syndrome — the failing checks, added up</h3>
+        <div class="synd">
+          <div class="weights">
+            <div class="wt" id="wt8"><span class="lab">·8</span><span class="v">0</span></div>
+            <div class="wt" id="wt4"><span class="lab">·4</span><span class="v">0</span></div>
+            <div class="wt" id="wt2"><span class="lab">·2</span><span class="v">0</span></div>
+            <div class="wt" id="wt1"><span class="lab">·1</span><span class="v">0</span></div>
+          </div>
+        </div>
+        <div class="synd-out" id="syndOut">Waiting to decode…</div>
+      </div>
+      <div class="box narr" id="narr">
+        <span class="step">Step · setup</span>
+        <p>Toggle the eight <span style="color:var(--data)">data</span> cells to whatever byte you like, then press <b>Encode</b>.</p>
+        <p class="sub">Positions <code>1, 2, 4, 8</code> (the powers of two) are reserved for parity — everything else holds your data.</p>
+      </div>
+    </div>
+
+    <div class="controls" id="controls">
+      <button class="btn" id="btnRandom">Randomize data</button>
+      <button class="btn primary" id="btnEncode">Encode →</button>
+      <span class="divider"></span>
+      <button class="btn" id="btnInject" disabled>Flip a random bit</button>
+      <button class="btn go" id="btnDecode" disabled>Decode &amp; correct</button>
+      <button class="btn ghost" id="btnStep" disabled>Step ▸</button>
+      <button class="btn ghost" id="btnReset">Reset</button>
+      <span class="hint" id="hint"></span>
+    </div>
+  </div>
+
+  <div class="real">
+    <div class="panel-head"><h2 style="font-family:var(--display);font-weight:600;font-size:17px;margin:0">From this toy to what's inside your SSD</h2></div>
+    <p class="lead">The Hamming code above fixes <b>one</b> bit per codeword — perfect for seeing the mechanism, too weak for real flash. Production drives keep the same spirit (structured parity → a syndrome that locates errors) but scale it up massively so they can correct many bit-flips at once. That headroom is exactly what lets flash keep getting denser.</p>
+    <div class="grid3">
+      <div class="rc now">
+        <p class="name">Hamming</p>
+        <p class="tagline">1 error · this demo</p>
+        <p>Parity positioned at powers of two; the syndrome is literally the error's address. The clean foundation every stronger code builds on.</p>
+        <span class="badge">shown here</span>
+      </div>
+      <div class="rc">
+        <p class="name">BCH</p>
+        <p class="tagline">t errors · algebraic</p>
+        <p>Generalizes Hamming using Galois-field polynomial algebra. Its syndrome feeds an error-locator polynomial that pins down <i>several</i> flipped bits at once. Long the SSD workhorse.</p>
+      </div>
+      <div class="rc">
+        <p class="name">LDPC</p>
+        <p class="tagline">many errors · probabilistic</p>
+        <p>A sparse check matrix where bits and checks pass "belief" messages back and forth, iterating toward a valid codeword — and it can use the analog voltage margin, not just hard 0/1. Corrects the most per bit of overhead, which is why it's becoming mainstream for dense TLC/QLC.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">Built for the SSD Deep Dive study set · Ch. 2 · back-end / ECC module</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- Hamming(12,8) model ----
+  const N = 12;
+  const PARITY = [1,2,4,8];
+  const DATA_POS = [3,5,6,7,9,10,11,12];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // coverage of a parity weight p (a power of two): all positions q with (q & p)
+  function coverage(p){ const c=[]; for(let q=1;q<=N;q++) if(q & p) c.push(q); return c; }
+  const COV = {1:coverage(1),2:coverage(2),4:coverage(4),8:coverage(8)};
+
+  let dataBits = [1,0,1,1,0,0,1,0];   // 8 user bits
+  let bits = new Array(N+1).fill(0);   // 1-indexed codeword
+  let cleanBits = null;                // correctly encoded reference
+  let originalData = null;             // data at encode time
+  let phase = 'setup';                 // setup | ready | error | decoding | done
+  let decodeQueue = [];
+  let syndrome = 0;
+  let busy = false;
+
+  const $ = id => document.getElementById(id);
+  const matrix = $('matrix');
+  const cellEls = {};   // position -> codeword cell
+  const chkEls = {};    // weight -> { cells:{pos:el}, res:el, label:el }
+  const flagEls = {};   // position -> flag el
+
+  const sleep = ms => new Promise(r=>setTimeout(r, reduceMotion?0:ms));
+
+  // ---- build the matrix DOM ----
+  function build(){
+    matrix.innerHTML='';
+    const rowWeights=[8,4,2,1];
+
+    // Row 1: positions
+    add(cellSpacer());
+    for(let p=1;p<=N;p++){
+      const d=document.createElement('div'); d.className='pos';
+      d.innerHTML='<b>'+p+'</b>'+toBin(p);
+      add(d);
+    }
+    add(cellSpacer());
+
+    // Row 2: codeword + flags overlay
+    const lab=document.createElement('div'); lab.className='rlabel';
+    lab.innerHTML='codeword<small>stored bits</small>'; add(lab);
+    for(let p=1;p<=N;p++){
+      const isP = PARITY.includes(p);
+      const b=document.createElement('button');
+      b.className='bit '+(isP?'parity':'data');
+      b.setAttribute('data-pos',p);
+      b.setAttribute('aria-label',(isP?'parity':'data')+' bit at position '+p);
+      b.innerHTML='<span class="role">'+(isP?'P':'D')+'</span><span class="val">0</span>';
+      b.addEventListener('click',()=>onCellClick(p));
+      cellEls[p]=b;
+      // flag marker sits in same grid cell, anchored to bottom
+      const f=document.createElement('div'); f.className='flag';
+      f.innerHTML='<span>▲ error here</span>'; flagEls[p]=f;
+      const holder=document.createElement('div');
+      holder.style.position='relative';
+      holder.appendChild(b); holder.appendChild(f);
+      add(holder);
+    }
+    add(cellSpacer());
+
+    // Rows 3-6: parity checks (displayed 8,4,2,1 top->bottom)
+    rowWeights.forEach(w=>{
+      const rl=document.createElement('div'); rl.className='rlabel';
+      rl.innerHTML='check ·'+w+'<small>'+COV[w].join(' ')+'</small>';
+      rl.setAttribute('data-row',w);
+      add(rl);
+      const cells={};
+      for(let p=1;p<=N;p++){
+        const c=document.createElement('div');
+        c.className='chk'+(COV[w].includes(p)?' cov':'');
+        c.innerHTML='<span class="dot"></span>';
+        cells[p]=c; add(c);
+      }
+      const res=document.createElement('div'); res.className='res';
+      res.textContent='·'+w;
+      add(res);
+      chkEls[w]={cells,res,label:rl};
+    });
+  }
+  function add(el){ matrix.appendChild(el); }
+  function cellSpacer(){ const d=document.createElement('div'); return d; }
+  function toBin(n){ return n.toString(2).padStart(4,'0'); }
+
+  // ---- rendering ----
+  function renderCodeword(){
+    for(let p=1;p<=N;p++){
+      const el=cellEls[p];
+      el.querySelector('.val').textContent=bits[p];
+      el.classList.toggle('on', bits[p]===1);
+    }
+  }
+  function setRowActive(w,on){
+    const {cells,label}=chkEls[w];
+    label.classList.toggle('row-active',on);
+    // highlight the codeword cells this check covers
+    COV[w].forEach(p=>{ cellEls[p].classList.toggle('cov-hi', on); });
+    // highlight the covered check-dot cells in this row
+    COV[w].forEach(p=>{
+      const c=cells[p];
+      if(on){ c.style.borderColor='#7f8db3'; c.style.background='#141d33';
+              c.querySelector('.dot').style.background='#cdd6ee';
+              c.querySelector('.dot').style.boxShadow='0 0 8px -1px #cdd6ee'; }
+      else  { c.style.borderColor=''; c.style.background='';
+              c.querySelector('.dot').style.background='';
+              c.querySelector('.dot').style.boxShadow=''; }
+    });
+  }
+  function resetSyndromeDisplay(){
+    [['wt8',8],['wt4',4],['wt2',2],['wt1',1]].forEach(([id,w])=>{
+      const el=$(id); el.classList.remove('on'); el.querySelector('.v').textContent='0';
+    });
+  }
+
+  function setPhaseTag(t){ $('phaseTag').textContent='phase: '+t; }
+
+  function narrate(step, html){
+    $('narr').innerHTML='<span class="step">'+step+'</span>'+html;
+  }
+
+  // ---- core operations ----
+  function placeData(){ DATA_POS.forEach((pos,i)=>bits[pos]=dataBits[i]); }
+  function encode(){
+    placeData();
+    PARITY.forEach(p=>{
+      let x=0; COV[p].forEach(q=>{ if(q!==p) x^=bits[q]; }); bits[p]=x;
+    });
+  }
+  function groupParity(w){ let x=0; COV[w].forEach(q=> x^=bits[q]); return x; } // 0 even, 1 odd
+  function extractData(){ return DATA_POS.map(p=>bits[p]); }
+
+  // ---- interactions ----
+  function onCellClick(p){
+    if(busy) return;
+    if(phase==='setup'){
+      if(!PARITY.includes(p)){ // toggle data cell
+        const idx=DATA_POS.indexOf(p);
+        dataBits[idx]^=1; bits[p]=dataBits[idx]; renderCodeword();
+      } else {
+        flash($('hint'),'positions 1·2·4·8 are parity — set after encoding');
+      }
+    } else if(phase==='ready' || phase==='error'){
+      // inject / toggle an error on any cell
+      bits[p]^=1; renderCodeword();
+      markErrors();
+    }
+  }
+  function markErrors(){
+    let diffs=[];
+    for(let p=1;p<=N;p++){ cellEls[p].classList.toggle('err', cleanBits && bits[p]!==cleanBits[p]); if(cleanBits && bits[p]!==cleanBits[p]) diffs.push(p); }
+    if(diffs.length>0){
+      phase='error'; setPhaseTag('error injected');
+      $('btnDecode').disabled=false; $('btnStep').disabled=false;
+      const list=diffs.join(', ');
+      narrate('Step · error', '<p>Flipped <b>'+diffs.length+'</b> bit'+(diffs.length>1?'s':'')+' in flash (position'+(diffs.length>1?'s':'')+' <code>'+list+'</code>).</p><p class="sub">The stored codeword no longer matches what was written. Now let the reader locate it.</p>');
+    } else {
+      phase='ready'; setPhaseTag('encoded · clean');
+      $('btnDecode').disabled=false; $('btnStep').disabled=false;
+      narrate('Step · clean', '<p>No bits differ from the encoded word — the codeword is clean.</p><p class="sub">Flip one and decode, or decode now to see a zero syndrome.</p>');
+    }
+  }
+
+  function doEncode(){
+    if(busy) return;
+    encode(); renderCodeword();
+    cleanBits=bits.slice(); originalData=extractData().slice();
+    phase='ready'; setPhaseTag('encoded · clean');
+    for(let p=1;p<=N;p++) cellEls[p].classList.remove('err');
+    $('btnInject').disabled=false; $('btnDecode').disabled=false; $('btnStep').disabled=false;
+    $('btnEncode').disabled=true; $('btnRandom').disabled=true;
+    // make cells clickable for error injection
+    for(let p=1;p<=N;p++) cellEls[p].classList.add('clickable');
+    narrate('Step · encode',
+      '<p>Encoded. Each parity bit was set so that <b>its group holds an even number of 1s</b>.</p>'+
+      '<p class="sub">This is the codeword written to flash. Now click any cell (or use the button) to flip a bit and simulate corruption.</p>');
+    flash($('hint'),'click any bit to corrupt it');
+  }
+
+  function doRandomData(){
+    if(busy||phase!=='setup') return;
+    dataBits=dataBits.map(()=>Math.random()<0.5?1:0);
+    placeData(); renderCodeword();
+  }
+
+  function doInject(){
+    if(busy || !(phase==='ready'||phase==='error')) return;
+    const p=1+Math.floor(Math.random()*N);
+    bits[p]^=1; renderCodeword(); markErrors();
+  }
+
+  // ---- decode: build the step queue ----
+  function buildQueue(){
+    decodeQueue=[];
+    [1,2,4,8].forEach(w=> decodeQueue.push({kind:'check', w}));
+    decodeQueue.push({kind:'assemble'});
+    decodeQueue.push({kind:'result'});
+  }
+  function startDecode(auto){
+    if(busy) return;
+    if(!(phase==='ready'||phase==='error')) return;
+    phase='decoding'; setPhaseTag('decoding');
+    syndrome=0; resetSyndromeDisplay();
+    for(let p=1;p<=N;p++){ cellEls[p].classList.remove('located','fixed'); flagEls[p].classList.remove('show'); }
+    buildQueue();
+    $('btnInject').disabled=true; $('btnDecode').disabled=true;
+    $('syndOut').innerHTML='Running checks…';
+    narrate('Step · decode','<p>Re-checking every parity group. Each covered cell is XORed together.</p><p class="sub">Watch which checks come out <span style="color:var(--fail)">odd</span> — those are the ones the error touched.</p>');
+    if(auto) autoRun(); else { $('btnStep').disabled=false; runStep(); }
+  }
+
+  async function autoRun(){
+    $('btnStep').disabled=true;
+    busy=true;
+    while(decodeQueue.length){
+      await runStepAsync();
+      await sleep(760);
+    }
+    busy=false;
+  }
+
+  function runStep(){ // manual
+    if(!decodeQueue.length) return;
+    runStepAsync();
+  }
+
+  async function runStepAsync(){
+    const s=decodeQueue.shift();
+    if(!s){ return; }
+
+    if(s.kind==='check'){
+      const w=s.w;
+      // clear previous row highlight
+      [1,2,4,8].forEach(x=> x!==w && setRowActive(x,false));
+      setRowActive(w,true);
+      const par=groupParity(w);      // 0 even / 1 odd
+      const covVals=COV[w].map(p=>bits[p]);
+      const ones=covVals.reduce((a,b)=>a+b,0);
+      const res=chkEls[w].res;
+      res.className='res '+(par?'odd':'even');
+      res.textContent=(par? '1 ✗':'0 ✓');
+      if(par){ syndrome+=w; setWeight(w,true); }
+      narrate('Step · check ·'+w,
+        '<p>Check <code>·'+w+'</code> covers positions <code>'+COV[w].join(', ')+'</code>.</p>'+
+        '<p class="sub">It sees <b>'+ones+'</b> one'+(ones===1?'':'s')+' → the group is <b style="color:'+(par?'var(--fail)':'var(--pass)')+'">'+(par?'odd ✗':'even ✓')+'</b>'+
+        (par? ' — this check <b>fails</b>, so weight <b>'+w+'</b> joins the syndrome.' : ' — this check passes.')+'</p>');
+      if(reduceMotion){ setRowActive(w,false); }
+      else { await sleep(120); }
+    }
+
+    else if(s.kind==='assemble'){
+      [1,2,4,8].forEach(x=> setRowActive(x,false));
+      const bin=toBin(syndrome);
+      const failed=[8,4,2,1].filter(w=> (syndrome & w));
+      $('syndOut').innerHTML = 'syndrome = <b>'+bin+'</b><sub style="color:var(--muted-2)">2</sub> = '+
+        (failed.length? failed.join(' + ')+' = ' : '') + '<span class="big">'+syndrome+'</span>';
+      narrate('Step · syndrome',
+        '<p>Collect the failing checks: '+(failed.length? '<code>'+failed.join(', ')+'</code>':'<b>none</b>')+'.</p>'+
+        '<p class="sub">Their weights add to <b>'+syndrome+'</b> — and in a Hamming code that sum <b>is the error position</b>.</p>');
+    }
+
+    else if(s.kind==='result'){
+      await resolve();
+    }
+  }
+
+  function setWeight(w,on){
+    const map={8:'wt8',4:'wt4',2:'wt2',1:'wt1'};
+    const el=$(map[w]); el.classList.toggle('on',on);
+    el.querySelector('.v').textContent=on?'1':'0';
+  }
+
+  async function resolve(){
+    const s=syndrome;
+    if(s===0){
+      $('syndOut').innerHTML='syndrome = <b>0000</b> → <span class="ok">no error</span>';
+      narrate('Step · done ✓',
+        '<p>Every check passed. Syndrome = <b>0</b>, so <b style="color:var(--pass)">nothing needs fixing</b>.</p>'+
+        '<p class="sub">Data returned to the host: <code>'+extractData().join('')+'</code>.</p>');
+      finishDecode(true);
+      return;
+    }
+    if(s>N){
+      $('syndOut').innerHTML='syndrome = <b>'+toBin(s)+'</b> = <span class="big">'+s+'</span> → outside the codeword';
+      narrate('Step · limit ⚠',
+        '<p>The syndrome points to position <b>'+s+'</b>, which doesn\'t exist here.</p>'+
+        '<p class="sub">That\'s the tell-tale sign of a <b>multi-bit error</b> a single-error code can\'t place. Real drives use BCH / LDPC for exactly this — see below.</p>');
+      finishDecode(false);
+      return;
+    }
+
+    // point to the located cell
+    const cell=cellEls[s];
+    flagEls[s].classList.add('show');
+    cell.classList.add('located');
+    narrate('Step · locate',
+      '<p>Syndrome <b>'+s+'</b> → the flipped bit is at <b>position '+s+'</b>.</p>'+
+      '<p class="sub">No searching, no comparing — the checks pointed straight at it. Flipping it back…</p>');
+    await sleep(650);
+
+    // correct
+    bits[s]^=1; renderCodeword();
+    cell.classList.remove('err','located');
+    cell.classList.add('fixed');
+    await sleep(120);
+
+    // verify against clean encode (catches multi-error mis-correction)
+    const nowData=extractData();
+    const good = cleanBits && bits.every((b,i)=> i===0 || b===cleanBits[i]);
+    if(good){
+      narrate('Step · done ✓',
+        '<p>Flipped position <b>'+s+'</b> back. <b style="color:var(--pass)">Data recovered.</b></p>'+
+        '<p class="sub">Bits returned to the host: <code>'+nowData.join('')+'</code> — identical to what was written. The host never knew a bit rotted.</p>');
+      finishDecode(true);
+    } else {
+      narrate('Step · mis-correct ⚠',
+        '<p>It flipped position <b>'+s+'</b> — but the word still isn\'t right.</p>'+
+        '<p class="sub">More than one bit had flipped, so the single-error code was <b>fooled</b> into "fixing" the wrong place. This is precisely why dense flash needs BCH / LDPC (below).</p>');
+      finishDecode(false);
+    }
+  }
+
+  function finishDecode(clean){
+    phase='ready'; setPhaseTag(clean?'corrected · clean':'needs stronger code');
+    if(clean){ for(let p=1;p<=N;p++) flagEls[p].classList.remove('show'); }
+    // refresh the clean reference so further flips compare correctly when recovered
+    if(clean){ cleanBits=bits.slice(); }
+    for(let p=1;p<=N;p++) cellEls[p].classList.toggle('err', cleanBits && bits[p]!==cleanBits[p]);
+    $('btnInject').disabled=false; $('btnDecode').disabled=false; $('btnStep').disabled=true;
+    busy=false;
+  }
+
+  function doReset(){
+    if(busy) return;
+    bits=new Array(N+1).fill(0);
+    dataBits=[1,0,1,1,0,0,1,0];
+    cleanBits=null; originalData=null; syndrome=0; phase='setup';
+    build(); placeData(); renderCodeword(); resetSyndromeDisplay();
+    setPhaseTag('set data');
+    $('syndOut').textContent='Waiting to decode…';
+    $('btnEncode').disabled=false; $('btnRandom').disabled=false;
+    $('btnInject').disabled=true; $('btnDecode').disabled=true; $('btnStep').disabled=true;
+    narrate('Step · setup',
+      '<p>Toggle the eight <span style="color:var(--data)">data</span> cells to whatever byte you like, then press <b>Encode</b>.</p>'+
+      '<p class="sub">Positions <code>1, 2, 4, 8</code> are reserved for parity — everything else holds your data.</p>');
+  }
+
+  // small helper: transient hint text
+  let hintTimer=null;
+  function flash(el,msg){ el.textContent=msg; clearTimeout(hintTimer); hintTimer=setTimeout(()=>el.textContent='',2600); }
+
+  // ---- wire up ----
+  $('btnRandom').addEventListener('click',doRandomData);
+  $('btnEncode').addEventListener('click',doEncode);
+  $('btnInject').addEventListener('click',doInject);
+  $('btnDecode').addEventListener('click',()=>startDecode(true));
+  $('btnStep').addEventListener('click',()=>{
+    if(phase!=='decoding'){ startDecode(false); } else { runStep(); }
+  });
+  $('btnReset').addEventListener('click',doReset);
+
+  // init
+  build();
+  placeData();
+  renderCodeword();
+})();
+</script>
+</body>
+</html>

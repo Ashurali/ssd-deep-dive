@@ -1,0 +1,565 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why SSDs need an FTL — NAND flash, animated</title>
+<style>
+  :root{
+    --bg:#0E1017; --stage:#12141D; --panel:#1B1F2E; --panel2:#232838;
+    --line:#333B54; --line-soft:#242B40; --grid:#1C2233;
+    --ink:#EAECF4; --muted:#8B93A9; --faint:#5A627A;
+    --charge:#FFB020; --charge-fill:rgba(255,176,32,.15); --charge-glow:rgba(255,176,32,.45);
+    --invalid:#C65A44; --invalid-fill:rgba(198,90,68,.13);
+    --ok:#5CC79B; --deny:#E0574B;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:transparent;color:var(--ink);font-family:var(--sans)}
+  .wrap{max-width:1040px;margin:0 auto;padding:20px 18px 34px}
+
+  /* Header */
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--faint)}
+  .eyebrow b{color:var(--charge);font-weight:600}
+  h1.stagetitle{font-size:clamp(21px,3.6vw,30px);line-height:1.12;font-weight:750;letter-spacing:-.02em;margin:8px 0 0;min-height:1.2em}
+
+  /* Chapter tabs */
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 10px}
+  .tab{font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;color:var(--muted);
+       background:var(--panel);border:1px solid var(--line-soft);border-radius:999px;
+       padding:7px 13px;cursor:pointer;display:flex;align-items:center;gap:8px;
+       transition:color .25s,border-color .25s,background .25s}
+  .tab:hover{color:var(--ink);border-color:var(--line)}
+  .tab .num{color:var(--faint);transition:color .25s}
+  .tab.on{color:#12141D;background:var(--charge);border-color:var(--charge);font-weight:600}
+  .tab.on .num{color:rgba(18,20,29,.6)}
+
+  /* Stage */
+  .stage{background:radial-gradient(120% 120% at 50% -10%,#181C29 0%,var(--stage) 60%);
+         border:1px solid var(--line-soft);border-radius:16px;overflow:hidden;position:relative}
+  svg.board{display:block;width:100%;height:auto}
+
+  .scene{opacity:0;transition:opacity .5s ease;pointer-events:none}
+  .scene.active{opacity:1}
+
+  /* Page cells */
+  .page{fill:rgba(255,255,255,.015);stroke:var(--line);stroke-width:1.5;
+        transition:fill .5s,stroke .5s,opacity .5s,stroke-dasharray .3s}
+  .page.charged{fill:var(--charge-fill);stroke:var(--charge)}
+  .page.valid{fill:var(--charge-fill);stroke:var(--charge)}
+  .page.invalid{fill:var(--invalid-fill);stroke:var(--invalid);stroke-dasharray:5 3.5}
+  .page.moved{opacity:.28}
+  .page-label{font-family:var(--mono);font-size:14px;font-weight:600;fill:var(--faint);
+              transition:fill .5s,opacity .4s;pointer-events:none;user-select:none}
+  .page-label.valid{fill:var(--charge)}
+  .page-label.invalid{fill:var(--invalid)}
+
+  /* electrons */
+  .edot{fill:var(--charge);transition:opacity .55s ease,transform .55s ease;transform-box:fill-box;transform-origin:center}
+  .page-g.drained .edot{opacity:0;transform:scale(0) translateY(14px)}
+
+  /* generic svg text */
+  .lbl{font-family:var(--mono);fill:var(--muted);font-size:12px;letter-spacing:.06em}
+  .lbl.dim{fill:var(--faint)}
+  .lbl.charge{fill:var(--charge)}
+  .tag{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em}
+  .fade{opacity:0;transition:opacity .45s ease}
+  .fade.show{opacity:1}
+  #s1blk{transition:transform .65s cubic-bezier(.4,0,.2,1)}
+  .struct{stroke:var(--line);fill:none;transition:opacity .45s ease,stroke .4s}
+
+  /* scene 2 substrate bits */
+  .substrate{fill:#20283C;stroke:var(--line);transition:fill .4s,stroke .4s,filter .4s}
+  .substrate.hot{fill:#3A2E12;stroke:var(--charge)}
+  .streak{opacity:0;stroke:var(--charge);stroke-width:2;stroke-dasharray:5 6;stroke-linecap:round}
+  .streak.flowing{opacity:.85}
+  @keyframes flowdown{to{stroke-dashoffset:-44}}
+  .flowing{animation:flowdown .55s linear infinite}
+  .volt{fill:var(--faint);transition:fill .4s}
+  .volt.on{fill:var(--charge)}
+
+  /* scene 3 rule chips */
+  .rulechip rect{fill:var(--panel);stroke:var(--line-soft);transition:stroke .35s,fill .35s}
+  .rulechip.ok.hot rect{stroke:var(--ok);fill:rgba(92,199,155,.10)}
+  .rulechip.deny.hot rect{stroke:var(--deny);fill:rgba(224,87,75,.10)}
+  .rulechip text{font-family:var(--mono);font-size:13px;fill:var(--muted);transition:fill .35s}
+  .rulechip.ok.hot text{fill:var(--ok)} .rulechip.deny.hot text{fill:var(--deny)}
+  .denyX{stroke:var(--deny);stroke-width:4;stroke-linecap:round;opacity:0;transition:opacity .3s}
+  .denyX.show{opacity:1}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  .shaking{animation:shake .32s ease 1}
+  .bigdigit{font-family:var(--mono);font-weight:700;font-size:30px;transition:fill .45s}
+  .bigdigit.one{fill:var(--faint)} .bigdigit.zero{fill:var(--charge)}
+
+  /* scene 4 meter */
+  .metertrack{fill:#161B29;stroke:var(--line-soft)}
+  .meterfill{transition:width .7s cubic-bezier(.4,0,.2,1)}
+  .meterfill.host{fill:var(--muted)} .meterfill.flash{fill:var(--charge)}
+  .metercap{font-family:var(--mono);font-size:12.5px;fill:var(--muted);letter-spacing:.04em}
+  .wanum{font-family:var(--mono);font-weight:750;fill:var(--charge);font-size:52px}
+  .arrow{stroke:var(--charge);stroke-width:2;fill:none;opacity:0;transition:opacity .4s;marker-end:url(#ah)}
+  .arrow.show{opacity:.9}
+
+  /* Caption */
+  .caption{display:flex;gap:12px;align-items:flex-start;margin:16px 2px 0;min-height:3.4em}
+  .caption .bar{flex:0 0 3px;align-self:stretch;background:var(--charge);border-radius:2px;margin-top:2px}
+  .caption p{margin:0;font-size:15.5px;line-height:1.55;color:#C9CEDD;max-width:74ch}
+  .caption p b{color:var(--ink);font-weight:600}
+
+  /* Controls */
+  .controls{display:flex;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap}
+  .btn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+       width:44px;height:44px;border-radius:11px;display:grid;place-items:center;cursor:pointer;
+       transition:background .2s,border-color .2s,transform .06s}
+  .btn:hover{background:var(--panel2);border-color:var(--faint)}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .btn.play{width:52px;background:var(--charge);border-color:var(--charge)}
+  .btn.play:hover{background:#ffbe42}
+  .btn.play svg{fill:#12141D;stroke:#12141D}
+  .btn svg{width:18px;height:18px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .steps{display:flex;gap:7px;margin-left:6px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--line);transition:background .25s,transform .25s;cursor:pointer}
+  .dot.on{background:var(--charge);transform:scale(1.18)}
+  .counter{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em}
+
+  .foot{margin-top:20px;font-family:var(--mono);font-size:11.5px;color:var(--faint);line-height:1.6;
+        border-top:1px solid var(--line-soft);padding-top:12px}
+  .foot b{color:var(--muted);font-weight:600}
+
+  :focus-visible{outline:2px solid var(--charge);outline-offset:3px}
+  .reduce .scene,.reduce .page,.reduce .edot,.reduce .meterfill,.reduce .fade,.reduce .streak{transition-duration:.001s!important}
+  .reduce .flowing{animation:none}
+  @media (max-width:560px){ .counter{display:none} h1.stagetitle{min-height:2.3em} }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">NAND FLASH · <b>THE GRANULARITY MISMATCH</b></div>
+  <h1 class="stagetitle" id="title">The smallest write</h1>
+
+  <div class="tabs" id="tabs">
+    <button class="tab" data-ch="1"><span class="num">01</span> Pages &amp; blocks</button>
+    <button class="tab" data-ch="2"><span class="num">02</span> Why erase is block‑wide</button>
+    <button class="tab" data-ch="3"><span class="num">03</span> The no‑overwrite rule</button>
+    <button class="tab" data-ch="4"><span class="num">04</span> Garbage collection &amp; wear</button>
+  </div>
+
+  <div class="stage">
+    <svg class="board" viewBox="0 0 960 580" role="img" aria-label="Animated diagram of NAND flash operation">
+      <defs>
+        <pattern id="lattice" width="26" height="26" patternUnits="userSpaceOnUse">
+          <path d="M26 0H0V26" fill="none" stroke="var(--grid)" stroke-width="1"/>
+        </pattern>
+        <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0L10 5L0 10z" fill="var(--charge)"/>
+        </marker>
+      </defs>
+      <rect x="0" y="0" width="960" height="580" fill="url(#lattice)" opacity="0.55"/>
+
+      <g id="s1" class="scene"></g>
+      <g id="s2" class="scene"></g>
+      <g id="s3" class="scene"></g>
+      <g id="s4" class="scene"></g>
+    </svg>
+  </div>
+
+  <div class="caption"><div class="bar"></div><p id="cap"></p></div>
+
+  <div class="controls">
+    <button class="btn" id="prev" title="Previous (←)" aria-label="Previous step">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="btn play" id="play" title="Play / pause (space)" aria-label="Play or pause">
+      <svg id="playicon" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></button>
+    <button class="btn" id="next" title="Next (→)" aria-label="Next step">
+      <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="btn" id="restart" title="Restart" aria-label="Restart">
+      <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9 9 0 00-6.7 3M3 3v4.5H7.5"/></svg></button>
+    <div class="steps" id="steps"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+
+  <div class="foot">
+    <b>Simplified model.</b> Real blocks hold 256+ pages across many planes and dies; the write‑amplification figure shown is a toy walkthrough — actual WA depends on the workload and how much spare capacity (over‑provisioning) the drive keeps.
+  </div>
+</div>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+
+/* ---------- page cell helper ---------- */
+function makePage(parent,x,y,s,r){
+  const g=el("g",{class:"page-g",transform:`translate(${x},${y})`},parent);
+  const rect=el("rect",{class:"page",x:0,y:0,width:s,height:s,rx:r},g);
+  const label=el("text",{class:"page-label",x:s/2,y:s/2+1,"text-anchor":"middle","dominant-baseline":"central"},g);
+  return {g,rect,label,x,y,s};
+}
+function setPage(p,state,text){
+  p.rect.setAttribute("class","page "+(state||""));
+  p.label.textContent=text||"";
+  p.label.setAttribute("class","page-label "+((state==="valid"||state==="invalid")?state:""));
+}
+
+/* ================= SCENE 1 : hierarchy ================= */
+const S1={};
+(function(){
+  const g=document.getElementById("s1");
+  // detailed block, built at native scale (top-left 0,0 inside its own g)
+  const bg=el("g",{id:"s1blk"},g); S1.blk=bg;
+  const cell=60,gap=10,pad=16,cols=4;
+  S1.pages=[];
+  for(let i=0;i<16;i++){const c=i%4,r=Math.floor(i/4);
+    S1.pages.push(makePage(bg,pad+c*(cell+gap),pad+r*(cell+gap),cell,9));}
+  const W=pad*2+cols*cell+(cols-1)*gap;
+  S1.blkBorder=el("rect",{x:2,y:2,width:W-4,height:W-4,rx:13,class:"struct",transform:"",fill:"none",stroke:"var(--charge)","stroke-width":2},bg);
+  S1.blkBorder.classList.add("fade");
+  S1.native={tx:330,ty:150,w:W};
+  bg.setAttribute("transform",`translate(${S1.native.tx},${S1.native.ty}) scale(1)`);
+
+  // single page highlight ring (step0) — around page index 5
+  const hp=S1.pages[5];
+  S1.pageRing=el("rect",{x:hp.x-4,y:hp.y-4,width:cell+8,height:cell+8,rx:11,fill:"none",stroke:"var(--charge)","stroke-width":2,class:"fade"},bg);
+
+  // BLOCK label (step1)
+  S1.blkLabel=el("text",{x:W/2,y:W+26,"text-anchor":"middle",class:"tag charge fade"},bg);
+  S1.blkLabel.textContent="1 BLOCK";
+
+  // sibling blocks + plane (step2) — drawn in scene space, hidden until step2
+  const sib=el("g",{class:"fade",id:"s1sib"},g); S1.sib=sib;
+  const slotW=150,slotH=132,ox=160,oy=146;
+  S1.slot0={x:ox,y:oy};
+  for(let r=0;r<3;r++)for(let c=0;c<4;c++){
+    if(r===0&&c===0)continue; // slot0 is the main block
+    const bx=ox+c*slotW, by=oy+r*slotH;
+    el("rect",{x:bx,y:by,width:122,height:112,rx:11,fill:"rgba(255,255,255,.02)",stroke:"var(--line-soft)","stroke-width":1.5},sib);
+    for(let k=1;k<4;k++){ // faint inner grid
+      el("line",{x1:bx+k*30.5,y1:by+8,x2:bx+k*30.5,y2:by+104,stroke:"var(--line-soft)","stroke-width":1},sib);
+      el("line",{x1:bx+8,y1:by+8+k*24,x2:bx+114,y2:by+8+k*24,stroke:"var(--line-soft)","stroke-width":1},sib);
+    }
+  }
+  // plane bracket + label
+  const plane=el("g",{class:"fade",id:"s1plane"},g); S1.plane=plane;
+  el("rect",{x:ox-16,y:oy-30,width:4*slotW+8,height:3*slotH+16,rx:14,fill:"none",stroke:"var(--line)","stroke-width":1.5,"stroke-dasharray":"2 5"},plane);
+  const pl=el("text",{x:ox-16,y:oy-40,class:"tag dim"},plane); pl.textContent="PLANE · DIE · CHIP"; pl.setAttribute("fill","var(--faint)");
+  // "watching" outline that sits over the scaled main block in step2
+  S1.watch=el("rect",{x:ox-5,y:oy-5,width:122,height:112,rx:12,fill:"none",stroke:"var(--charge)","stroke-width":2,class:"fade"},g);
+
+  // static caption chip under detailed block for step0/1 handled via labels above
+})();
+function renderS1(local){
+  const big=`translate(${S1.native.tx},${S1.native.ty}) scale(1)`;
+  const scale=112/S1.native.w; // fit block into a slot
+  const small=`translate(${S1.slot0.x},${S1.slot0.y}) scale(${scale.toFixed(4)})`;
+  // default page look
+  S1.pages.forEach(p=>setPage(p,""));
+  const on=(node,b)=>node.classList.toggle("show",b);
+  if(local===0){
+    S1.blk.setAttribute("transform",big);
+    on(S1.pageRing,true); on(S1.blkBorder,false); on(S1.blkLabel,false);
+    on(S1.sib,false); on(S1.plane,false); on(S1.watch,false);
+  }else if(local===1){
+    S1.blk.setAttribute("transform",big);
+    on(S1.pageRing,false); on(S1.blkBorder,true); on(S1.blkLabel,true);
+    on(S1.sib,false); on(S1.plane,false); on(S1.watch,false);
+  }else{
+    S1.blk.setAttribute("transform",small);
+    on(S1.pageRing,false); on(S1.blkBorder,false); on(S1.blkLabel,false);
+    on(S1.sib,true); on(S1.plane,true); on(S1.watch,true);
+  }
+}
+
+/* ================= SCENE 2 : shared substrate erase ================= */
+const S2={};
+(function(){
+  const g=document.getElementById("s2");
+  const cell=58,gap=9,pad=14,cols=4, bx=336,by=64;
+  const blk=el("g",{transform:`translate(${bx},${by})`},g);
+  S2.pages=[];
+  for(let i=0;i<16;i++){const c=i%4,r=Math.floor(i/4);
+    const p=makePage(blk,pad+c*(cell+gap),pad+r*(cell+gap),cell,9);
+    // 3 electrons per page
+    const cy=cell/2, s=cell;
+    for(let k=0;k<3;k++){el("circle",{class:"edot",cx:s/2+(k-1)*s*0.19,cy,r:3.6},p.g);}
+    S2.pages.push(p);
+  }
+  const W=pad*2+cols*cell+(cols-1)*gap;
+  el("text",{x:bx+W/2,y:by-14,"text-anchor":"middle",class:"tag dim"},g).textContent="ONE BLOCK";
+  // column centers (absolute)
+  S2.colX=[]; for(let c=0;c<4;c++)S2.colX.push(bx+pad+c*(cell+gap)+cell/2);
+  const blkBottom=by+W, subTop=by+W+56;
+  // connectors + streaks
+  const conn=el("g",{},g);
+  S2.streaks=[];
+  S2.colX.forEach(cx=>{
+    el("line",{x1:cx,y1:blkBottom,x2:cx,y2:subTop,class:"struct",stroke:"var(--line-soft)","stroke-width":1.5},conn);
+    const st=el("line",{x1:cx,y1:blkBottom+2,x2:cx,y2:subTop-2,class:"streak"},conn);
+    S2.streaks.push(st);
+  });
+  // substrate
+  S2.sub=el("rect",{x:bx,y:subTop,width:W,height:26,rx:8,class:"substrate"},g);
+  el("text",{x:bx+W/2,y:subTop+17,"text-anchor":"middle",class:"tag"},g).textContent="SHARED SUBSTRATE";
+  // voltage source to the left
+  S2.volt=el("g",{class:"volt"},g); S2.voltEl=S2.volt;
+  const vx=bx-84, vy=subTop+13;
+  el("circle",{cx:vx,cy:vy,r:16,fill:"none",stroke:"currentColor","stroke-width":2},S2.volt);
+  el("text",{x:vx,y:vy+1,"text-anchor":"middle","dominant-baseline":"central","font-family":"var(--mono)","font-size":"13","font-weight":"700",fill:"currentColor"},S2.volt).textContent="+V";
+  S2.voltArrow=el("path",{d:`M${vx+18} ${vy}H${bx-4}`,stroke:"currentColor","stroke-width":2,fill:"none","marker-end":"url(#ah)"},S2.volt);
+  S2.voltLabel=el("text",{x:vx,y:vy-26,"text-anchor":"middle",class:"tag"},S2.volt); S2.voltLabel.textContent="HIGH VOLTAGE";
+})();
+function renderS2(local){
+  const charged = local<=1;
+  S2.pages.forEach(p=>{
+    p.rect.setAttribute("class","page "+(charged?"charged":""));
+    p.g.classList.toggle("drained",!charged);
+    setPage(p,charged?"charged":"","");
+  });
+  const voltOn = local>=1;
+  S2.voltEl.classList.toggle("on",voltOn);
+  S2.sub.classList.toggle("hot",voltOn);
+  S2.streaks.forEach(s=>{ const flow=(local===2); s.classList.toggle("flowing",flow); s.classList.toggle("streak",true); s.style.opacity= flow?"":"0"; });
+}
+
+/* ================= SCENE 3 : no overwrite ================= */
+const S3={};
+(function(){
+  const g=document.getElementById("s3");
+  const n=8,cell=66,gap=13, W=n*cell+(n-1)*gap, x0=(960-W)/2, y0=176;
+  el("text",{x:960/2,y:y0-26,"text-anchor":"middle",class:"tag dim"},g).textContent="ONE WORDLINE · 8 CELLS";
+  S3.cells=[];
+  for(let i=0;i<n;i++){
+    const cx=x0+i*(cell+gap);
+    const cg=el("g",{transform:`translate(${cx},${y0})`},g);
+    const rect=el("rect",{x:0,y:0,width:cell,height:cell,rx:10,class:"page"},cg);
+    const dig=el("text",{x:cell/2,y:cell/2+2,"text-anchor":"middle","dominant-baseline":"central",class:"bigdigit one"},cg);
+    dig.textContent="1";
+    // deny X overlay
+    const dx=el("g",{class:"denyX"},cg);
+    el("line",{x1:14,y1:14,x2:cell-14,y2:cell-14,stroke:"var(--deny)","stroke-width":4,"stroke-linecap":"round"},dx);
+    el("line",{x1:cell-14,y1:14,x2:14,y2:cell-14,stroke:"var(--deny)","stroke-width":4,"stroke-linecap":"round"},dx);
+    S3.cells.push({g:cg,rect,dig,dx});
+  }
+  // rule chips below
+  const cy=y0+cell+52;
+  function chip(cls,x,txt){
+    const gg=el("g",{class:"rulechip "+cls,transform:`translate(${x},${cy})`},g);
+    el("rect",{x:0,y:0,width:190,height:38,rx:10},gg);
+    el("text",{x:16,y:24},gg).textContent=txt;
+    return gg;
+  }
+  S3.okChip=chip("ok",960/2-206,"1 → 0   write · allowed");
+  S3.denyChip=chip("deny",960/2+16,"0 → 1   needs erase · blocked");
+})();
+function renderS3(local){
+  const setCell=(i,val)=>{
+    const c=S3.cells[i];
+    c.dig.textContent = val==="0"?"0":"1";
+    c.dig.setAttribute("class","bigdigit "+(val==="0"?"zero":"one"));
+    c.rect.setAttribute("class","page "+(val==="0"?"charged":""));
+    c.dx.classList.remove("show"); c.g.classList.remove("shaking");
+  };
+  for(let i=0;i<8;i++) setCell(i,"1");
+  S3.okChip.classList.remove("hot"); S3.denyChip.classList.remove("hot");
+  if(local>=1){ setCell(2,"0"); setCell(5,"0"); S3.okChip.classList.add("hot"); }
+  if(local===2){
+    // attempt 0 -> 1 on cell 2 : blocked
+    S3.denyChip.classList.add("hot");
+    const c=S3.cells[2];
+    c.dx.classList.add("show");
+    // trigger shake
+    c.g.classList.remove("shaking"); void c.g.getBBox(); c.g.classList.add("shaking");
+  }
+  if(local===3){ S3.okChip.classList.add("hot"); S3.denyChip.classList.add("hot"); }
+}
+
+/* ================= SCENE 4 : GC + write amplification ================= */
+const S4={};
+(function(){
+  const g=document.getElementById("s4");
+  const cell=50,gap=8,pad=13,cols=4;
+  const W=pad*2+cols*cell+(cols-1)*gap; // 250
+  const xX=150,xZ=xX+W+96,yB=58;
+  el("text",{x:xX+W/2,y:yB-14,"text-anchor":"middle",class:"tag charge"},g).textContent="BLOCK X";
+  S4.zLabel=el("text",{x:xZ+W/2,y:yB-14,"text-anchor":"middle",class:"tag dim"},g); S4.zLabel.textContent="BLOCK Z · FREE";
+  const blkX=el("g",{transform:`translate(${xX},${yB})`},g);
+  const blkZ=el("g",{transform:`translate(${xZ},${yB})`},g);
+  el("rect",{x:2,y:2,width:W-4,height:W-4,rx:12,fill:"none",stroke:"var(--line-soft)","stroke-width":1.5},blkX);
+  el("rect",{x:2,y:2,width:W-4,height:W-4,rx:12,fill:"none",stroke:"var(--line-soft)","stroke-width":1.5},blkZ);
+  S4.X=[];S4.Z=[];
+  const pos=i=>({c:i%4,r:Math.floor(i/4)});
+  for(let i=0;i<16;i++){const {c,r}=pos(i);
+    S4.X.push(makePage(blkX,pad+c*(cell+gap),pad+r*(cell+gap),cell,8));
+    S4.Z.push(makePage(blkZ,pad+c*(cell+gap),pad+r*(cell+gap),cell,8));}
+  // absolute centre of a page (for arrows)
+  S4.absX=i=>{const {c,r}=pos(i);return {x:xX+pad+c*(cell+gap)+cell/2,y:yB+pad+r*(cell+gap)+cell/2};};
+  S4.absZ=i=>{const {c,r}=pos(i);return {x:xZ+pad+c*(cell+gap)+cell/2,y:yB+pad+r*(cell+gap)+cell/2};};
+  // GC arrows (3) from X valid survivors -> Z
+  S4.arrows=[];
+  for(let k=0;k<3;k++){
+    const a=el("path",{class:"arrow"},g); S4.arrows.push(a);
+  }
+
+  /* ---- Write amplification meter ---- */
+  const mx=150,my=344,mw=600,mh=204;
+  el("rect",{x:mx,y:my,width:mw,height:mh,rx:14,fill:"rgba(255,255,255,.02)",stroke:"var(--line-soft)","stroke-width":1.5},g);
+  el("text",{x:mx+26,y:my+34,class:"tag dim"},g).textContent="WRITE AMPLIFICATION";
+  // big WA number left
+  S4.wa=el("text",{x:mx+118,y:my+128,"text-anchor":"middle",class:"wanum"},g); S4.wa.textContent="—";
+  el("text",{x:mx+118,y:my+164,"text-anchor":"middle",class:"metercap"},g).textContent="flash writes ÷ host writes";
+  // bars right
+  const tx=mx+256, tw=316, tH=26;
+  const barY1=my+70, barY2=my+130;
+  el("text",{x:tx,y:barY1-12,class:"metercap"},g).textContent="Host asked to write";
+  el("text",{x:tx,y:barY2-12,class:"metercap"},g).textContent="Flash actually wrote";
+  el("rect",{x:tx,y:barY1,width:tw,height:tH,rx:7,class:"metertrack"},g);
+  el("rect",{x:tx,y:barY2,width:tw,height:tH,rx:7,class:"metertrack"},g);
+  S4.hostBar=el("rect",{x:tx,y:barY1,width:0,height:tH,rx:7,class:"meterfill host"},g);
+  S4.flashBar=el("rect",{x:tx,y:barY2,width:0,height:tH,rx:7,class:"meterfill flash"},g);
+  S4.hostCnt=el("text",{x:tx+tw,y:barY1+tH+18,"text-anchor":"end",class:"metercap"},g); S4.hostCnt.textContent="0 pages";
+  S4.flashCnt=el("text",{x:tx+tw,y:barY2+tH+18,"text-anchor":"end",class:"metercap"},g); S4.flashCnt.textContent="0 pages";
+  S4.meter={tx,tw,max:6};
+})();
+
+let waShown=0, waTween=null;
+function tweenWA(target){
+  if(document.documentElement.classList.contains("reduce")){ waShown=target; S4.wa.textContent=target?target.toFixed(1)+"×":"—"; return; }
+  if(target===null||target===0){ S4.wa.textContent="—"; waShown=0; if(waTween)cancelAnimationFrame(waTween); return; }
+  const start=waShown, t0=performance.now(), dur=600;
+  if(waTween)cancelAnimationFrame(waTween);
+  (function step(t){
+    const k=Math.min(1,(t-t0)/dur), v=start+(target-start)*(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2);
+    S4.wa.textContent=v.toFixed(1)+"×"; waShown=v;
+    if(k<1)waTween=requestAnimationFrame(step);
+  })(t0);
+}
+function setMeter(host,flash){
+  const {tx,tw,max}=S4.meter;
+  S4.hostBar.setAttribute("width", tw*host/max);
+  S4.flashBar.setAttribute("width", tw*flash/max);
+  S4.hostCnt.textContent=host+" page"+(host===1?"":"s");
+  S4.flashCnt.textContent=flash+" page"+(flash===1?"":"s");
+  tweenWA(host>0? flash/host : null);
+}
+function renderS4(local){
+  // reset arrows
+  S4.arrows.forEach(a=>a.classList.remove("show"));
+  const setX=(i,st,t)=>setPage(S4.X[i],st,t);
+  const setZ=(i,st,t)=>setPage(S4.Z[i],st,t);
+  for(let i=0;i<16;i++){setX(i,""); setZ(i,"");}
+  S4.zLabel.textContent="BLOCK Z · FREE";
+
+  // survivor cells in X: 4,5,6 hold A',B',C' ; old originals 0,1,2
+  const layout={
+    0:()=>{ setX(0,"valid","A"); setX(1,"valid","B"); setX(2,"valid","C"); },
+    1:()=>{ setX(0,"invalid","A"); setX(1,"valid","B"); setX(2,"valid","C"); setX(4,"valid","A′"); },
+    2:()=>{ setX(0,"invalid","A"); setX(1,"invalid","B"); setX(2,"invalid","C");
+            setX(4,"valid","A′"); setX(5,"valid","B′"); setX(6,"valid","C′"); },
+    3:()=>{ layout[2](); }, // free running low — same picture
+    4:()=>{ setX(0,"invalid","A"); setX(1,"invalid","B"); setX(2,"invalid","C");
+            setX(4,"moved","A′"); setX(5,"moved","B′"); setX(6,"moved","C′");
+            S4.X[4].label.textContent="A′";S4.X[5].label.textContent="B′";S4.X[6].label.textContent="C′";
+            setZ(0,"valid","A′"); setZ(1,"valid","B′"); setZ(2,"valid","C′");
+            // arrows from X survivors to Z targets
+            const src=[4,5,6], dst=[0,1,2];
+            S4.arrows.forEach((a,k)=>{const s=S4.absX(src[k]),d=S4.absZ(dst[k]);
+              a.setAttribute("d",`M${s.x+18} ${s.y} C ${(s.x+d.x)/2} ${s.y-14}, ${(s.x+d.x)/2} ${d.y-14}, ${d.x-20} ${d.y}`);
+              a.classList.add("show");});
+            S4.zLabel.textContent="BLOCK Z · IN USE"; },
+    5:()=>{ // erase X -> all free ; Z keeps data
+            for(let i=0;i<16;i++)setX(i,"");
+            setZ(0,"valid","A′"); setZ(1,"valid","B′"); setZ(2,"valid","C′");
+            S4.zLabel.textContent="BLOCK Z · IN USE"; },
+    6:()=>{ layout[5](); }
+  };
+  layout[local]();
+
+  // move-labels need class fix (moved cells keep their label visible)
+  [4,5,6].forEach(i=>{ if(local===4){ S4.X[i].label.setAttribute("class","page-label valid"); } });
+
+  const counts={0:[0,0],1:[1,1],2:[3,3],3:[3,3],4:[3,6],5:[3,6],6:[3,6]};
+  const [h,f]=counts[local]; setMeter(h,f);
+}
+
+/* ================= BEATS + DRIVER ================= */
+const beats=[
+ {ch:1,title:"The smallest write",cap:"A <b>page</b> is the smallest unit NAND can read or write — usually 4 to 16&nbsp;KB. Everything the drive stores lives in pages like this one."},
+ {ch:1,title:"The smallest erase",cap:"Pages are grouped into a <b>block</b>, the smallest unit NAND can <b>erase</b>. We're drawing 16 pages; a real block packs 256 or more."},
+ {ch:1,title:"Up the hierarchy",cap:"Blocks tile into <b>planes</b> and <b>dies</b> to build the whole chip. Read and write act on a page; erase acts on a block. That size mismatch drives everything that follows."},
+
+ {ch:2,title:"One shared substrate",cap:"Every cell in a block sits on a <b>single shared substrate</b> — the silicon floor running beneath all of its pages."},
+ {ch:2,title:"High voltage, applied once",cap:"To erase, a high voltage is applied to that shared substrate. There's no way to aim it at just one page."},
+ {ch:2,title:"Electrons drain out — everywhere",cap:"The voltage pulls electrons out of <b>every</b> floating gate at once. Each emptied cell now reads a logical <b>1</b>."},
+ {ch:2,title:"All‑or‑nothing",cap:"You can't spare a single page. Because they share the substrate, the <b>whole block erases together</b> — that's why erase is block‑level."},
+
+ {ch:3,title:"Erased means 1",cap:"Straight after an erase, every cell reads <b>1</b> — empty and ready to be programmed."},
+ {ch:3,title:"Writing flips 1 → 0",cap:"Programming injects charge to turn a <b>1 into a 0</b>. That direction is allowed."},
+ {ch:3,title:"But 0 → 1 is blocked",cap:"Nothing can flip a <b>0 back to a 1</b> by writing. The only way back to 1 is an erase — and erase only works block‑wide."},
+ {ch:3,title:"So: no updates in place",cap:"You can't overwrite a page where it sits. New data has to be written to a <b>fresh page</b> somewhere else — which sets up garbage collection."},
+
+ {ch:4,title:"Live data in Block X",cap:"Block X holds three valid pages — <b>A, B, C</b> — with free pages to spare. Block Z sits empty, in reserve."},
+ {ch:4,title:"Update A",cap:"Updating A in place is impossible, so the FTL writes <b>A′ to a fresh page</b> and marks the old A <b>invalid</b> — garbage."},
+ {ch:4,title:"Update B and C",cap:"Same story for B and C. Live data keeps hopping to fresh pages while stale copies pile up as garbage."},
+ {ch:4,title:"Free pages run low",cap:"Block X is now mostly garbage with little free space left. To reclaim it, the drive runs <b>garbage collection</b>."},
+ {ch:4,title:"GC: copy the survivors",cap:"GC copies the still‑valid pages <b>A′, B′, C′</b> into fresh Block Z. Nobody asked for these writes — the drive does them on its own."},
+ {ch:4,title:"Then erase the whole block",cap:"With its valid data safely moved, Block X is <b>erased in one shot</b> and returns to the free pool."},
+ {ch:4,title:"That extra work is Write Amplification",cap:"You asked to write <b>3 pages</b>; the flash wrote <b>6</b>. That ratio is <b>Write Amplification</b> — here 2.0× — and every extra write wears the drive down."},
+];
+const chFn={1:renderS1,2:renderS2,3:renderS3,4:renderS4};
+const chLocal={}; // map global index -> local index within chapter
+(function(){const seen={};beats.forEach((b,i)=>{seen[b.ch]=(seen[b.ch]||0);b._local=seen[b.ch];seen[b.ch]++;});
+  Object.keys(seen).forEach(c=>chLocal[c]=seen[c]);})();
+
+const scenes={1:document.getElementById("s1"),2:document.getElementById("s2"),3:document.getElementById("s3"),4:document.getElementById("s4")};
+const $title=document.getElementById("title"),$cap=document.getElementById("cap"),
+      $tabs=[...document.querySelectorAll(".tab")],$steps=document.getElementById("steps"),
+      $counter=document.getElementById("counter"),$prev=document.getElementById("prev"),
+      $next=document.getElementById("next"),$play=document.getElementById("play"),
+      $playicon=document.getElementById("playicon"),$restart=document.getElementById("restart");
+
+let idx=-1,playing=false,timer=null;
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(reduce)document.documentElement.classList.add("reduce");
+
+function showScene(ch){for(const k in scenes)scenes[k].classList.toggle("active",+k===ch);}
+function buildSteps(ch){
+  $steps.innerHTML="";
+  const count=chLocal[ch];
+  for(let i=0;i<count;i++){const d=document.createElement("div");d.className="dot";
+    d.addEventListener("click",()=>{const g=beats.findIndex(b=>b.ch===ch&&b._local===i);go(g);});
+    $steps.appendChild(d);}
+}
+function render(i){
+  const prev=idx;idx=i;const b=beats[i];
+  const chChanged=!(prev>=0&&beats[prev].ch===b.ch);
+  showScene(b.ch);
+  $title.textContent=b.title;$cap.innerHTML=b.cap;
+  $tabs.forEach(t=>{const on=+t.dataset.ch===b.ch;t.classList.toggle("on",on);});
+  if(chChanged)buildSteps(b.ch);
+  [...$steps.children].forEach((d,k)=>d.classList.toggle("on",k===b._local));
+  chFn[b.ch](b._local);
+  $prev.disabled=(i===0);$next.disabled=(i===beats.length-1);
+  $counter.textContent=`STEP ${String(i+1).padStart(2,"0")} / ${beats.length}`;
+}
+function setPlayIcon(){
+  $playicon.innerHTML = playing
+    ? '<path d="M7 5h3v14H7z"/><path d="M14 5h3v14h-3z"/>'
+    : '<path d="M6 4l14 8-14 8z"/>';
+}
+function schedule(){clearTimeout(timer);if(!playing)return;
+  timer=setTimeout(()=>{ if(idx>=beats.length-1){playing=false;setPlayIcon();return;} render(idx+1);schedule(); },3600);}
+function play(){ if(idx>=beats.length-1)render(0); playing=true;setPlayIcon();schedule(); }
+function pause(){playing=false;setPlayIcon();clearTimeout(timer);}
+function togglePlay(){ playing?pause():play(); }
+function go(i){ render(i); if(playing)schedule(); }
+
+$prev.addEventListener("click",()=>{if(idx>0)go(idx-1);});
+$next.addEventListener("click",()=>{if(idx<beats.length-1)go(idx+1);});
+$play.addEventListener("click",togglePlay);
+$restart.addEventListener("click",()=>{pause();render(0);});
+$tabs.forEach(t=>t.addEventListener("click",()=>{const ch=+t.dataset.ch;const g=beats.findIndex(b=>b.ch===ch);go(g);}));
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight"){e.preventDefault();if(idx<beats.length-1)go(idx+1);}
+  else if(e.key==="ArrowLeft"){e.preventDefault();if(idx>0)go(idx-1);}
+  else if(e.key===" "){e.preventDefault();togglePlay();}
+});
+
+render(0);
+if(!reduce)setTimeout(play,650);
+</script>
