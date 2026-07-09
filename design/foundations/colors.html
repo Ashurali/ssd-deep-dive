@@ -1,0 +1,44 @@
+<!-- @dsCard group="Foundations" name="Color system" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SSD Deep Dive — color system</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font:14px/1.5 "IBM Plex Sans",sans-serif;display:grid;grid-template-columns:1fr 1fr}
+section{padding:28px}
+.dark{background:#0b1020;color:#e8eeff}
+.light{background:#ffffff;color:#1a2030}
+h2{font-family:"Space Grotesk";font-size:16px;margin:0 0 14px;opacity:.7}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.chip{width:120px;border-radius:10px;overflow:hidden;border:1px solid rgba(128,140,180,.25)}
+.chip .c{height:56px}
+.chip .l{padding:7px 9px;font-family:"IBM Plex Mono";font-size:10.5px;line-height:1.5}
+</style>
+</head>
+<body>
+<section class="dark">
+  <h2>Dark (slate) — default</h2>
+  <div class="sw">
+    <div class="chip"><div class="c" style="background:#0b1020"></div><div class="l">bg<br>#0b1020</div></div>
+    <div class="chip"><div class="c" style="background:#111832"></div><div class="l">surface<br>#111832</div></div>
+    <div class="chip"><div class="c" style="background:#26304d"></div><div class="l">line<br>#26304d</div></div>
+    <div class="chip"><div class="c" style="background:#4dd0c4"></div><div class="l">cyan · links/data<br>#4dd0c4</div></div>
+    <div class="chip"><div class="c" style="background:#f2b13c"></div><div class="l">amber · emphasis<br>#f2b13c</div></div>
+    <div class="chip"><div class="c" style="background:#a78bfa"></div><div class="l">violet · tags<br>#a78bfa</div></div>
+    <div class="chip"><div class="c" style="background:#ef6a6a"></div><div class="l">red · errors<br>#ef6a6a</div></div>
+  </div>
+</section>
+<section class="light">
+  <h2>Light — follows system</h2>
+  <div class="sw">
+    <div class="chip"><div class="c" style="background:#ffffff;border-bottom:1px solid #eee"></div><div class="l">bg<br>#ffffff</div></div>
+    <div class="chip"><div class="c" style="background:#0a0e1c"></div><div class="l">header (brand)<br>#0a0e1c</div></div>
+    <div class="chip"><div class="c" style="background:#0b7f76"></div><div class="l">teal · links (AA)<br>#0b7f76</div></div>
+    <div class="chip"><div class="c" style="background:#f2b13c"></div><div class="l">amber · marks<br>#f2b13c</div></div>
+    <div class="chip"><div class="c" style="background:#5b3fc0"></div><div class="l">violet · tags (AA)<br>#5b3fc0</div></div>
+  </div>
+</section>
+</body>
+</html>

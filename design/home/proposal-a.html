@@ -1,0 +1,67 @@
+<!-- @dsCard group="Home" name="Proposal A — hero + path rail + tiles" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home — proposal A</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--dim:#8ea0c9}
+body{margin:0;background:var(--bg);color:#e8eeff;font:15px/1.6 "IBM Plex Sans",sans-serif;padding:0 0 40px}
+a{text-decoration:none;color:inherit}
+.hero{padding:52px 48px 40px;background:
+  radial-gradient(700px 260px at 85% -40%, rgba(77,208,196,.14), transparent),
+  radial-gradient(500px 220px at 15% -30%, rgba(167,139,250,.12), transparent)}
+.kicker{font-family:"IBM Plex Mono";font-size:12px;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+h1{font-family:"Space Grotesk";font-size:40px;margin:0 0 12px;line-height:1.1}
+h1 em{color:var(--cyan);font-style:normal}
+.lede{max-width:560px;color:rgba(232,238,255,.82);margin:0 0 22px}
+.cta{display:inline-block;font:600 14px "Space Grotesk";padding:11px 20px;border-radius:10px;margin-right:10px}
+.cta.p{background:var(--cyan);color:var(--bg)}
+.cta.s{border:1px solid var(--line);color:var(--cyan)}
+.wrap{padding:0 48px}
+h2{font-family:"Space Grotesk";font-size:15px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin:34px 0 14px}
+.path{display:flex;gap:0;overflow-x:auto;padding-bottom:6px}
+.step{min-width:150px;position:relative;padding:14px 16px 12px;border:1px solid var(--line);border-radius:12px;margin-right:26px;background:var(--panel);flex-shrink:0}
+.step:not(:last-child)::after{content:"";position:absolute;right:-26px;top:50%;width:26px;height:2px;background:var(--line)}
+.step .n{font-family:"IBM Plex Mono";font-size:11px;color:var(--amber)}
+.step .t{font-family:"Space Grotesk";font-size:14px;margin-top:3px}
+.step .d{font-size:11.5px;color:var(--dim);margin-top:3px}
+.step.supp{border-style:dashed}.step.supp .n{color:var(--violet)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.tile .i{font-size:20px}.tile .t{font-family:"Space Grotesk";font-size:14.5px;margin:8px 0 4px}
+.tile .d{font-size:12px;color:var(--dim)}
+.tile:hover{border-color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="kicker">深入淺出SSD · study companion</div>
+  <h1>Think in <em>SSDs</em>,<br>not just read about them.</h1>
+  <p class="lede">Seven chapter guides, five supplements, a 359-figure atlas — and 13 interactive animations embedded right where the book needs them to move.</p>
+  <a class="cta p" href="#">Start at Chapter 1 →</a>
+  <a class="cta s" href="#">🎬 Animation gallery</a>
+</div>
+<div class="wrap">
+  <h2>The learning path</h2>
+  <div class="path">
+    <a class="step" href="#"><div class="n">01</div><div class="t">SSD Overview</div><div class="d">what a drive is</div></a>
+    <a class="step" href="#"><div class="n">02</div><div class="t">Controllers &amp; AFA</div><div class="d">the machine around flash</div></a>
+    <a class="step" href="#"><div class="n">03</div><div class="t">NAND Flash</div><div class="d">the unruly physics</div></a>
+    <a class="step" href="#"><div class="n">04</div><div class="t">FTL</div><div class="d">the taming software</div></a>
+    <a class="step supp" href="#"><div class="n">A</div><div class="t">ECC Theory</div><div class="d">Hamming → LDPC</div></a>
+    <a class="step" href="#"><div class="n">05</div><div class="t">PCIe</div><div class="d">the highway</div></a>
+    <a class="step" href="#"><div class="n">06</div><div class="t">NVMe</div><div class="d">the protocol</div></a>
+    <a class="step" href="#"><div class="n">07</div><div class="t">Testing</div><div class="d">proving it works</div></a>
+  </div>
+  <h2>Looking for…</h2>
+  <div class="tiles">
+    <a class="tile" href="#"><div class="i">🔤</div><div class="t">Glossary</div><div class="d">322 terms, EN + 中文</div></a>
+    <a class="tile" href="#"><div class="i">🧮</div><div class="t">Formulas</div><div class="d">WA · TBW · UCL · dmin</div></a>
+    <a class="tile" href="#"><div class="i">🎬</div><div class="t">Animations</div><div class="d">13 interactive builds</div></a>
+    <a class="tile" href="#"><div class="i">✅</div><div class="t">Quizzes</div><div class="d">check yourself, per chapter</div></a>
+  </div>
+</div>
+</body>
+</html>

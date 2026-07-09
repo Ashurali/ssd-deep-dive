@@ -1,0 +1,27 @@
+<!-- @dsCard group="Chapter reading" name="Current — dense text wall" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chapter — current</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0b1020;color:#e8eeff;font:15px/1.65 "IBM Plex Sans",sans-serif;padding:32px 44px;max-width:760px}
+.dim{color:#8ea0c9;font-size:12px;font-family:"IBM Plex Mono";margin-bottom:16px}
+h2{font-family:"Space Grotesk";font-size:22px;margin:22px 0 10px}
+h3{font-family:"Space Grotesk";font-size:17px;margin:20px 0 8px}
+p{color:rgba(232,238,255,.85);margin:0 0 12px}
+strong{color:#e8eeff}
+details{border:1px solid #26304d;border-radius:8px;padding:8px 12px;margin:12px 0;color:#8ea0c9;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="dim">AS-IS: headings and paragraphs run together; page refs inline; embeds look like any admonition</div>
+<h2>4.3 Garbage collection — pp. 16–43 ⭐⭐ <em>the conceptual heart of the book</em></h2>
+<details><summary>🎬 Animate this — The Toy SSD Sandbox</summary></details>
+<p>This is the single most important section. It introduces <strong>GC</strong> and the two concepts welded to it: <strong>Write Amplification (WA)</strong> and <strong>Over-Provisioning (OP)</strong>.</p>
+<h3>4.3.1 GC principle, via a toy SSD (p. 16–26, Figs 4-14 to 4-22)</h3>
+<p>The book builds a tiny fictional SSD to make this concrete — follow it, because the intuition transfers exactly to real drives: 4 channels (CH0–CH3), each with 1 die. Each die has 6 blocks; each block has 9 small squares. Total 24 blocks. <strong>20 blocks = user capacity</strong>; <strong>4 blocks = OP</strong>.</p>
+<p>The walk-through: sequential writes stripe across the 4 dies — data goes to different channels in parallel to maximize write speed. Keep writing until the user space is full — but the flash isn't full yet, because OP exists…</p>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!-- @dsCard group="Home" name="Proposal B — chapter grid, quieter hero" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home — proposal B</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--dim:#8ea0c9}
+body{margin:0;background:var(--bg);color:#e8eeff;font:15px/1.6 "IBM Plex Sans",sans-serif;padding:40px 48px}
+a{text-decoration:none;color:inherit}
+.top{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+.mark{width:44px;height:44px;border:3px solid var(--cyan);border-radius:10px;display:grid;place-items:center}
+.mark i{width:9px;height:9px;background:var(--amber);border-radius:2px}
+h1{font-family:"Space Grotesk";font-size:30px;margin:0}
+.lede{color:var(--dim);margin:4px 0 28px;max-width:640px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.ch{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.ch::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--cyan);opacity:.7}
+.ch.supp::before{background:var(--violet)}
+.ch .n{font-family:"IBM Plex Mono";font-size:26px;color:rgba(232,238,255,.16);position:absolute;right:12px;top:8px}
+.ch .t{font-family:"Space Grotesk";font-size:15px;margin:2px 0 5px;max-width:80%}
+.ch .d{font-size:11.5px;color:var(--dim)}
+.ch .anim{margin-top:9px;font-size:10.5px;font-family:"IBM Plex Mono";color:var(--cyan)}
+.ch:hover{border-color:var(--cyan)}
+.rowlinks{display:flex;gap:22px;border-top:1px solid var(--line);padding-top:18px;font-size:13.5px}
+.rowlinks a{color:var(--cyan)}
+.rowlinks span{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="mark"><i></i></div>
+  <h1>SSD Deep Dive</h1>
+</div>
+<p class="lede">The complete《深入淺出SSD》study corpus — searchable in English and 中文, with the book's figures rebuilt as things you can drag, break, and replay.</p>
+<div class="grid">
+  <a class="ch" href="#"><div class="n">01</div><div class="t">SSD Overview</div><div class="d">parameters · form factors · market</div><div class="anim">🎬 sandbox · calculators</div></a>
+  <a class="ch" href="#"><div class="n">02</div><div class="t">Controllers &amp; AFA</div><div class="d">SoC anatomy · XtremIO</div><div class="anim">🎬 timing lab</div></a>
+  <a class="ch" href="#"><div class="n">03</div><div class="t">NAND Flash</div><div class="d">cells · bells · failure modes</div><div class="anim">🎬 Vt playground +3</div></a>
+  <a class="ch" href="#"><div class="n">04</div><div class="t">FTL</div><div class="d">mapping · GC · WA · recovery</div><div class="anim">🎬 toy SSD +3</div></a>
+  <a class="ch" href="#"><div class="n">05</div><div class="t">PCIe</div><div class="d">layers · TLPs · enumeration</div><div class="anim">🎬 packet dresser +2</div></a>
+  <a class="ch" href="#"><div class="n">06</div><div class="t">NVMe</div><div class="d">queues · doorbells · fabrics</div><div class="anim">🎬 ring machine</div></a>
+  <a class="ch" href="#"><div class="n">07</div><div class="t">Testing</div><div class="d">FIO · JEDEC · SNIA</div><div class="anim">🎬 jammer · calculators</div></a>
+  <a class="ch supp" href="#"><div class="n">A–E</div><div class="t">Supplements</div><div class="d">ECC · UFS · F2FS · power · space</div><div class="anim">🎬 ECC visualizers</div></a>
+</div>
+<div class="rowlinks">
+  <span>Shortcuts:</span>
+  <a href="#">Glossary (322 terms)</a><a href="#">Formulas</a><a href="#">Animation gallery</a><a href="#">Quizzes</a><a href="#">Figure atlas</a>
+</div>
+</body>
+</html>

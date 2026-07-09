@@ -1,0 +1,47 @@
+<!-- @dsCard group="Navigation" name="Current — flat sidebar, no wayfinding" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Navigation — current</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0b1020;color:#e8eeff;font:14px/1.6 "IBM Plex Sans",sans-serif}
+.dim{color:#8ea0c9;font-size:12px;font-family:"IBM Plex Mono";padding:14px 20px 0}
+.bar{background:#0a0e1c;border-bottom:1px solid #26304d;padding:12px 20px;font-family:"Space Grotesk";display:flex;gap:26px;margin-top:10px}
+.bar b{color:#4dd0c4}
+.cols{display:flex}
+.side{width:230px;padding:18px 20px;border-right:1px solid #26304d;color:#8ea0c9;font-size:13px}
+.side div{padding:4px 0}
+.side .on{color:#4dd0c4}
+.main{flex:1;padding:18px 26px;color:rgba(232,238,255,.6)}
+.main h1{font-family:"Space Grotesk";color:#e8eeff;font-size:20px}
+.issue{color:#f2b13c;font-size:11.5px;font-family:"IBM Plex Mono";margin-top:14px;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="dim">AS-IS</div>
+<div class="bar">Home <b>Core Chapters</b> Supplements Animations Atlas Reference</div>
+<div class="cols">
+  <div class="side">
+    <div>Ch 1 — SSD Overview</div>
+    <div>Ch 2 — Controllers &amp; AFA</div>
+    <div>Ch 3 — NAND Flash</div>
+    <div class="on">Ch 4 — FTL</div>
+    <div>Ch 5 — PCIe</div>
+    <div>Ch 6 — NVMe</div>
+    <div>Ch 7 — SSD Testing</div>
+  </div>
+  <div class="main">
+    <h1>Ch 4 — FTL</h1>
+    <p>(content)</p>
+    <div class="issue">
+      ✗ no breadcrumbs — where am I in the path?<br>
+      ✗ page ends dead — no "next: Supplement A"<br>
+      ✗ sidebar gives no sense of length or progress<br>
+      ✗ reference pages (glossary/formulas) are a tab away, never at hand
+    </div>
+  </div>
+</div>
+</body>
+</html>

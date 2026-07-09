@@ -1,0 +1,68 @@
+<!-- @dsCard group="Navigation" name="Proposal — breadcrumbs, path position, prev/next" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Navigation — proposal</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--dim:#8ea0c9}
+body{margin:0;background:var(--bg);color:#e8eeff;font:14px/1.6 "IBM Plex Sans",sans-serif}
+.dim{color:var(--dim);font-size:12px;font-family:"IBM Plex Mono";padding:14px 20px 0}
+.bar{background:#0a0e1c;border-bottom:1px solid var(--line);padding:12px 20px;font-family:"Space Grotesk";display:flex;gap:26px;margin-top:10px}
+.bar b{color:var(--cyan);border-bottom:2px solid var(--cyan);padding-bottom:10px;margin-bottom:-12px}
+.cols{display:flex}
+.side{width:240px;padding:16px 18px;border-right:1px solid var(--line);font-size:13px}
+.side .item{display:flex;align-items:center;gap:9px;padding:5px 8px;border-radius:7px;color:var(--dim)}
+.side .n{font-family:"IBM Plex Mono";font-size:10.5px;width:18px;color:rgba(232,238,255,.35)}
+.side .done .n{color:var(--cyan)}
+.side .done::after{content:"✓";margin-left:auto;color:var(--cyan);font-size:11px}
+.side .on{background:var(--panel);color:#e8eeff;border-left:2px solid var(--cyan)}
+.side .on .n{color:var(--amber)}
+.side .anim{margin-left:auto;font-size:10px;color:var(--violet)}
+.main{flex:1;padding:14px 26px}
+.crumbs{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--dim);margin-bottom:10px}
+.crumbs b{color:var(--cyan);font-weight:400}
+.main h1{font-family:"Space Grotesk";font-size:21px;margin:2px 0 4px}
+.pathpos{font-size:11.5px;color:var(--dim);margin-bottom:14px}
+.pathpos .seg{display:inline-block;width:26px;height:4px;border-radius:2px;background:var(--line);margin-right:3px;vertical-align:middle}
+.pathpos .seg.f{background:var(--cyan)}
+.pathpos .seg.cur{background:var(--amber)}
+.content{color:rgba(232,238,255,.55);padding:12px 0 20px}
+.footnav{display:flex;gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.fn{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.fn .lab{font-family:"IBM Plex Mono";font-size:10.5px;color:var(--dim)}
+.fn .t{font-family:"Space Grotesk";font-size:14px;color:var(--cyan);margin-top:2px}
+.fn.next{text-align:right;border-color:rgba(77,208,196,.4)}
+</style>
+</head>
+<body>
+<div class="dim">PROPOSAL: breadcrumbs + path progress · numbered sidebar with ✓ read-state &amp; 🎬 badges · prev/next cards</div>
+<div class="bar">Home <b>Core Chapters</b> Supplements Animations Atlas Reference</div>
+<div class="cols">
+  <div class="side">
+    <div class="item done"><span class="n">01</span> SSD Overview</div>
+    <div class="item done"><span class="n">02</span> Controllers &amp; AFA</div>
+    <div class="item done"><span class="n">03</span> NAND Flash <span class="anim">🎬×4</span></div>
+    <div class="item on"><span class="n">04</span> FTL <span class="anim">🎬×4</span></div>
+    <div class="item"><span class="n">05</span> PCIe <span class="anim">🎬×3</span></div>
+    <div class="item"><span class="n">06</span> NVMe <span class="anim">🎬×1</span></div>
+    <div class="item"><span class="n">07</span> SSD Testing <span class="anim">🎬×3</span></div>
+  </div>
+  <div class="main">
+    <div class="crumbs">Core Chapters ▸ <b>Ch 4 — FTL</b> ▸ 4.3 Garbage collection</div>
+    <h1>Ch 4 — FTL</h1>
+    <div class="pathpos">
+      learning path:
+      <span class="seg f"></span><span class="seg f"></span><span class="seg f"></span><span class="seg cur"></span><span class="seg"></span><span class="seg"></span><span class="seg"></span><span class="seg"></span>
+      step 4 of 8
+    </div>
+    <div class="content">(content)</div>
+    <div class="footnav">
+      <div class="fn"><div class="lab">← previous</div><div class="t">Ch 3 — NAND Flash</div></div>
+      <div class="fn next"><div class="lab">next on the path →</div><div class="t">Supplement A — ECC Coding Theory</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

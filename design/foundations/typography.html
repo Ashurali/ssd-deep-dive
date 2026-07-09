@@ -1,0 +1,31 @@
+<!-- @dsCard group="Foundations" name="Typography" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SSD Deep Dive — typography</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0b1020;color:#e8eeff;font:15px/1.6 "IBM Plex Sans",sans-serif;padding:32px 40px}
+.tag{font-family:"IBM Plex Mono";font-size:10.5px;color:#8ea0c9;margin-bottom:2px}
+h1{font-family:"Space Grotesk";font-size:34px;margin:0 0 20px;font-weight:700}
+h2{font-family:"Space Grotesk";font-size:24px;margin:0 0 18px;font-weight:600}
+h3{font-family:"Space Grotesk";font-size:18px;margin:0 0 18px;font-weight:600}
+p{max-width:640px;margin:0 0 18px}
+code{font-family:"IBM Plex Mono";font-size:13px;background:#111832;border:1px solid #26304d;border-radius:6px;padding:2px 7px;color:#4dd0c4}
+.zh{color:#8ea0c9}
+</style>
+</head>
+<body>
+<div class="tag">Space Grotesk 700 · 34px — page titles</div>
+<h1>Ch 4 — The Flash Translation Layer</h1>
+<div class="tag">Space Grotesk 600 · 24px — sections</div>
+<h2>4.3 Garbage collection ⭐⭐</h2>
+<div class="tag">Space Grotesk 600 · 18px — subsections</div>
+<h3>4.3.2 Write Amplification — know this cold</h3>
+<div class="tag">IBM Plex Sans 400 · 15px/1.6 — body</div>
+<p>Because GC does extra internal writes, the SSD writes <strong>more</strong> to flash than the host sent. That ratio is write amplification <span class="zh">(寫放大)</span> — and the whole design goal is keeping it low.</p>
+<div class="tag">IBM Plex Mono — code, formulas, data</div>
+<p><code>WA = flash_writes ÷ host_writes</code> &nbsp; <code>map ≈ capacity / 1000</code></p>
+</body>
+</html>
