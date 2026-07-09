@@ -2,39 +2,42 @@
 title: Home
 hide:
   - navigation
+  - toc
 ---
 
-# SSD Deep Dive
+<div class="sdd-hero">
+  <div class="sdd-kicker">深入淺出SSD · study companion</div>
+  <h1>Think in <em>SSDs</em>,<br>not just read about them.</h1>
+  <p class="sdd-lede">Seven chapter guides, five supplements, a 359-figure
+  atlas — and 13 interactive animations embedded right where the book needs
+  them to move.</p>
+  <p class="sdd-ctas">
+    <a class="sdd-cta sdd-cta--p" href="core/ch1-overview/">Start at Chapter 1 →</a>
+    <a class="sdd-cta sdd-cta--s" href="animations/">🎬 Animation gallery</a>
+  </p>
+</div>
 
-A searchable knowledge base for a complete SSD study corpus: seven
-chapter-by-chapter English study companions to the book **《深入淺出SSD》**
-(*SSD In Depth and Simple*), five topic supplements that extend it to modern
-territory (ECC coding theory, UFS, flash file systems, power management,
-aerospace storage), a figure atlas, and a growing set of interactive
-animations. Everything here is original study material — the book's own pages
-and figures are referenced by page number only ("CH4 p.22, Fig 4-19") and are
-not reproduced.
+<h2 class="sdd-h2">The learning path</h2>
 
-## Learning path
+<nav class="sdd-path" aria-label="Learning path">
+  <a class="sdd-step" href="core/ch1-overview/"><span class="n">01</span><span class="t">SSD Overview</span><span class="d">what a drive is</span></a>
+  <a class="sdd-step" href="core/ch2-controllers-afa/"><span class="n">02</span><span class="t">Controllers &amp; AFA</span><span class="d">the machine around flash</span></a>
+  <a class="sdd-step" href="core/ch3-nand-flash/"><span class="n">03</span><span class="t">NAND Flash</span><span class="d">the unruly physics</span></a>
+  <a class="sdd-step" href="core/ch4-ftl/"><span class="n">04</span><span class="t">FTL</span><span class="d">the taming software</span></a>
+  <a class="sdd-step sdd-step--supp" href="supplements/a-ecc-coding-theory/"><span class="n">A</span><span class="t">ECC Theory</span><span class="d">Hamming → LDPC</span></a>
+  <a class="sdd-step" href="core/ch5-pcie/"><span class="n">05</span><span class="t">PCIe</span><span class="d">the highway</span></a>
+  <a class="sdd-step" href="core/ch6-nvme/"><span class="n">06</span><span class="t">NVMe</span><span class="d">the protocol</span></a>
+  <a class="sdd-step" href="core/ch7-testing/"><span class="n">07</span><span class="t">Testing</span><span class="d">proving it works</span></a>
+  <a class="sdd-step sdd-step--supp" href="supplements/b-ufs/"><span class="n">B–E</span><span class="t">Supplements</span><span class="d">UFS · F2FS · power · space</span></a>
+</nav>
 
-Follow the chapters in book order; supplement A slots naturally after the FTL
-chapter, and the rest of the supplements follow the core:
+<h2 class="sdd-h2">Looking for…</h2>
 
-1. [Ch 1 — SSD Overview](core/ch1-overview.md) — what an SSD is, product parameters, form factors
-2. [Ch 2 — Controllers & All-Flash Arrays](core/ch2-controllers-afa.md)
-3. [Ch 3 — NAND Flash](core/ch3-nand-flash.md) — the physics that causes every downstream problem
-4. [Ch 4 — FTL](core/ch4-ftl.md) — the heart of the book: mapping, GC, wear leveling, power-loss recovery
-5. [Supplement A — ECC Coding Theory](supplements/a-ecc-coding-theory.md) — Hamming → BCH → LDPC
-6. [Ch 5 — PCIe](core/ch5-pcie.md)
-7. [Ch 6 — NVMe](core/ch6-nvme.md)
-8. [Ch 7 — SSD Testing](core/ch7-testing.md)
-9. [Supplements B–E](supplements/b-ufs.md) — UFS, flash file systems, power management, aerospace storage
-10. Companion throughout: the [Figure Atlas & Animation Roadmap](atlas/figure-atlas-animation-roadmap.md)
+<div class="sdd-tiles">
+  <a class="sdd-tile" href="reference/glossary/"><span class="i">🔤</span><span class="t">Glossary</span><span class="d">322 terms, EN + 中文</span></a>
+  <a class="sdd-tile" href="reference/formulas/"><span class="i">🧮</span><span class="t">Formulas</span><span class="d">WA · TBW · UCL · dmin</span></a>
+  <a class="sdd-tile" href="animations/"><span class="i">🎬</span><span class="t">Animations</span><span class="d">13 interactive builds</span></a>
+  <a class="sdd-tile" href="reference/quizzes/"><span class="i">✅</span><span class="t">Quizzes</span><span class="d">check yourself, per chapter</span></a>
+</div>
 
-## If you're looking for…
-
-- **A term in English or 中文** → the [master glossary](reference/glossary.md), or just use the search box (it indexes both languages, section by section)
-- **A formula** → the [formula cheat sheet](reference/formulas.md)
-- **Something visual** → the [animation gallery](animations/index.md)
-- **Self-testing** → the [quiz index](reference/quizzes.md)
-- **Browsing by topic** → the [tag index](reference/tags.md)
+<p class="sdd-foot">Companion throughout: the <a href="atlas/figure-atlas-animation-roadmap/">figure atlas &amp; animation roadmap</a> — all 359 book figures, tiered and turned into the build plan behind the animations. Browse everything <a href="reference/tags/">by tag</a>.</p>

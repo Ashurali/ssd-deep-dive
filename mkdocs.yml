@@ -37,8 +37,10 @@ theme:
   features:
     - navigation.instant
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.top
+    - navigation.footer # prev/next links at the bottom of every page
     - toc.follow
     - search.highlight
     - search.suggest
