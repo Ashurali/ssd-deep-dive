@@ -116,16 +116,17 @@ function findFree(exclude=-1){
 function freeBlocks(){ return S.blocks.filter(b=>!b.bad&&b.pages.every(p=>p===-2)).length; }
 function blockVPC(b){ return S.blocks[b].pages.filter(p=>p>=0).length; }
 function writePage(lba){
-  // invalidate old copy
+  // space in frontier? else move the frontier to any block with an open slot
+  let blk=S.frontier, slot=S.blocks[blk].bad?-1:S.blocks[blk].pages.indexOf(-2);
+  if(slot<0){
+    let nf=findFree();
+    if(nf<0) nf=[...S.blocks.keys()].find(i=>!S.blocks[i].bad&&S.blocks[i].pages.indexOf(-2)>=0)??-1;
+    if(nf<0) return false;               // truly no room anywhere
+    S.frontier=blk=nf; slot=S.blocks[blk].pages.indexOf(-2);
+  }
+  // invalidate the old copy only once the new write has a secured slot
   const old=S.map[lba];
   if(old) S.blocks[old[0]].pages[old[1]]=-1;
-  // space in frontier?
-  let blk=S.frontier, slot=S.blocks[blk].pages.indexOf(-2);
-  if(slot<0){
-    const nf=findFree();
-    if(nf<0) return false;               // must GC first
-    S.frontier=blk=nf; slot=0;
-  }
   S.blocks[blk].pages[slot]=lba;
   S.map[lba]=[blk,slot];
   S.flash++;
@@ -135,13 +136,21 @@ function hostWrite(){
   const n=userLBAs();
   const lba = S.seq ? (S.seqPtr++ % n) : Math.floor(Math.random()*n);
   if(S.deadLBAs.has(lba)) S.deadLBAs.delete(lba);
-  // ensure space (foreground GC when out of room)
-  if(freeBlocks()===0 && S.blocks[S.frontier].pages.indexOf(-2)<0){
-    if(!gcOnce()) return false;
-  }
+  if(!ensureSpace()) return false;
   if(!writePage(lba)) return false;
   S.host++; S.tickHost++;
   return true;
+}
+const totalFreeSlots=()=>S.blocks.reduce((a,b)=>a+(b.bad?0:b.pages.filter(p=>p===-2).length),0);
+function ensureSpace(){
+  // foreground GC: keep a page's worth of headroom so writes never stall —
+  // at low OP this fires on nearly every write, and WA explodes (Fig 4-25)
+  let prev=-1;
+  while(totalFreeSlots()<PG+1 && totalFreeSlots()!==prev){
+    prev=totalFreeSlots();
+    if(!gcOnce()) break;
+  }
+  return totalFreeSlots()>0;
 }
 function gcOnce(){
   // victim: closed, non-bad, non-frontier block with most garbage (min VPC among blocks containing garbage)
@@ -154,25 +163,19 @@ function gcOnce(){
     if(v<best){best=v;victim=i;}
   }
   if(victim<0) return false;
-  // move valid pages out
-  for(let p=0;p<PG;p++){
-    const lba=S.blocks[victim].pages[p];
-    if(lba>=0){
-      // find space NOT in victim
-      let blk=S.frontier;
-      if(blk===victim || S.blocks[blk].pages.indexOf(-2)<0){
-        const nf=findFree(victim);
-        if(nf<0) return false;
-        S.frontier=blk=nf;
-      }
-      const slot=S.blocks[blk].pages.indexOf(-2);
-      S.blocks[blk].pages[slot]=lba; S.map[lba]=[blk,slot]; S.flash++;
-    }
-  }
+  // read valid pages up into controller RAM, erase the block, then program
+  // them back out — GC never needs a spare erased block this way
+  const rescued=[];
+  for(let p=0;p<PG;p++){ const lba=S.blocks[victim].pages[p]; if(lba>=0) rescued.push(lba); }
   S.blocks[victim].pages.fill(-2);
   S.blocks[victim].ec++;
+  for(const lba of rescued){
+    let blk=S.frontier, slot=(blk!==victim&&!S.blocks[blk].bad)?S.blocks[blk].pages.indexOf(-2):-1;
+    if(slot<0){ blk=victim; slot=S.blocks[blk].pages.indexOf(-2); }
+    S.blocks[blk].pages[slot]=lba; S.map[lba]=[blk,slot]; S.flash++;
+  }
   S.gc++;
-  log("GC: reclaimed block "+victim+" (moved "+best+" valid pages, erase #"+S.blocks[victim].ec+")");
+  log("GC: reclaimed block "+victim+" (moved "+rescued.length+" valid pages, erase #"+S.blocks[victim].ec+")");
   if(S.staticWL) staticWLStep();
   return true;
 }
@@ -205,18 +208,18 @@ function killBlock(){
   const alive=[...S.blocks.keys()].filter(i=>!S.blocks[i].bad&&i!==S.frontier);
   if(!alive.length) return;
   const v=alive[Math.floor(Math.random()*alive.length)];
-  // relocate its valid pages (grown bad block handling)
-  for(let p=0;p<PG;p++){
-    const lba=S.blocks[v].pages[p];
-    if(lba>=0){
-      let blk=S.frontier;
-      if(S.blocks[blk].pages.indexOf(-2)<0){ const nf=findFree(v); if(nf<0) break; S.frontier=blk=nf; }
-      const slot=S.blocks[blk].pages.indexOf(-2);
-      S.blocks[blk].pages[slot]=lba; S.map[lba]=[blk,slot]; S.flash++;
-    }
-  }
+  // grown bad block: read the data out, retire the block, re-program elsewhere
+  const rescue=S.blocks[v].pages.filter(p=>p>=0);
   S.blocks[v].bad=true; S.blocks[v].pages.fill(-2);
-  log("block "+v+" went BAD (grown) — data rescued, capacity down: channel "+(v%CH)+" lost parallelism");
+  let lost=0;
+  for(const lba of rescue){
+    ensureSpace();
+    const blk=[...S.blocks.keys()].find(i=>!S.blocks[i].bad&&S.blocks[i].pages.indexOf(-2)>=0);
+    if(blk===undefined){ delete S.map[lba]; lost++; continue; }
+    const slot=S.blocks[blk].pages.indexOf(-2);
+    S.blocks[blk].pages[slot]=lba; S.map[lba]=[blk,slot]; S.flash++;
+  }
+  log("block "+v+" went BAD (grown) — "+(lost?lost+" pages LOST, ":"data rescued, ")+"capacity down: channel "+(v%CH)+" lost parallelism");
 }
 
 /* ---------------- rendering ---------------- */
@@ -293,7 +296,11 @@ $("auto").onclick=()=>{
   $("auto").classList.add("on"); $("auto").textContent="⏸ pause";
   S.auto=setInterval(()=>{
     S.tickHost=0;
-    for(let i=0;i<6;i++) hostWrite();
+    // fixed flash budget per tick: GC relocations eat into it, so host
+    // throughput sinks as WA rises — FOB → transition → steady state
+    const budget=S.flash+12;
+    let guard=0;
+    while(S.flash<budget && guard++<60){ if(!hostWrite()) break; }
     S.hist.push(S.tickHost);
     draw(); drawPerf();
   },RM?600:280);
