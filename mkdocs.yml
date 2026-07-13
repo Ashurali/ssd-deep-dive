@@ -1,8 +1,9 @@
 # SSD Deep Dive — MkDocs configuration (see SITE_SPECIFICATION.md)
 site_name: SSD Deep Dive
 site_description: >-
-  A searchable, indexed knowledge base for the《深入淺出SSD》study corpus —
-  chapter study guides, supplements, and interactive animations.
+  A standalone, bilingual (EN/中文) interactive textbook on solid-state
+  storage — controllers, NAND flash, FTL, PCIe, NVMe, testing — with 13
+  live animations. Grew out of the《深入淺出SSD》study corpus.
 # TODO(owner): update to the real Pages URL after creating the GitHub repo
 site_url: https://lolikeano.github.io/ssd-deep-dive/
 

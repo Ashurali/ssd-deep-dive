@@ -23,13 +23,13 @@ $$ OP = \frac{\text{flash space} - \text{user space}}{\text{user space}} $$
 
 **TBW** — total bytes writable over the drive's life, from capacity, NAND
 endurance, and firmware quality (WA).
-*Derived in [Ch 1 §1.5.3](../core/ch1-overview.md#153-endurance-pp-3437).*
+*Derived in [Ch 1 §1.5.3](../core/ch1-overview.md#153-endurance).*
 
 $$ TBW \approx \frac{\text{Capacity} \times \text{P/E cycles}}{WA} $$
 
 **DWPD** — full-drive writes per day sustainable over the warranty period;
 the other face of TBW.
-*Same section, [Ch 1 §1.5.3](../core/ch1-overview.md#153-endurance-pp-3437).*
+*Same section, [Ch 1 §1.5.3](../core/ch1-overview.md#153-endurance).*
 
 $$ DWPD = \frac{TBW}{365 \times \text{years} \times \text{Capacity}} $$
 
@@ -44,7 +44,7 @@ $$ \text{map table} \approx \frac{\text{Capacity}}{1000} $$
 
 **IOPS ceiling from link bandwidth** — an interface can never deliver more
 I/Os per second than its usable bandwidth divided by the transfer size.
-*Context in [Ch 1 §1.5.2](../core/ch1-overview.md#152-performance-pp-2933) and
+*Context in [Ch 1 §1.5.2](../core/ch1-overview.md#152-performance) and
 [Ch 5 §5.13](../core/ch5-pcie.md#513-pcie-link-performance-loss-analysis-pp-7074-why-you-never-get-the-theoretical-number)
 (why the realized number is always lower).*
 

@@ -8,84 +8,97 @@ tags:
 source_anchor: "CH1 file, pp. 1–61"
 ---
 
-# SSD Deep Dive — Chapter 1: SSD Overview (綜述)
-## English Study Companion
+# Chapter 1 — SSD Overview (綜述)
 
-**The book:** 《深入淺出SSD》 (*SSD Deep Dive: Core Technologies, Principles and Practice of Solid-State Storage*), written by the SSDFans engineering community, published 2018. Chapter 1 spans pages 1–60 of your file (pages 61–66 are just website reader comments — skip them).
+A **solid-state drive (SSD, 固態硬盤)** stores data in semiconductor cells and moves it with nothing but electrons. A **hard disk drive (HDD, 機械硬盤)** stores data magnetically on spinning platters read by a mechanical arm. That single difference — electrons versus mechanics — explains almost everything about why SSDs beat HDDs on speed, power, noise, and durability, and it sets up every problem the rest of this book solves: flash is fast but awkward, and taming that awkwardness is an entire engineering discipline.
 
-**How to use this guide:** Section numbers match the book (1.1, 1.2 …). Page references like *(p. 22, Fig 1-14)* point to pages inside your CH1 file so you can look at the original figures and tables while reading the explanation here. A Chinese-to-English glossary at the end helps you decode labels inside the figures themselves.
+This chapter is the aerial view. It shows you what an SSD is made of, how it pulls off the trick of impersonating a disk, how to read a datasheet the way an engineer does, and how the market ended up shaped the way it is.
+
+!!! abstract "In this chapter"
+    - **What's inside the box** — controller, NAND flash, firmware: the three core technologies (§1.1)
+    - **SSD vs HDD** — the five advantages, and the one thing disks still do better (§1.2)
+    - **Fifty years in ten minutes** — from the floating gate to the all-flash data center (§1.3)
+    - **How an SSD actually works** — the mapping table, garbage collection, wear leveling ⭐ (§1.4)
+    - **Reading a datasheet** — capacity, IOPS and QoS, endurance, reliability, power, compatibility (§1.5)
+    - **Form factors and the market** — 2.5″, M.2, BGA, U.2; who makes money and why (§1.6–1.7)
 
 ---
 
-## The big picture (chapter opening, p. 1)
+## 1.1 The hook (引子): what an SSD is
 
-An **SSD (Solid State Drive / 固態硬盤)** stores data on semiconductor chips — NAND flash memory (閃存) — using pure electronics with **no moving parts**. A traditional **HDD (hard disk drive / 機械硬盤)** stores data magnetically on spinning platters read by a mechanical head. That single difference — electrons vs. mechanics — explains almost everything about why SSDs beat HDDs in speed, power, and durability.
+Speed is the first thing anyone notices. A PC that took 30–60+ seconds to boot from a hard disk boots in roughly 8 seconds from an SSD — same OS, same files, different physics. So what is this device?
 
-The authors note that in 2008 only a handful of companies made SSDs; by 2018, hundreds did, and SSDs were displacing the two HDD giants (Western Digital and Seagate) as the mainstream storage device. The chapter opens with a joke referencing a wuxia novel: anyone in storage who doesn't know SSDs is like a hero who's never met the legendary Chen Jinnan — not really a hero at all.
+Physically, an SSD is just a printed circuit board (PCB) carrying:
 
----
-
-## 1.1 Introduction (引子) — pp. 1–4
-
-The hook is boot time: PCs used to take 30–60+ seconds to boot; with an SSD, about 8 seconds. Speed is the most visceral thing users notice.
-
-**What's physically inside an SSD** *(p. 3, Fig 1-3)* — it's just a circuit board (PCB) carrying:
-
-1. **Controller (主控)** — the brain; a specialized chip (ASIC) that manages everything
-2. **NAND flash chips (閃存)** — where your data actually lives
-3. **DRAM cache (緩存)** — optional; some SSDs use only small on-chip SRAM instead
-4. **Support components** — power regulation chips, resistors, capacitors
+1. **Controller (主控)** — the brain: a specialized ASIC that manages everything on the drive
+2. **NAND flash chips (閃存)** — where the data actually lives
+3. **DRAM cache (緩存)** — optional; budget designs use small on-chip SRAM (or the host's RAM — see HMB in §1.6.3) instead
+4. **Support components** — power-regulation chips, resistors, capacitors
 5. **Interface connector (接口)** — SATA, SAS, or PCIe
 
-On the software side, the SSD runs **firmware (固件, FW)** internally — code that schedules data between the host interface and the flash, and runs the algorithms that manage flash lifespan and reliability. The book's framing to remember: **controller + flash + firmware are the three core technologies of an SSD**, and each gets its own chapter later.
+On the software side the SSD runs **firmware (固件, FW)**: code executing on the controller that schedules data between the host interface and the flash, and runs the algorithms that manage flash lifespan and reliability. Hold on to this framing — **controller + flash + firmware are the three core technologies of an SSD** — because it is the table of contents of this whole subject: controllers get [Chapter 2](ch2-controllers-afa.md), flash gets [Chapter 3](ch3-nand-flash.md), and the firmware's central algorithm layer gets [Chapter 4](ch4-ftl.md).
 
-**Storage media taxonomy** *(p. 4, Fig 1-4)*: media divide into optical (CD/DVD), magnetic (HDD, tape), and semiconductor. Semiconductor is where all the innovation is: flash today, with 3D XPoint, MRAM, RRAM as emerging candidates. As of the book's writing, the flash market was dominated by five suppliers: Micron, Samsung, SK Hynix, Toshiba, and WD/SanDisk.
-
----
-
-## 1.2 SSD vs HDD — pp. 4–8
-
-HDD = "motor + magnetic head + platters" (mechanical). SSD = "flash media + controller" (semiconductor). See the comparison table *(p. 5, Table 1-1)* and structure diagram *(p. 5, Fig 1-5)*.
-
-**Five advantages of SSDs:**
-
-**1. Performance** *(p. 5, Table 1-2; p. 6, Fig 1-6)* — Sequential read/write is several times faster; **random read/write is where the gap explodes** — up to hundreds of times faster, in both speed and latency. Benchmarks like IOMeter and FIO measure raw throughput/IOPS; PCMark Vantage measures user experience (boot time, file loading), where HDDs get crushed.
-
-**2. Lower power** *(p. 7, Table 1-3)* — Active power: HDD 6–8 W vs SATA SSD ~5 W; but standby drops to *milliwatts* for SSDs. Power categories you'll see repeatedly: peak, active (read/write), idle, standby/sleep, and **DevSleep** (a special ultra-low state below 10 mW, critical for laptops). Where does the power go? Mostly into the flash chips during reads/writes; the controller accounts for roughly 20%. The scientifically fair comparison is **power per IOPS** — and since an SSD delivers ~100× the performance per watt, it's the natural fit for data centers.
-
-**3. Shock resistance** — No mechanics means nothing to physically crash. An HDD head touching a platter during a drop causes permanent damage; an SSD is just chips on a board.
-
-**4. Silence** — No spinning motor.
-
-**5. Tiny, flexible form factors** — HDDs only come in 3.5″ and 2.5″. SSDs go down to M.2 sticks and even single chips (BGA SSDs as small as 11.5 mm × 13 mm).
-
-**The one HDD advantage: price.** *(p. 8, Table 1-4)* And the authors predict even that will erode as flash density grows. (Spoiler from 2026: they were right for most uses.)
+Where does flash sit in the storage universe? Storage media divide into three families: **optical** (CD/DVD), **magnetic** (HDD, tape), and **semiconductor**. All the innovation now happens in the third family: NAND flash today, with 3D XPoint, MRAM, and RRAM as emerging candidates. As of 2018 the flash market was supplied by essentially five companies: Micron, Samsung, SK Hynix, Toshiba, and WD/SanDisk.
 
 ---
 
-## 1.3 History of solid-state storage — pp. 9–19
+## 1.2 SSD vs HDD
 
-A condensed timeline (much of it sourced from StorageSearch.com). Worth skimming; the details matter less than the arc: *expensive curiosity → niche → tipping point → explosion → consolidation*.
+Reduced to one line each: **HDD = motor + magnetic head + platters** (a precision mechanical instrument), **SSD = flash media + controller** (a pure semiconductor device). Everything below follows from that.
 
-- **1976** — Dataram sells "Bulk Core," a 2 MB RAM-based SSD on eight large boards *(p. 10, Fig 1-7)*. RAM SSDs were blazing fast and byte-addressable but lost data on power-off and cost a fortune. For ~20 years these remained toys for the rich (main player: Texas Memory Systems).
-- **1967** — The foundational invention: at Bell Labs, **Dawon Kahng and Simon Sze (施敏) invent the floating-gate transistor** *(p. 11–12, Fig 1-9)* — a MOSFET with an extra electrically-isolated gate that traps charge, which is exactly how flash stores bits. Sze was born in Nanjing, educated at National Taiwan University and Stanford.
-- **1988** — Giant magnetoresistance (GMR) discovered — this made *HDDs* huge in capacity and cheap, winning its discoverers the 2007 Nobel Prize and making HDD king for two decades.
-- **1991** — SanDisk ships a 20 MB flash SSD.
-- **1997–1999** — First commercial flash SSDs (Altec, BiTMICRO). Flash keeps data without power — now it truly behaves like a "disk."
-- **2005–2006** — Samsung becomes the first tech giant to enter; laptops start shipping with SSDs; Windows Vista is the first OS with SSD-specific support.
-- **2007 — "the year of revolution"** — Flash SSDs (Mtron, Memoright) finally match the fastest enterprise HDDs; the disk war begins. TMS's RamSan-500: 2 TB, 2 GB/s sequential.
-- **2008** — Vendor count hits ~100. Intel ships the X-25E (SLC, 250/170 MB/s). EMC puts SSDs in enterprise arrays.
-- **2009** — PureSilicon fits **1 TB in a 2.5″ SSD** using MLC — SSDs match HDD capacity in the same volume while destroying them on speed. SandForce launches its first controller. Steve Wozniak joins Fusion-IO.
-- **2010** — Market hits $1B. Enterprise still uses SLC; consumer moves to MLC.
-- **2011–2012** — IPOs and a buying spree: OCZ buys Indilinx ($32M); LSI buys SandForce ($370M); Hynix buys LAMD. SandForce pioneers **real-time in-controller compression** (fiendishly hard: compressed pages vary in size, so the mapping tables get very clever) — the book calls SandForce the most successful controller company ever.
-- **2013** — PCIe SSDs reach consumers: SATA's 6 Gbps (~560 MB/s real-world) and shallow command queues had become the bottleneck. Violin Memory's IPO flops.
-- **2014** — Software ecosystems (VMware VSAN, etc.) rebuild around fast storage. SanDisk buys Fusion-IO ($1.1B); Seagate buys LSI's flash divisions.
-- **2015** — **Intel + Micron announce 3D XPoint**, a new memory class. WD acquires SanDisk for $19B. Toshiba samples 48-layer 3D NAND.
-- **2016** — PCIe 4.0 demos; 60 TB SAS SSD shown; all-flash-array vendor Pure Storage out-earns the top HDD-array vendor; Violin files for bankruptcy protection.
+| | HDD | SSD |
+|---|---|---|
+| Data lives in | magnetic domains on spinning platters | charge trapped in flash cells |
+| To reach data | seek: physically move a head (~ms) | address a chip electronically (~µs) |
+| Random 4 KB I/O | ~100–200 IOPS (head must travel) | tens to hundreds of thousands of IOPS |
+| Sequential speed | ~100–200 MB/s | ~500 MB/s (SATA) to several GB/s (PCIe) |
+| Active power | 6–8 W | ~5 W (SATA), falling to *milliwatts* at idle |
+| Drop it while running | head crashes into platter — often fatal | nothing moves — usually shrugs it off |
+| Noise | audible spin + seek chatter | silent |
+| Form factors | 3.5″ and 2.5″ only | 2.5″, M.2 sticks, down to single 11.5 × 13 mm chips |
+| Price per GB | **cheaper** — the one surviving advantage | premium, shrinking every year |
+
+**Five advantages of SSDs, in the order buyers feel them:**
+
+**1. Performance.** Sequential read/write is several times faster — but **random I/O is where the gap explodes**, up to hundreds of times faster in both IOPS and latency. There's a subtlety in how this is measured: raw-throughput benchmarks (IOMeter, FIO) show the biggest numbers, but *user-experience* benchmarks (PCMark Vantage: boot time, application loading) are where HDDs get truly crushed, because real desktop work is dominated by random reads.
+
+**2. Lower power.** Active power is comparable (HDD 6–8 W, SATA SSD ~5 W), but an idle SSD drops to milliwatts while a disk must keep its platters spinning. The categories you'll meet on every datasheet: peak, active (read/write), idle, standby/sleep, and **DevSleep** — an ultra-low state under 10 mW, built for laptops (§1.5.5). The scientifically fair metric is **power per IOPS**, and there an SSD delivers roughly 100× the performance per watt — which is why data centers switched.
+
+**3. Shock resistance.** No mechanics, nothing to crash. An HDD head touching a spinning platter during a drop is permanent damage; an SSD is chips on a board.
+
+**4. Silence.** No motor.
+
+**5. Tiny, flexible form factors.** A disk drive cannot shrink below its platters and motor. SSDs scale down to gum-stick M.2 cards and even single soldered chips (§1.6.3).
+
+**The one HDD advantage: price per GB.** Around 2018 the gap was roughly 8× — a 128 GB SSD cost about what a 1 TB HDD did. But flash density compounds like Moore's law, and the prediction that flash would erode disk's price advantage has largely come true: SSDs now own every performance-sensitive tier, leaving HDDs the bulk-capacity and archive tiers (§1.7).
 
 ---
 
-## 1.4 How an SSD actually works — pp. 19–22 ⭐ *the most important section*
+## 1.3 A short history of solid-state storage
+
+The details matter less than the arc: *expensive curiosity → niche → tipping point → explosion → consolidation.*
+
+- **1967** — The foundational invention: at Bell Labs, **Dawon Kahng and Simon Sze (施敏) invent the floating-gate transistor** — a MOSFET with an extra, electrically isolated gate that traps charge. Every flash cell ever made is a descendant of this device ([Chapter 3](ch3-nand-flash.md) dissects it). Sze was born in Nanjing and educated at National Taiwan University and Stanford.
+- **1976** — Dataram sells "Bulk Core": a 2 MB RAM-based SSD spanning eight large boards. RAM SSDs were blazing fast and byte-addressable but lost everything on power-off and cost a fortune; for ~20 years they stayed toys for the rich (main player: Texas Memory Systems).
+- **1988** — Giant magnetoresistance (GMR) is discovered — a boon for the *other* side. GMR heads made HDDs huge and cheap, won the 2007 Nobel Prize in Physics, and kept disk king for two more decades.
+- **1991** — SanDisk ships a 20 MB flash SSD: flash, unlike RAM, keeps data without power. The device finally behaves like a "disk."
+- **1997–1999** — First sustained commercial flash SSDs (Altec, BiTMICRO).
+- **2005–2006** — Samsung becomes the first tech giant to enter the market; laptops begin shipping with SSDs; Windows Vista is the first OS with SSD-specific support.
+- **2007 — the year of revolution** — Flash SSDs (Mtron, Memoright) finally match the fastest enterprise HDDs, and the disk war begins in earnest. Texas Memory Systems' RamSan-500 reaches 2 TB at 2 GB/s.
+- **2008** — The vendor count hits ~100. Intel ships the X-25E (SLC, 250/170 MB/s). EMC starts putting SSDs in enterprise arrays.
+- **2009** — PureSilicon fits **1 TB into a 2.5″ SSD** using MLC: SSDs now match HDD capacity in the same volume while destroying them on speed. SandForce launches its first controller. Steve Wozniak joins Fusion-IO.
+- **2010** — The market crosses $1B. Enterprise still buys SLC; consumers move to MLC.
+- **2011–2012** — IPOs and a buying spree: OCZ buys Indilinx ($32M); LSI buys SandForce ($370M); Hynix buys LAMD. SandForce's signature trick was **real-time in-controller compression** — fiendishly hard, because compressed pages vary in size and the mapping tables must get very clever — and it made SandForce arguably the most successful controller company ever.
+- **2013** — PCIe SSDs reach consumers. SATA's 6 Gbps ceiling (~560 MB/s real-world) and shallow command queue had become the bottleneck — the opening act for NVMe ([Chapter 6](ch6-nvme.md)).
+- **2014** — Software ecosystems (VMware VSAN and friends) rebuild around fast storage. SanDisk buys Fusion-IO ($1.1B); Seagate buys LSI's flash divisions.
+- **2015** — **Intel and Micron announce 3D XPoint**, a new memory class between DRAM and flash. WD acquires SanDisk for $19B. Toshiba samples 48-layer 3D NAND.
+- **2016** — PCIe 4.0 is demonstrated; a 60 TB SAS SSD is shown; all-flash-array vendor Pure Storage out-earns the top HDD-array vendor; Violin Memory — a flash pioneer that IPO'd badly in 2013 — files for bankruptcy protection. Consolidation has arrived.
+
+---
+
+## 1.4 How an SSD actually works ⭐
+
+*The most important section of this chapter — everything in [Chapter 4](ch4-ftl.md) grows out of it.*
 
 ??? example "🎬 Animate this — The Toy SSD Sandbox"
 
@@ -96,89 +109,88 @@ A condensed timeline (much of it sourced from StorageSearch.com). Worth skimming
     <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Toy SSD Sandbox"></iframe>
 
 
-From the host's perspective an SSD looks exactly like an HDD: the OS/file system sends standardized read/write **commands**; the drive returns **data and status**. Internally *(p. 20, Fig 1-13)*, an SSD has three functional blocks:
+From the host's point of view an SSD *is* a hard disk: the OS sends standardized read/write **commands**, the drive returns **data and status**. All the magic is internal, in three functional blocks:
 
-1. **Front end (前端)** — speaks the host protocol. Interface ↔ protocol pairs *(p. 20, Table 1-5)*: **SATA → ATA/AHCI**, **SAS → SCSI**, **PCIe → NVMe**.
-2. **FTL — Flash Translation Layer** — the middle layer, the soul of the SSD (all of Chapter 4).
-3. **Back end (後端)** — talks to the flash chips using standard flash interfaces (ONFI or Toggle protocol).
+1. **Front end (前端)** — speaks the host protocol. Each interface pairs with a protocol: **SATA → ATA/AHCI**, **SAS → SCSI**, **PCIe → NVMe**.
+2. **FTL — Flash Translation Layer** — the middle layer and the soul of the SSD (all of [Chapter 4](ch4-ftl.md)).
+3. **Back end (後端)** — talks to the flash chips over a standard flash interface (ONFI or Toggle).
 
-**The write path:** Host sends a write → data lands in the SSD's RAM buffer → the FTL assigns each logical block an address in flash → once enough data accumulates, the back end flushes it to those flash locations.
+**The write path:** host sends a write → the data lands in the SSD's RAM buffer → the FTL assigns each logical block a physical address in flash → once enough data accumulates, the back end flushes it out to those flash locations. Reads run the same path in reverse: look the logical address up in the map, fetch from that flash location, return.
 
-**Why the FTL must exist:** flash **cannot be overwritten in place** (不能覆蓋寫). A flash block must be *erased* before it can be written again. So incoming logical block X doesn't live at any fixed physical spot — the SSD writes it wherever convenient and records the location in a **mapping table (映射表)**: logical address → physical flash address.
+**Why must the FTL exist at all?** Because flash **cannot be overwritten in place (不能覆蓋寫)**. A flash block must be *erased* before it can be programmed again ([Chapter 3](ch3-nand-flash.md) explains the physics). So logical block X has no fixed home: the SSD writes each incoming version wherever convenient and records the location in a **mapping table (映射表)** — logical address → physical flash address.
 
-*Worked example from the book (p. 21):* a 128 GB SSD with 4 KB logical blocks has 128 GB ÷ 4 KB = 32M logical blocks. At 4 bytes per map entry, the mapping table is 32M × 4 B = **128 MB** — which is why SSDs carry DRAM roughly proportional to capacity (1 : 1000 ratio).
+!!! example "Worked example: how big is the mapping table?"
+    A 128 GB SSD mapped in 4 KB logical blocks has 128 GB ÷ 4 KB = 32M entries. At 4 bytes per entry the table is 32M × 4 B = **128 MB**. That is why SSDs carry DRAM roughly proportional to capacity — the classic ratio is **1 : 1000**.
 
-Reads are the reverse: look up the logical address in the map → fetch from that flash location → return to host.
-
-**The key competitive insight:** front-end protocols are standardized; the flash interface is standardized. So once interface and flash are chosen, **an SSD's performance, reliability, and power are decided by its FTL algorithms** — that's where vendors differentiate.
+**The competitive insight hiding in this architecture:** the front-end protocols are standardized, and the flash interface is standardized. Once you've picked an interface and bought your flash, **a drive's performance, reliability, and power are decided by its FTL algorithms**. That's where vendors actually differentiate — and it's why the one-sentence summary of this whole field is: *understand the FTL and you understand SSDs.*
 
 **What else the FTL must do:**
 
-- **Garbage collection (垃圾回收, GC)** *(p. 22, Fig 1-14)*: since you can't overwrite, updated data gets written elsewhere and the old copy becomes garbage (invalid). GC copies the still-valid data out of mostly-garbage blocks into a fresh block, then erases the old blocks to free them. Fig 1-14 shows valid data A/B/C from Block X and D/E/F/G from Block Y being consolidated into empty Block Z.
-- **Wear leveling (磨損平衡)**: every flash block has a limited number of erase cycles, so the FTL spreads writes evenly across all blocks instead of wearing out a few.
-- Plus: bad block management, read-disturb handling, data retention handling, error handling.
-
-The book's claim: *understand the FTL and you understand SSDs.*
+- **Garbage collection (垃圾回收, GC).** Since nothing is overwritten in place, updating data writes a new copy elsewhere and abandons the old one as garbage (invalid). Space fills with a mixture of valid and dead pages. GC copies the still-valid data out of mostly-garbage blocks into fresh blocks, then erases the reclaimed blocks. (Try it live in the sandbox above — watch the WA meter while you overwrite.)
+- **Wear leveling (磨損平衡).** Every block endures a limited number of erase cycles, so the FTL spreads erases evenly across all blocks rather than wearing a hole in a few of them.
+- **Housekeeping beyond that:** bad-block management, read-disturb handling, data-retention handling, error handling — all covered in [Chapter 4](ch4-ftl.md).
 
 ---
 
-## 1.5 Core product parameters — pp. 22–47
+## 1.5 Reading a datasheet: the core product parameters
 
-This long section teaches you to read an SSD datasheet, using Intel's enterprise DC S3710 as the running example *(p. 23, Fig 1-15)*. A spec sheet covers: basic info (capacity, media, form factor, temperature, certifications), performance (bandwidth, IOPS, latency, QoS), reliability & endurance, and power. Things a datasheet *can't* show: real-world return rate (RMA) and system compatibility — those you learn from testing and reputation.
+This long section teaches you to read an SSD spec sheet like an engineer, using Intel's enterprise DC S3710 as the running example. A datasheet covers four areas: basic information (capacity, media, form factor, temperature, certifications), performance (bandwidth, IOPS, latency, QoS), endurance & reliability, and power. Two crucial things a datasheet *cannot* show: real-world return rate (RMA) and system compatibility — those you learn only from testing and reputation (§1.5.6).
 
-### 1.5.1 Basic information — pp. 24–29
+### 1.5.1 Basic information
 
-**Capacity — decimal vs binary (p. 24–25).** Marketed capacity is decimal (128 GB = 128×10⁹ bytes); the flash chips inside are binary (128 GiB = 137.4×10⁹ bytes). The **~7% difference** isn't wasted — the SSD uses it internally for the FTL mapping table, spare blocks for garbage collection, and bad-block replacements. This surplus is called **OP (Over-Provisioning, 預留空間)**:
+**Capacity — decimal vs binary.** Marketed capacity is decimal (128 GB = 128 × 10⁹ bytes); the flash chips inside are binary (128 GiB = 137.4 × 10⁹ bytes). The **~7% difference is not wasted** — the drive keeps it for the FTL mapping table, spare blocks for garbage collection, and bad-block replacement. This hidden surplus is called **OP (Over-Provisioning, 預留空間)**:
 
-> OP = (raw capacity − user capacity) ÷ user capacity
+\[
+\mathrm{OP} = \frac{\text{raw capacity} - \text{user capacity}}{\text{user capacity}}
+\]
 
-Enterprise SSDs often add even more OP to boost sustained performance and endurance.
+Enterprise SSDs deliberately add *more* OP than the free 7% to boost sustained performance and endurance — [Chapter 4](ch4-ftl.md) §4.3 derives exactly why more spare area means less write amplification.
 
-**Media info — SLC / MLC / TLC (p. 25–26, Table 1-6).** These names tell you *bits stored per flash cell*:
+**Media: SLC / MLC / TLC.** The names encode *bits stored per flash cell*:
 
-| Type | Bits/cell | Erase-cycle life (P/E) | Speed | Price |
+| Type | Bits/cell | P/E-cycle life | Speed | Price |
 |---|---|---|---|---|
 | SLC (Single-Level Cell) | 1 | 50,000–100,000 | fastest | ~3×+ MLC |
 | MLC (Multi-Level Cell) | 2 | 3,000–10,000 | medium | medium |
 | TLC (Triple-Level Cell) | 3 | 500–1,500 | slowest | cheapest |
 
-More bits per cell = more capacity per silicon area = cheaper per GB, but slower and shorter-lived. (QLC, 4 bits, was just emerging.)
+More bits per cell = more capacity per silicon area = cheaper per GB — paid for in speed and lifespan. (QLC, 4 bits/cell, was just emerging as this generation of drives shipped; the trade continues in the same direction.)
 
-**2D → 3D flash (p. 26–27, Fig 1-16, Table 1-7).** Instead of shrinking cells in a flat plane, 3D NAND stacks layers vertically. Samsung's 48-layer 3D V-NAND achieved 2,600 Mb/mm² — about **3× the density of 2D**, meaning roughly ⅓ the cost per GB. The industry race *(p. 27, Fig 1-17 roadmap)* is simply: denser, faster, cheaper.
+**2D → 3D flash.** Instead of shrinking cells further in a flat plane — which was running into physics — 3D NAND stacks cell layers vertically. Samsung's 48-layer 3D V-NAND reached 2,600 Mb/mm², about **3× the density of 2D**, i.e. roughly ⅓ the cost per GB. The industry roadmap since is simply: more layers, denser, cheaper.
 
-**Form factor (p. 27–28, Fig 1-18)** — covered in depth in section 1.6.
+**Form factor** — important enough to get its own section (§1.6).
 
-**Temperature (p. 28).** Operating: 0 °C to 70 °C. Non-operating (storage/transport): −50 °C to 90 °C. Outside these ranges, anomalies or damage aren't covered by warranty.
+**Temperature.** Typical ratings: operating 0 °C to 70 °C; non-operating (storage/transport) −50 °C to 90 °C. Outside those ranges, damage isn't covered by warranty.
 
-**Certifications & compatibility (p. 28–29, Fig 1-19).** Third-party standard-body test suites; passing them spares customers some of their own testing.
+**Certifications & compatibility logos.** Third-party standards-body test suites; passing them spares customers part of their own qualification effort.
 
-### 1.5.2 Performance — pp. 29–33
+### 1.5.2 Performance
 
-**Three core metrics (p. 29):**
+**Three core metrics:**
 
-- **IOPS** — I/O operations per second; measures **random** small-block performance (typically 4 KB). Higher is better.
-- **Throughput / Bandwidth (吞吐量/帶寬, MB/s)** — measures **sequential** large-block performance (typically 512 KB+). Higher is better.
-- **Latency (時延/響應時間)** — time from command sent to status returned; reported as **average** and **maximum**. Lower is better. Once latency reaches the *seconds* range, humans perceive stutter.
+- **IOPS** — I/O operations per second: **random** small-block performance (typically 4 KB). Higher is better.
+- **Throughput / bandwidth (吞吐量/帶寬, MB/s)** — **sequential** large-block performance (typically 512 KB+). Higher is better.
+- **Latency (時延/響應時間)** — time from command to status, reported as **average** and **maximum**. Lower is better; once latency reaches the *seconds* range, humans perceive stutter.
 
-**Access patterns (p. 29–30).** Every benchmark workload is a combination of three knobs:
-1. **Random vs Sequential** — are consecutive commands' LBAs (logical block addresses) contiguous?
+**Every benchmark workload is a combination of three knobs:**
+
+1. **Random vs sequential** — are consecutive commands' LBAs (logical block addresses) contiguous?
 2. **Block size** — 4 KB for random tests, 512 KB–1 MB for sequential
-3. **Read/write ratio** — e.g., 100% write, 100% read, or mixed like 65:35
+3. **Read/write ratio** — 100% read, 100% write, or a mix like 65:35
 
-**QoS — Quality of Service (p. 30–31, Fig 1-20).** Max latency expressed at confidence levels: the worst command among 99% ("two nines") up to 99.999% ("five nines") of commands in a test window. Enterprise/data-center customers (the book cites Baidu/Alibaba/Tencent) care intensely about tail latency because one slow I/O stalls a user-facing request; they often care about QoS more than raw IOPS.
+**QoS — Quality of Service.** Maximum latency expressed at confidence levels: the worst command among 99% ("two nines") up to 99.999% ("five nines") of all commands in a test window. Hyperscale data-center customers (Baidu, Alibaba, Tencent and their global peers) care intensely about this **tail latency**, because one slow I/O stalls an entire user-facing request that fanned out across many drives. They routinely care more about QoS than about peak IOPS. ([Chapter 7](ch7-testing.md) §7.1 shows how FIO measures it.)
 
-**Empty drive vs full drive — the marketing tell (p. 31–33, Fig 1-21).** Performance is measured **FOB (Fresh Out of Box, 空盤)** and **steady-state/full (滿盤)**:
+**Empty drive vs full drive — the marketing tell.** Performance is measured **FOB (Fresh Out of Box, 空盤)** and at **steady state (滿盤, full)**:
 
-- HDDs perform the same empty or full (no garbage collection).
-- SSDs slow down dramatically when full, because writes now trigger garbage collection (and consumer drives may exhaust their SLC cache).
-- **Consumer SSD specs quote empty-drive numbers** — look for the phrase "up to" (最高可達).
-- **Enterprise SSD specs quote steady-state (full) numbers** — no "up to."
+- An HDD performs the same empty or full — there is no garbage collection.
+- An SSD slows down dramatically once full, because every new write now triggers GC (and consumer drives may also exhaust their SLC cache).
 
-The book's trick: you can identify whether a drive is consumer or enterprise-grade just by whether the spec sheet says "up to."
+!!! tip "The 'up to' trick"
+    Consumer SSD specs quote empty-drive numbers — look for the phrase **"up to" (最高可達)**. Enterprise specs quote steady-state numbers, no "up to." You can classify a drive's market segment from that phrase alone. Watch the toy sandbox's throughput sparkline (§1.4) reproduce the FOB → steady-state cliff live.
 
-One more subtlety (p. 33): quoted latencies are measured **cache-on** — the command completes when data reaches the SSD's RAM buffer, not flash. Writing through to flash (FUA) would take hundreds of microseconds even on SLC.
+One more subtlety: quoted latencies are measured **cache-on** — a write "completes" when the data reaches the drive's RAM buffer, not the flash. Forcing data through to flash (FUA) takes hundreds of microseconds even on SLC.
 
-### 1.5.3 Endurance (壽命) — pp. 34–37
+### 1.5.3 Endurance (壽命)
 
 ??? example "🎬 Animate this — The SSD Calculator Bundle"
 
@@ -189,90 +201,100 @@ One more subtlety (p. 33): quoted latencies are measured **cache-on** — the co
     <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
 
 
-Two interchangeable lifespan metrics:
+Flash wears out as it's erased and reprogrammed, so drives are rated for a total write volume. Two interchangeable metrics express it:
 
 - **DWPD (Drive Writes Per Day)** — how many times per day you can fill the entire drive, sustained over the warranty period (usually 5 years).
 - **TBW (Terabytes Written)** — total bytes writable over the drive's life.
 
-*Worked example (p. 34):* the 200 GB S3710 is rated 3,600 TB TBW over 5 years → 3,600 TB ÷ (5 × 365) ≈ 1,972 GB/day ≈ 10 full drive writes → **10 DWPD**.
+!!! example "Worked example: from TBW to DWPD"
+    A 200 GB drive rated 3,600 TB TBW over 5 years: 3,600 TB ÷ (5 × 365 days) ≈ 1,972 GB/day ≈ 10 full drive fills per day → **10 DWPD**. (That's the enterprise S3710. A mainstream consumer drive is ~0.3 DWPD — a 30× difference in what you're paying for.)
 
-**The formulas (p. 36–37):**
+The two formulas behind every endurance rating:
 
-> TBW ≈ (Capacity × NAND P/E cycles) ÷ WA
->
-> DWPD = TBW ÷ (365 × years × Capacity)
+\[
+\mathrm{TBW} \approx \frac{\text{Capacity} \times \text{P/E cycles}}{\mathrm{WA}}
+\qquad\qquad
+\mathrm{DWPD} = \frac{\mathrm{TBW}}{365 \times \text{years} \times \text{Capacity}}
+\]
 
-where **WA = Write Amplification (寫放大)** — the ratio of data actually written to flash vs data the host sent (garbage collection forces extra internal writes; WA depends heavily on firmware quality and whether your workload is sequential or random). Full treatment in Chapter 4.
+where **WA is Write Amplification (寫放大)** — the ratio of bytes physically written to flash vs bytes the host sent. Garbage collection forces extra internal copies, so WA > 1 in practice, and it depends heavily on firmware quality and on whether the workload is sequential (WA near 1) or random (much worse). The full treatment — including how OP buys WA down — is in [Chapter 4](ch4-ftl.md).
 
-**Matching DWPD to workload (p. 34–36, Table 1-8, Figs 1-22/1-23).** Applications split into **write-intensive (WI)** and **read-intensive (RI)**. Real-world data: **83% of applications need less than 1 DWPD**; mainstream consumer SSDs are ~**0.3 DWPD** (you'll almost never fill your laptop drive daily). High-DWPD drives cost more, so architects tier data: hot OLTP data on expensive write-intensive SSDs, warm read-mostly data on read-intensive SSDs, cold data on cheap HDDs.
+**Matching DWPD to the workload.** Applications split into **write-intensive (WI)** and **read-intensive (RI)** profiles, and real-world telemetry shows **83% of applications need less than 1 DWPD**. High-DWPD drives cost real money, so architects tier data: hot OLTP tables on write-intensive SSDs, warm read-mostly data on read-intensive SSDs, cold data on cheap HDDs (§1.7.2).
 
-### 1.5.4 Data reliability — pp. 37–41
+### 1.5.4 Data reliability
 
-Three metrics:
+Three metrics, in causal order:
 
-- **RBER (Raw Bit Error Rate)** — how often the raw flash flips bits *before* any correction. This reflects flash quality.
-- **UBER (Uncorrectable Bit Error Rate)** — probability of a bit error that survives *even after* error correction. This is the number users care about.
-- **MTBF (Mean Time Between Failures)** — whole-product reliability in hours.
+- **RBER (Raw Bit Error Rate)** — how often the raw flash flips bits *before* any correction. A property of the flash itself.
+- **UBER (Uncorrectable Bit Error Rate)** — the probability that an error survives *even after* ECC. The number users actually experience.
+- **MTBF (Mean Time Between Failures)** — whole-product reliability, in hours.
 
-**Why flash flips bits at all (p. 38):** ① program/erase wear (P/E cycling), ② **read disturb** (讀取乾擾 — reading a page slightly disturbs neighbors), ③ **program disturb** (編程干擾 — writing disturbs neighbors), ④ **data retention** loss (數據保持 — trapped charge leaks over time). The controller fights back with **ECC (error-correcting codes**, e.g., BCH) and sometimes internal RAID — but correction has limits, hence UBER.
+**Why flash flips bits at all:** ① program/erase wear (P/E cycling damages the cell oxide), ② **read disturb (讀取乾擾)** — reading a page slightly stresses its neighbors, ③ **program disturb (編程干擾)** — writing disturbs neighbors too, ④ **data retention (數據保持)** loss — the trapped charge slowly leaks. ([Chapter 3](ch3-nand-flash.md) §3.5–3.7 covers the physics of all four.) The controller fights back with **ECC** (BCH, and LDPC in newer designs — [Supplement A](../supplements/a-ecc-coding-theory.md) builds the theory from scratch) and sometimes an internal RAID layer across dies ([Chapter 4](ch4-ftl.md) §4.8).
 
-Relationships shown in the figures: stronger ECC → exponentially lower UBER *(p. 38, Fig 1-24)*; lower RBER → exponentially lower UBER *(p. 39, Fig 1-25)*; RBER rises as the flash wears *(p. 40, Fig 1-26)* — at end of life you may face ~1 bad bit per 100; and RBER varies *within* a block: upper pages can be ~100× worse than lower pages *(p. 40, Fig 1-27)*. Typical requirements *(p. 40, Table 1-9)*: enterprise SSDs demand lower UBER (commonly 10⁻¹⁶) than consumer (10⁻¹⁵).
+The relationships to internalize, all roughly exponential:
 
-**MTBF (p. 41).** Computed per standards (MIL-HDBK-217, Bellcore/Telcordia, China's GJB/Z299B) from component failure rates, and for SSDs tested per **JESD218A** — crucially, MTBF depends on workload: the same drive rated 1.2M hours at 20 GB/day of writes becomes 2.5M hours at 10 GB/day and 4M hours at 5 GB/day.
+- Stronger ECC → exponentially lower UBER.
+- Lower RBER → exponentially lower UBER.
+- RBER **rises as flash wears**: near end of life, raw error rates approach ~1 flipped bit per 100 read.
+- RBER varies *within* a block: the worst pages can be ~100× worse than the best ones.
 
-### 1.5.5 Power & thermals — pp. 41–45
+Typical requirements: enterprise SSDs demand UBER ≤ 10⁻¹⁶, consumer ≤ 10⁻¹⁵ — i.e. the enterprise part promises 10× fewer uncorrectable errors.
 
-**SSD power states (p. 41–42):** Idle → Standby/Sleep (consumer: 100–500 mW) → **DevSleep** (<10 mW; a newer SATA/PCIe state for system hibernation where the SSD shuts nearly everything off). Max active power occurs under sustained sequential writes (all flash channels busy + controller at full tilt).
+**MTBF** is computed from component failure-rate standards (MIL-HDBK-217, Bellcore/Telcordia, China's GJB/Z299B) and validated per **JESD218A**. Crucially it depends on workload: one drive can be rated 1.2M hours at 20 GB/day of writes, 2.5M hours at 10 GB/day, and 4M hours at 5 GB/day — same hardware, different stress.
 
-**Host power states S0–S5 (p. 42):** the host drives power transitions; the SSD follows. S0 = working; S1/S2 = light sleep variants; S3 = sleep (RAM stays alive, SSD off); S4 = hibernate (RAM contents written *to the SSD*, then everything off); S5 = soft-off.
+### 1.5.5 Power & thermals
 
-**The latency trade-off (p. 42–43, Table 1-10).** Entering/leaving low-power states takes time (exit is slower). Firmware must pick a timer: switch to low power too eagerly and you hurt performance on wake; too lazily and you waste energy. Low power matters enormously for laptops, much less for enterprise (which prioritizes consistent performance). Figs 1-28/1-29 *(pp. 43–44)* show AnandTech comparisons of slumber power and max write power across drives — max write power tracks write performance, since flash writes dominate consumption.
+**Drive power states**, from awake to comatose: active → idle → standby/sleep (consumer: 100–500 mW) → **DevSleep** (< 10 mW), a newer SATA/PCIe state that lets the drive shut nearly everything off during system hibernation. Maximum active power occurs under sustained sequential writes — all flash channels busy, controller at full tilt. Most of the energy goes into the flash chips themselves; the controller draws roughly 20%.
 
-**Thermal throttling (p. 44–45, Fig 1-30).** The controller and flash are the heat sources. When a temperature sensor hits a threshold (e.g., 70 °C), firmware reduces the number of parallel flash writes → temperature falls → performance falls too; when it cools below threshold, parallelism (and heat) return. The result is the sawtooth performance-vs-temperature oscillation in Fig 1-30. This matters most in hot ambient environments (50–60 °C).
+**Host power states S0–S5** drive the SSD's transitions: S0 = working; S1/S2 = light-sleep variants; S3 = sleep (RAM stays powered, SSD off); S4 = hibernate (RAM contents are written *to the SSD*, then everything powers off); S5 = soft-off.
 
-### 1.5.6 System compatibility — pp. 45–47
+**The latency trade-off.** Entering and — especially — leaving a low-power state costs time. Firmware picks an idle timer: go to sleep too eagerly and the next command eats a slow wake-up; too lazily and battery drains. Low-power engineering matters enormously for laptops and much less for enterprise, which prioritizes consistent latency. Across published drive comparisons, maximum write power tracks write performance almost linearly — more parallel flash programs, more watts — which is exactly the lever thermal management pulls:
 
-The least quantifiable spec and the most painful in practice: a drive with beautiful benchmark numbers that isn't recognized by some motherboard is "a pretty vase — nice to look at, useless." Three categories:
+**Thermal throttling.** The controller and flash are the heat sources. When an on-board sensor crosses a threshold (say 70 °C), firmware reduces the number of parallel flash operations → the drive cools → performance drops; once it cools below the threshold, parallelism and heat return. The signature is a **sawtooth** in performance-vs-time under sustained load, most pronounced in hot ambients (50–60 °C).
 
-1. **BIOS/OS compatibility (p. 46).** The boot chain: link negotiation at the electrical level → BIOS issues Identify to read drive info (part number, firmware version) → reads SMART → finds and loads the MBR → MBR reads the partition table → hands control to the partition boot record → OS loads via normal reads. A failure at *any* step = boot failure or blue screen. Because there are thousands of motherboard × BIOS × OS combinations, compatibility certification must cover OS types/versions, chipsets (Intel/AMD), BIOS versions, and key applications.
-2. **Electrical/hardware compatibility (p. 46–47).** The drive must tolerate imperfect-but-in-spec signals (jitter, marginal signal integrity), temperature extremes, and EMI — robustness comes from good power-regulator and signal-integrity design.
-3. **Error tolerance (p. 47).** When the *host* misbehaves (CRC errors, dropped packets, malformed commands), the SSD must at minimum not brick itself (變磚 = "turn into a brick"), and ideally return proper error status plus logs for debugging.
+### 1.5.6 System compatibility
 
-The authors' verdict: compatibility is earned through long, painful accumulated experience — "the mines must be stepped on" — and it's a core competitive advantage.
+The least quantifiable spec and the most painful in practice. A drive with beautiful benchmark numbers that a motherboard refuses to recognize is, as the engineering folklore goes, a pretty vase — nice to look at, useless. Three categories:
+
+1. **BIOS/OS compatibility.** Consider everything the boot chain must survive: electrical link negotiation → BIOS issues Identify and reads drive info (part number, firmware version) → reads SMART → locates and loads the MBR → MBR reads the partition table → hands off to the partition boot record → the OS loads via ordinary reads. A failure at *any* step means a boot failure or a blue screen — and there are thousands of motherboard × BIOS × OS combinations. Serious vendors certify against a matrix of OS versions, chipsets (Intel/AMD), BIOS versions, and key applications.
+2. **Electrical/hardware compatibility.** The drive must tolerate imperfect-but-in-spec signals: jitter, marginal signal integrity, temperature extremes, EMI. Robustness here comes from careful power-regulation and signal-integrity design.
+3. **Error tolerance.** When the *host* misbehaves — CRC errors, dropped packets, malformed commands — the SSD must at minimum not brick itself (變磚, "turn into a brick"), and ideally return proper error status plus logs for debugging.
+
+Compatibility is earned through long, accumulated, painful experience — every mine must be stepped on once — and that accumulated experience is a genuine competitive moat.
 
 ---
 
-## 1.6 Form factors (接口形態) — pp. 47–57
+## 1.6 Form factors (接口形態)
 
-Because SSDs are standardized commodities, standards bodies define **Form Factors** — physical dimensions + connector + electrical specs *(p. 47–48, Fig 1-31, Table 1-11)*. The interface landscape at the time:
+Because SSDs are standardized commodities, standards bodies define **form factors**: physical dimensions + connector + electrical spec. The landscape by interface:
 
 - **SATA SSDs** — the volume leader; consumer (mostly M.2 and 2.5″) and low-end enterprise.
-- **PCIe SSDs** — rising fast since 2016 thanks to NVMe; consumer = M.2, enterprise = 2.5″/U.2/AIC (add-in card).
+- **PCIe SSDs** — rising fast since 2016 on the back of NVMe; consumer = M.2, enterprise = 2.5″/U.2 and add-in cards.
 - **SAS SSDs** — enterprise arrays only, riding the mature SAS ecosystem; 2.5″.
 
-**1.6.1 — 2.5-inch (p. 49).** The enterprise mainstay: a 1U server front panel fits 20–30 of them. As flash density grows, one 2.5″ shell can hold 16–32 TB.
+**1.6.1 — 2.5-inch.** The enterprise mainstay: a 1U server front panel fits 20–30 hot-swappable 2.5″ bays, and as flash density grows one shell holds 16–32 TB.
 
-**1.6.2 — M.2 (p. 50–51, Figs 1-32/1-33).** Originally "NGFF," designed for ultrabooks. The naming code is **width × length in mm**: Type 2280 = 22 mm wide, 80 mm long (also 2242, 2260, 22110, etc.). Thickness and single/double-sided mounting are specified separately. The critical detail is the **key notch**:
+**1.6.2 — M.2.** Originally "NGFF," designed for ultrabooks. The naming code is **width × length in mm**: Type 2280 = 22 mm wide, 80 mm long (also 2242, 2260, 22110…). The critical detail is the **key notch**:
 
-- **B key (Socket 2):** supports SATA or PCIe ×2 → up to ~2 GB/s
-- **M key (Socket 3):** adds PCIe ×4 → up to ~4 GB/s; the mainstream going forward
-- B+M keyed cards fit both sockets.
+- **B key (Socket 2):** SATA or PCIe ×2 → up to ~2 GB/s
+- **M key (Socket 3):** adds PCIe ×4 → up to ~4 GB/s; the mainstream choice
+- B+M-keyed cards fit both sockets.
 
-M.2 defines only the physical/electrical connector — whether a given card speaks SATA or NVMe/PCIe depends on the product.
+M.2 defines only the connector and dimensions — whether a given card speaks SATA or NVMe is a product choice, which is why "it fits the slot" doesn't guarantee "it works in the slot."
 
-**1.6.3 — BGA SSD (p. 51–55).** The whole SSD (controller + flash) in one soldered-down chip package. Benefits vs an M.2 stick *(p. 52)*: ~15% board-space saving, ~10% battery-life gain, 0.5–1.5 mm height saving, better heat conduction through the solder balls. Samsung's PM971 (2016) opened the consumer era. The book profiles Longsys's **P900** *(pp. 53–55)*: at 11.5 × 13 mm the world's smallest NVMe SSD at the time — PCIe Gen3 ×2, NVMe 1.3, 64-layer 3D TLC, and notably **HMB (Host Memory Buffer)**: the SSD borrows a slice of the host's RAM instead of carrying its own DRAM, cutting cost and power. It also supports Boot Partition (host can boot without a separate SPI flash chip).
+**1.6.3 — BGA SSD.** The entire SSD — controller plus flash — in one soldered-down chip package. Versus an M.2 stick: ~15% board-space saving, ~10% battery-life gain, 0.5–1.5 mm height saving, and better heat conduction through the solder balls. Samsung's PM971 (2016) opened the consumer era; Longsys's P900 (11.5 × 13 mm, PCIe Gen3 ×2, NVMe 1.3, 64-layer 3D TLC) held the "world's smallest NVMe SSD" title in its day. The P900 also showcases **HMB (Host Memory Buffer)** — the drive borrows a slice of host RAM instead of carrying DRAM, cutting cost and power ([Chapter 4](ch4-ftl.md) §4.2 weighs the trade-offs) — and Boot Partition, letting a system boot without a separate SPI flash chip.
 
-**1.6.4 — SDP (p. 55–57).** "SATA Disk in Package" (a Longsys product concept): controller + flash sealed into one tested module (33.4 × 17.2 × 1.23 mm, 1.9 g) — a semi-finished SSD needing only a case. Point: modular manufacturing cut production from 15 days to 1 day and scaled capacity from 15K to 100K units/day.
+**1.6.4 — SDP.** "SATA Disk in Package": controller + flash sealed into one tested module (33.4 × 17.2 × 1.23 mm, 1.9 g) — a semi-finished SSD needing only a case. The point is manufacturing: modular assembly cut production time from 15 days to 1 and scaled output from 15K to 100K units/day.
 
-**1.6.5 — U.2 (p. 57).** Also known as SFF-8639: a 2.5″-drive connector that **unifies SATA, SAS, and PCIe on one socket**, simplifying deployment. Expected to become the main enterprise form factor as PCIe displaces SATA/SAS.
+**1.6.5 — U.2.** Also known as SFF-8639: a 2.5″-drive connector that **unifies SATA, SAS, and PCIe on one socket**. It lets enterprise chassis offer one bay that accepts anything — the bridge form factor for the PCIe transition.
 
 ---
 
-## 1.7 The solid-state storage market — pp. 57–61
+## 1.7 The solid-state storage market
 
-**1.7.1 — SSD is replacing HDD (p. 58–59).** Consumer SSD attach rate hit 30–40% in 2017, predicted >50% in 2018 *(Fig 1-41)*. The pace of replacement is governed by one variable: **price per GB of flash**. At writing, a 128 GB SSD cost about the same as a 1 TB HDD — an ~8× per-GB gap — but flash density growth (Moore's law) was steadily closing it *(p. 59, Fig 1-42)*.
+**1.7.1 — SSD is replacing HDD.** Consumer attach rates tell the story: 30–40% of new PCs shipped with SSDs in 2017, crossing 50% in 2018. The pace of replacement is governed by exactly one variable — **price per GB of flash** — and flash density growth keeps pushing it down.
 
-**1.7.2 — Where each belongs (p. 59): data tiering by temperature.**
+**1.7.2 — Where each belongs: data tiering by temperature.**
 
 - Acceleration tier → PCIe SSDs
 - Hot data (frequent access) → SATA/SAS SSDs
@@ -280,13 +302,23 @@ M.2 defines only the physical/electrical connector — whether a given card spea
 - Cold data → HDDs
 - Archive → cheap high-capacity HDDs or tape
 
-SSD = performance-first, smaller capacity; HDD = capacity/price-first. (熱/溫/冷數據 = hot/warm/cold data.)
+SSD is performance-first; HDD is capacity-per-dollar-first. (熱/溫/冷數據 = hot/warm/cold data.) A well-designed storage system uses both, each where its economics win.
 
-**1.7.3 — Market structure (p. 60–61, Fig 1-43).** Per 2016 TrendFocus data, **Samsung held roughly half the SSD market**, powered by owning both controller and (industry-leading) flash media. Since **flash is 90%+ of an SSD's cost**, flash fabs (原廠) dominate — especially in cut-throat consumer SSDs. Non-fab players like Kingston and Lite-ON still carved out 5–10% via brand and channel strength, buying flash and third-party turnkey controllers. The market is a three-way dance: **flash fabs + controller vendors + channel/brand SSD makers**.
+**1.7.3 — Market structure.** Per 2016 TrendFocus data, **Samsung held roughly half the SSD market**, powered by owning both an industry-leading flash fab and its own controllers. The structural reason fabs dominate: **flash is 90%+ of an SSD's bill of materials**, so whoever makes the flash controls the cost curve — especially brutal in consumer SSDs. Yet non-fab players (Kingston, Lite-ON) still carved out 5–10% each on brand and channel strength, buying flash on the market and pairing it with third-party turnkey controllers. The market is a permanent three-way dance: **flash fabs + controller vendors + channel/brand SSD makers**.
 
 ---
 
-## Key vocabulary — for decoding the original figures
+## Key takeaways
+
+1. **SSD = controller + NAND flash + firmware.** The interfaces are standardized at both ends; the FTL algorithms in between are where drives are actually won or lost.
+2. **Flash can't overwrite in place** → mapping table → garbage collection → write amplification → wear leveling. This one causal chain generates most of the field's complexity.
+3. **Datasheets have dialects.** "Up to" = consumer, empty-drive numbers; steady-state numbers = enterprise. Latency is quoted cache-on. MTBF depends on the assumed workload.
+4. **Endurance is arithmetic:** TBW ≈ capacity × P/E ÷ WA. Everything vendors do — OP, better GC, compression — is an attack on WA.
+5. **Price per GB is the only axis HDDs still win** — which is why tiering (hot on flash, cold on disk) is how real systems are built.
+
+---
+
+## Key vocabulary
 
 | 中文 | English |
 |---|---|
@@ -333,4 +365,27 @@ SSD = performance-first, smaller capacity; HDD = capacity/price-first. (熱/溫/
 
 ---
 
-*Next up: Chapter 2 — SSD Controllers and All-Flash Arrays.*
+??? info "📖 Book page map — for readers of 《深入淺出SSD》"
+
+    This chapter grew out of, and follows the section numbering of, Chapter 1 of
+    《深入淺出SSD》 (SSDFans, 2018). If you have the book, the original figures
+    live here (see also the [figure atlas](../atlas/figure-atlas-animation-roadmap.md)):
+
+    | Section | Book pages | Key figures/tables |
+    |---|---|---|
+    | 1.1 Introduction | pp. 1–4 | Fig 1-3 (PCB), Fig 1-4 (media taxonomy) |
+    | 1.2 SSD vs HDD | pp. 4–8 | Table 1-1/1-2/1-3/1-4, Fig 1-5/1-6 |
+    | 1.3 History | pp. 9–19 | Figs 1-7…1-12 |
+    | 1.4 How an SSD works | pp. 19–22 | Fig 1-13 (three blocks), Table 1-5, Fig 1-14 (GC) |
+    | 1.5.1 Basic info | pp. 24–29 | Table 1-6 (SLC/MLC/TLC), Fig 1-16/1-17, Fig 1-19 |
+    | 1.5.2 Performance | pp. 29–33 | Fig 1-20 (QoS), Fig 1-21 (empty vs full) |
+    | 1.5.3 Endurance | pp. 34–37 | Table 1-8, Figs 1-22/1-23 |
+    | 1.5.4 Reliability | pp. 37–41 | Figs 1-24…1-27, Table 1-9 |
+    | 1.5.5 Power | pp. 41–45 | Table 1-10, Figs 1-28/1-29/1-30 (throttling sawtooth) |
+    | 1.5.6 Compatibility | pp. 45–47 | — |
+    | 1.6 Form factors | pp. 47–57 | Fig 1-31, Table 1-11, Figs 1-32/1-33 (M.2 keys) |
+    | 1.7 Market | pp. 57–61 | Figs 1-41/1-42/1-43 |
+
+    Pages 61–66 of the chapter file are website reader comments — nothing to see there.
+
+*Next: [Chapter 2 — SSD Controllers and All-Flash Arrays](ch2-controllers-afa.md), the machine wrapped around the flash.*

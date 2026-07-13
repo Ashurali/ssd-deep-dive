@@ -7,12 +7,16 @@ Re-runnable pipeline (SITE_SPECIFICATION.md §6.1, §8):
   matter (title, tags, source_anchor), demote any H1 after the first to H2
   (fence-aware), and inject collapsed animation-embed blocks after the
   sections whose figures each animation realizes (EMBEDS registry below).
-  Prose itself is never rewritten. Re-ingesting overwrites the destination.
+  IMPORTANT: docs/ prose is now AUTHORED — chapters are being rewritten in
+  place as standalone textbook text. A destination that already exists is
+  therefore never overwritten unless --overwrite-docs is passed (only do
+  that to re-bootstrap a chapter from its raw incoming/ study guide, which
+  DISCARDS the authored rewrite).
 - Animations: copy each incoming/animations/*.html verbatim to
   docs/animations/files/ and generate a wrapper page if one doesn't already
   exist. Existing wrappers are left untouched (hand edits survive).
 
-Usage: python scripts/ingest.py
+Usage: python scripts/ingest.py [--overwrite-docs]
 """
 from __future__ import annotations
 
@@ -510,13 +514,17 @@ def strip_existing_front_matter(text: str) -> str:
     return text
 
 
-def ingest_documents() -> int:
+def ingest_documents(overwrite: bool = False) -> int:
     count = 0
     for name, (dest_rel, title, tags, anchor) in DOCUMENTS.items():
         src = INCOMING / name
         if not src.exists():
             continue
         dest = DOCS / dest_rel
+        if dest.exists() and not overwrite:
+            print(f"  skip {name} (docs/{dest_rel} is authored; "
+                  "--overwrite-docs to discard it)")
+            continue
         dest.parent.mkdir(parents=True, exist_ok=True)
         text = strip_existing_front_matter(src.read_text(encoding="utf-8"))
         lines = demote_extra_h1s(text.splitlines())
@@ -573,9 +581,10 @@ def ingest_animations() -> int:
 
 
 def main() -> int:
+    overwrite = "--overwrite-docs" in sys.argv[1:]
     print("Ingesting from incoming/ ...")
     anims = ingest_animations()      # animations first: embeds reference them
-    docs = ingest_documents()
+    docs = ingest_documents(overwrite)
     print(f"Done: {docs} document(s), {anims} animation(s).")
     if docs == 0 and anims == 0:
         print("Nothing found in incoming/. Drop files there and re-run.")

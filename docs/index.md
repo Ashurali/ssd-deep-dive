@@ -6,11 +6,11 @@ hide:
 ---
 
 <div class="sdd-hero">
-  <div class="sdd-kicker">深入淺出SSD · study companion</div>
+  <div class="sdd-kicker">固態硬盤 · an interactive textbook</div>
   <h1>Think in <em>SSDs</em>,<br>not just read about them.</h1>
-  <p class="sdd-lede">Seven chapter guides, five supplements, a 359-figure
-  atlas — and 13 interactive animations embedded right where the book needs
-  them to move.</p>
+  <p class="sdd-lede">Seven core chapters, five supplements, and 13 interactive
+  animations embedded right where the ideas need to move — a self-contained
+  course in how solid-state storage really works.</p>
   <p class="sdd-ctas">
     <a class="sdd-cta sdd-cta--p" href="core/ch1-overview/">Start at Chapter 1 →</a>
     <a class="sdd-cta sdd-cta--s" href="animations/">🎬 Animation gallery</a>
@@ -40,4 +40,4 @@ hide:
   <a class="sdd-tile" href="reference/quizzes/"><span class="i">✅</span><span class="t">Quizzes</span><span class="d">check yourself, per chapter</span></a>
 </div>
 
-<p class="sdd-foot">Companion throughout: the <a href="atlas/figure-atlas-animation-roadmap/">figure atlas &amp; animation roadmap</a> — all 359 book figures, tiered and turned into the build plan behind the animations. Browse everything <a href="reference/tags/">by tag</a>.</p>
+<p class="sdd-foot">Behind the scenes: the <a href="atlas/figure-atlas-animation-roadmap/">figure atlas &amp; animation roadmap</a> — the 359-figure survey that became the build plan for the animations. Browse everything <a href="reference/tags/">by tag</a>.</p>
