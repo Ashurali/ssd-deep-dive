@@ -45,7 +45,7 @@ $$ \text{map table} \approx \frac{\text{Capacity}}{1000} $$
 **IOPS ceiling from link bandwidth** — an interface can never deliver more
 I/Os per second than its usable bandwidth divided by the transfer size.
 *Context in [Ch 1 §1.5.2](../core/ch1-overview.md#152-performance) and
-[Ch 5 §5.13](../core/ch5-pcie.md#513-pcie-link-performance-loss-analysis-pp-7074-why-you-never-get-the-theoretical-number)
+[Ch 5 §5.13](../core/ch5-pcie.md#513-pcie-link-performance-loss-analysis)
 (why the realized number is always lower).*
 
 $$ IOPS_{max} = \frac{\text{link bandwidth}}{\text{block size}} $$
