@@ -55,7 +55,7 @@ $$ IOPS_{max} = \frac{\text{link bandwidth}}{\text{block size}} $$
 **Sample-size inequalities** — how many drives to test: SS must satisfy both,
 using the looked-up Upper Confidence Limit (UCL = 0.92 at zero accepted
 failures). Take the larger SS and round up.
-*Worked through in [Ch 7 §7.8](../core/ch7-testing.md#78-endurance-testing-pp-3746-the-formula-heavy-core).*
+*Worked through in [Ch 7 §7.8](../core/ch7-testing.md#78-endurance-testing).*
 
 $$ UCL(\text{functional failures}) \le FFR \times SS $$
 

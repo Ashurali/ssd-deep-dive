@@ -9,95 +9,100 @@ tags:
 source_anchor: "CH7 file, pp. 1–54"
 ---
 
-# SSD Deep Dive — Chapter 7: SSD Testing
-## English Study Companion
+# Chapter 7 — SSD Testing
 
-**Where we are:** Chapters 1–6 built the SSD from the inside out — media, controller, flash physics, FTL, PCIe, NVMe. This final chapter turns to **practice**: how SSDs are actually validated and tested before shipping. It's the least theoretical and, for your internship, probably the **most immediately useful** chapter — the tools (FIO, IOMeter), the equipment (analyzers, jammers, emulators), and the standardized test methods (JEDEC endurance, SNIA performance) are things you may touch directly. Chapter 7 runs pages 1–54 of your file (p. 55 is empty website comments).
+Chapters 1–6 built the SSD from the inside out — media, controller, flash physics, FTL, PCIe, NVMe. This final chapter turns to **practice**: how drives are actually validated before they ship. It is the least theoretical chapter and the most immediately usable one — the tools (FIO, IOMeter), the lab equipment (emulators, analyzers, jammers), and the standardized methods (JEDEC endurance, SNIA performance) are what real bench work is made of.
 
-**How to use this guide:** Section numbers match the book. Page references like *(p. 39, Fig 7-6)* point into your CH7 file so you can view the original table/figure beside the explanation. Because this chapter is practical, I've kept the concrete numbers (FIO command flags, the endurance sample-size formulas, the SNIA test matrix) that you'd actually use, and worked through the calculations. A **"Modern developments"** section at the end updates the tool landscape (the async-I/O story in particular has moved on in a way that beautifully echoes Chapter 6), and there's a short **closing note on the whole book**. Glossary and self-quiz at the very end.
+!!! abstract "In this chapter"
+    - **The software tools** — FIO ⭐⭐ and the GUI benchmarks, with their data-pattern traps (§7.1)
+    - **Verification vs validation** — a vocabulary distinction with a price tag (§7.2)
+    - **The lab equipment** — emulator vs FPGA, protocol analyzers, jammers (§7.3)
+    - **Regression** (§7.4) · **DevSleep testing** (§7.5) · **PCIe interop** (§7.6) · **Measuring WA** ⭐ (§7.7)
+    - **Endurance testing** ⭐⭐ — JESD218A sample-size math and temperature acceleration (§7.8)
+    - **Certification bodies** (§7.9) · **SNIA performance methodology** ⭐⭐ — purge, precondition, steady state (§7.10)
+    - **Modern developments** — io_uring and the current tool landscape (§7.11) · **FTL & power-loss test suites** (§7.12)
 
-**The chapter's shape:** 7.1 the software tools. 7.2 the vocabulary of "testing" (verification vs validation). 7.3 the lab equipment (emulator, analyzer, jammer). 7.4 regression testing. 7.5 DevSleep testing. 7.6 PCIe interop/compliance. 7.7 measuring write amplification. 7.8 endurance testing (the most formula-heavy section). 7.9 certification bodies. 7.10 performance testing (the SNIA methodology). If your time is limited, **7.1 (FIO), 7.8 (endurance), and 7.10 (performance)** are the ones that map to real bench work.
+    Short on time? §7.1, §7.8, and §7.10 map directly onto real bench work.
 
 ---
 
-## 7.1 SSD testing software — pp. 1–15
+## 7.1 SSD testing software
 
-### 7.1.1 FIO — the king of performance testing ⭐⭐ *the one tool to actually learn*
+### 7.1.1 FIO — the king of performance testing ⭐⭐
 
-**FIO (Flexible I/O tester)** is the book's "number one tool" for SSD performance. It's open-source, written by **Jens Axboe** — a Linux kernel heavyweight who maintains the **block device layer** (the layer between the filesystem and the device driver, i.e., the one closest to SSDs) and wrote the Deadline and CFQ I/O schedulers. *(p. 1–2)*
+**FIO (Flexible I/O tester)** is the one tool to actually learn. Open source, written by **Jens Axboe** — maintainer of the Linux **block layer** (the layer between filesystem and driver, the one closest to the SSD) and author of the Deadline and CFQ I/O schedulers. The tool comes from the same mind that owns the kernel path it exercises.
 
-**Concepts you need first (p. 2–3) — these are storage-testing fundamentals, not just FIO trivia:**
-- **Threads** — how many read/write tasks run in parallel. One CPU core runs one thread at a time; more parallelism needs more threads (or time-slicing).
-- **Sync vs async mode** — this is *the* key idea. A host sends a command in a few microseconds, but the SSD takes hundreds of μs to ms to finish it. In **sync mode**, the thread issues one command then *sleeps* until the result returns — which wastes the SSD, because an enterprise SSD has 8–16 channels × 4–16 parallel units = **32–256 commands executable at once**, and sync mode keeps only *one* busy. So real testing uses **async mode**: fire a command, don't wait, keep firing; completions come back via interrupt/polling. Now all the parallel units get work → huge efficiency gain.
-- **Queue depth** — in async mode you can't fire *infinitely* (a stalled SSD would let commands pile up, exhausting memory). Queue depth caps outstanding commands: depth 64 means the queue holds 64; when full, no new commands until some complete. *(This is the same SQ depth concept from Chapter 6, seen from the test side.)*
-- **Offset** — start testing from a byte offset into the device/file (e.g., offset=4G).
-- **DirectIO** — Linux normally buffers reads/writes in a kernel cache (fast, but lost on power-off, and *hides true device speed*). **DirectIO bypasses the cache** to read/write the SSD directly — essential for honest benchmarks.
-- **BIO (Block-IO)** — Linux's block-request structure (carries LBA, size, memory address).
+**Five concepts first — storage-testing fundamentals, not FIO trivia:**
 
-**A real FIO command, flag by flag (p. 4) — worth memorizing the important ones:**
+- **Threads** — parallel I/O tasks. One core runs one thread at a time; more parallelism needs more threads.
+- **Sync vs async** — *the* key idea. Issuing a command takes microseconds; completing it takes hundreds of microseconds. In **sync** mode the thread sleeps until each command returns — leaving an enterprise SSD's 8–16 channels × 4–16 parallel units (**32–256 concurrent commands' worth of hardware**) almost entirely idle. **Async** mode fires without waiting and collects completions later, keeping every parallel unit fed. ([Chapter 2](ch2-controllers-afa.md#213-back-end)'s parallelism, seen from the test bench.)
+- **Queue depth** — the cap on outstanding async commands (depth 64 = at most 64 in flight). The same concept as [Chapter 6](ch6-nvme.md#63-the-three-treasures-in-detail)'s SQ depth, from the other side of the cable.
+- **DirectIO** — Linux normally routes I/O through the kernel page cache, which is fast, volatile, and **hides the device's true speed**. `direct=1` bypasses it. Essential for honest numbers.
+- **Offset / BIO** — start the test at a byte offset; BIO is the kernel's block-request structure (LBA, size, buffer).
+
+**A real command, flag by flag:**
+
 ```
 fio -rw=randwrite -ioengine=libaio -direct=1 -thread -numjobs=1 \
     -iodepth=64 -filename=/dev/sdb4 -size=10G -name=job1 -bs=4k \
     --output TestResult.log
 ```
-- `-rw=randwrite` — access mode: `randwrite`/`randread` (random), `write`/`read` (sequential), or mixed.
-- `-ioengine=libaio` — `libaio` = async; `sync` = synchronous.
-- `-direct=1` — use DirectIO (bypass cache). **Almost always 1 for real tests.**
-- `-thread` — use threads (lighter than processes).
-- `-numjobs=1` — threads per named job. **Total threads = jobs × numjobs.**
+
+- `-rw=randwrite` — access pattern: `randwrite`/`randread`, sequential `write`/`read`, or mixes.
+- `-ioengine=libaio` — async engine (`sync` for synchronous; see §7.11 for the modern successor).
+- `-direct=1` — bypass the page cache. **Almost always 1.**
+- `-thread`, `-numjobs=1` — threads, and threads per job (total = jobs × numjobs).
 - `-iodepth=64` — queue depth.
-- `-filename=/dev/sdb4` — target (a device, partition, or file).
-- `-size=10G` — data per thread.
-- `-bs=4k` — block size per I/O. **This is where you set 4 KB for the classic 4K IOPS test.**
+- `-filename=/dev/sdb4` — device, partition, or file.
+- `-size=10G`, `-bs=4k` — data per thread; block size (this is where the classic 4K IOPS test lives).
 
-**Reading FIO output (p. 5–7):** the aggregate line matters most. `aggrb=784568KB/s` ÷ 4 KB = **~196K IOPS**. Latency breaks into **slat** (submission latency — time to issue), **clat** (completion latency — time to execute), and **lat** (total). FIO also prints **percentiles**: `90.00th=[684]` means 90% of reads completed within 684 μs — this is how you read tail latency / QoS.
+**Reading the output:** the aggregate line first — `aggrb=784568KB/s` ÷ 4 KB ≈ **196K IOPS**. Latency splits into **slat** (submission), **clat** (completion), **lat** (total), plus **percentiles**: `90.00th=[684]` means 90% of I/Os finished within 684 µs — this is how tail latency and QoS ([Ch 1 §1.5.2](ch1-overview.md#152-performance)) are actually read off a bench run.
 
-**FIO can also verify data integrity (p. 7):** `-verify=<algo>` (md5, crc32c, sha256…) with `do_verify=1` writes then reads-back-and-checks; `verify=meta` embeds timestamps and logical addresses (so it catches the "wrong-LBA" mix-ups from Chapter 6's data-protection discussion). Note the memory cost: FIO stores every block's checksum in RAM. Config files (`fio test.log`) let you script all this. *(This R/W/C — read/write/compare — integrity testing recurs throughout the chapter.)*
+**FIO also verifies data integrity:** `-verify=<algo>` (crc32c, md5, sha256…) writes then reads back and compares; `verify=meta` embeds timestamps and LBAs into each block, catching the wrong-LBA mix-ups that [Chapter 6 §6.6](ch6-nvme.md#66-end-to-end-data-protection)'s Reference Tag exists for. (Mind the RAM cost — FIO keeps every block's checksum in memory.) This **R/W/C — read/write/compare** — pattern recurs through the whole chapter.
 
-### 7.1.2–7.1.6 The GUI benchmarks (p. 8–15) — *know what each measures and its data-pattern trap*
+### 7.1.2–7.1.6 The GUI benchmarks — know each one's data-pattern trap
 
-The book surveys five consumer/Windows tools. The recurring gotcha to understand: **whether a tool uses compressible or incompressible test data drastically changes results on compressing controllers** (like SandForce).
+Five consumer/Windows tools, one recurring gotcha: **compressible vs incompressible test data changes everything on a compressing controller** (SandForce, [Ch 1 §1.3](ch1-overview.md#13-a-short-history-of-solid-state-storage)):
 
-- **AS SSD Benchmark (p. 8–9)** — German tool; tests sequential, 4K, 4K-QD64 (to expose NCQ), and access time; gives a composite score. Uses **random (incompressible) data** — realistic. Also reports whether AHCI is on and whether partitions are 4K-aligned. Needs ≥2 GB free; a full run ~1 hour.
-- **ATTO Disk Benchmark (p. 10–11)** — tests across block sizes (512B→8K). Uses **all-0 (highly compressible) data** by default → flattering numbers on compressing drives; represents a best-case ceiling, not typical use.
-- **CrystalDiskMark (p. 11–13)** — sequential, random 512K, 4K, 4K-QD32. Defaults to **incompressible data**, but has `0Fill`/`1Fill` options that switch to compressible data (title bar flags it) — same caveat as ATTO. Bigger test files reduce cache interference (truer result) but wear the drive more.
-- **PCMark Vantage (p. 13)** — whole-PC benchmark with a storage component modeling real app traces (boot, app launch, media). *(This one is dated — see modern note.)*
-- **IOMeter (p. 13–15)** — the most *configurable* tool: set LBA range, queue depth, data pattern, random/sequential mix, R/W ratio, duration. Reports IOPS, MB/s, average response time, CPU utilization. No GUI report viewer — export the CSV to Excel. A typical run is ~10 minutes.
-
----
-
-## 7.2 Verification vs Validation — pp. 15–16 ⭐ *a vocabulary distinction worth getting right*
-
-Chinese says "测试" for everything; English splits it into Simulation, Emulation, Verification, Validation, Test, QA. The two that matter here hinge on the **chip design flow**: (1) requirements → (2) architecture → (3) ASIC design (assemble IP) → (4) **tape-out** → (5) chip returns.
-
-- **Verification** = testing *during design* (using an **Emulator** or **FPGA**, before the chip exists) — *"helping the ASIC do the thing right."*
-- **Validation** = testing *after the chip returns* (using a dev board) — *"confirming the ASIC did the thing right."*
-
-The stakes differ enormously: a bug found in **Verification** is cheap — the ASIC engineer fixes the RTL, reloads the emulator database or FPGA bitfile, re-tests. The *same* bug found in **Validation** is expensive — it may require a **re-tape-out** (with metal fix) or a firmware workaround to "cover" for the hardware. This is why so much effort goes into pre-silicon verification.
+- **AS SSD Benchmark** — sequential, 4K, 4K-QD64 (exposes queuing), access time; composite score. Uses **incompressible (random) data** — realistic. Also flags AHCI state and 4K partition alignment. Needs ≥2 GB free; a full run ~1 hour.
+- **ATTO Disk Benchmark** — sweeps block sizes 512 B → 8 K. Defaults to **all-zero (highly compressible) data** → flattering ceiling numbers on compressing drives, not typical use.
+- **CrystalDiskMark** — sequential, 512K, 4K, 4K-QD32. Defaults to **incompressible**, with 0Fill/1Fill compressible options (the title bar tells you which). Larger test files reduce cache interference but wear the drive more.
+- **PCMark Vantage** — whole-PC benchmark whose storage part replays real application traces (boot, app launch, media). Long obsolete — see §7.11.
+- **IOMeter** — the most configurable: LBA range, queue depth, data pattern, random/sequential mix, R/W ratio, duration; reports IOPS, MB/s, response time, CPU load. No report GUI — export the CSV.
 
 ---
 
-## 7.3 Test equipment — pp. 16–27
+## 7.2 Verification vs Validation ⭐
 
-### 7.3.1 Emulator (p. 16–18)
+Chinese uses 測試 for everything; English engineering splits it, and the split hinges on the chip-design flow: requirements → architecture → ASIC design → **tape-out** → silicon returns.
 
-First, **Simulation vs Emulation**: a **Simulator** is *software* that models the chip's function and outputs results; an **Emulator** is *hardware* that reproduces the chip's internal design to run its function. In controller design, besides RTL simulation you do Verification on an **Emulator** (e.g., Cadence Palladium) or an **FPGA**. Emulator vs FPGA trade-offs *(p. 17–18)*:
-- **Price:** Emulator ~$1M+; FPGA ~$1K–10K.
-- **Capacity:** Emulator ~billions of gates (whole ASIC fits); FPGA ~millions (one FPGA might hold only the front end — PCIe+NVMe — needing a second for the flash controller).
-- **Debug:** Emulator easily exports internal signals/waveforms; FPGA connects more easily to protocol/logic analyzers.
-- **Speed:** FPGA is *much* faster — the book's line: booting an OS might take hours on FPGA but **days** on an emulator.
+- **Verification** = testing *before the chip exists* (emulator or FPGA) — *helping the ASIC do the thing right.*
+- **Validation** = testing *the returned silicon* (dev board) — *confirming the ASIC did the thing right.*
 
-Both let the **firmware team start before silicon returns**, skipping the painful bring-up-then-guess-if-it's-hardware-or-code phase.
+The distinction carries a price tag: a bug caught in verification costs an RTL edit and a re-run. The same bug caught in validation can cost a **re-tape-out** (metal fix) or a permanent firmware workaround papering over hardware. That asymmetry is why pre-silicon verification soaks up so much engineering.
 
-### 7.3.2 Protocol Analyzer (p. 18–24) ⭐ *you saw its output already*
+---
 
-SSD front ends fall into two protocol families: **SATA/SAS** and **PCIe**. An **Analyzer** is a **wiretap**: it sits on the link between host and SSD and shows you *everything* they say to each other, invisibly. (This is exactly the tool that captured the NVMe/PCIe trace in Chapter 6.)
-- **SATA/SAS Analyzers** — vendors: SerialTek, LeCroy *(Figs 7-9 to 7-11)*.
-- **PCIe Analyzers** — vendors: LeCroy, SerialTek, Agilent *(Figs 7-12 to 7-14)*; use **interposer** cards, and can *decode NVMe/AHCI* on top of the raw PCIe. Unlike an oscilloscope, an analyzer parses all lanes' transactions per the protocol and provides **triggers**.
+## 7.3 Test equipment
 
-**The hard part (p. 24):** capturing correctly across **power-state transitions**. The book's real example — a `CfgWr` writes the wrong value, but *only when ASPM is enabled*. Power transitions stress the link and can corrupt packets; to debug, the analyzer must capture *every* TLP as the link exits L0s back to L0 — and L0s exit is so brief the analyzer must lock on within tens of **FTS** (Fast Training Sequences) of leaving electrical idle. *"Tools are dead, people are alive"* — knowing when to capture, where, and how to set triggers is the engineer's skill.
+### 7.3.1 Emulator vs FPGA
 
-### 7.3.3 Jammer (p. 24–27) ⭐ *the robustness tool*
+First, **simulation vs emulation**: a *simulator* is software modeling the chip's function; an *emulator* is hardware reproducing the chip's design at speed. Controller verification uses both an emulator (e.g., Cadence Palladium) and FPGAs, with clean trade-offs:
+
+- **Price:** emulator ~$1M+; FPGA ~$1K–10K.
+- **Capacity:** emulator swallows the whole ASIC (billions of gates); an FPGA holds a slice — the front end (PCIe+NVMe) on one, the flash controller on another.
+- **Debug:** the emulator exports internal signals and waveforms easily; the FPGA connects naturally to protocol/logic analyzers.
+- **Speed:** FPGA wins big — booting an OS takes hours on FPGA, *days* on an emulator.
+
+Either way, the payoff is the same: **firmware development starts before silicon returns**, skipping the bring-up phase of guessing whether each hang is hardware or code.
+
+### 7.3.2 Protocol analyzer ⭐
+
+An **analyzer is a wiretap**: inserted invisibly on the link, it records everything host and drive say to each other — it's exactly the instrument that captured [Chapter 6 §6.5](ch6-nvme.md#65-trace-analysis-a-real-read-as-pcie-packets)'s trace. SATA/SAS analyzers come from SerialTek and LeCroy; PCIe analyzers (LeCroy, SerialTek, Agilent) attach through **interposer** cards and decode NVMe/AHCI on top of raw PCIe. Unlike a scope, an analyzer parses every lane's traffic *as protocol* and offers **triggers**.
+
+**The hard part is capturing across power-state transitions.** A real case: a CfgWr writes the wrong value — but only with ASPM enabled. Power transitions stress the link and corrupt packets, and to catch it the analyzer must lock on within tens of **FTS** (Fast Training Sequences) of the link leaving electrical idle. *Tools are dead; people are alive* — knowing when to capture and where to trigger is the engineer's craft, not the instrument's.
+
+### 7.3.3 Jammer ⭐
 
 ??? example "🎬 Animate this — The Packet Dresser & ACK/NAK Lab"
 
@@ -108,51 +113,55 @@ SSD front ends fall into two protocol families: **SATA/SAS** and **PCIe**. An **
     <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
 
 
-The motivation (p. 25): an SSD ships to countless customers with unknown hosts, OSes, drivers, and environments. Someday one host will send a malformed FIS/primitive. The book's memorable vignette: the SSD lovingly reads data from flash, ECC-decodes it, checks it, hands the host an `X_RDY`, hopefully awaits an `R_RDY` — and the host coldly replies `R_ERR`, rejecting it. The requirement — *"however many times the host abuses you, treat it like your first love"* — is called **Robustness**, and it demands extensive **error handling** in RTL and firmware. The problem: these error paths might not trigger once in a week of normal lab testing, and no engineer can foresee every error.
+**The motivation.** A drive ships into unknown hosts, OSes, drivers, and electrical environments — someday, some host *will* send it garbage. The classic vignette: the SSD lovingly reads the data, ECC-corrects it, presents an `X_RDY`, awaits its `R_RDY` — and the host coldly answers `R_ERR`. The requirement — *no matter how many times the host abuses you, treat it like your first love* — is called **robustness**, and it demands deep error handling in RTL and firmware. The problem: those error paths might not fire once in a week of normal lab time, and nobody can enumerate every possible abuse.
 
-**Solution: the Jammer.** If an Analyzer is a *wiretap*, a Jammer is a *mail carrier* — **all traffic passes through it, and it can open, modify, or replace the contents**, then forward *(Figs 7-15/7-16)*. So you can deliberately turn a normal `R_RDY` into `R_ERR`, or inject a **CRC error into a Data FIS**, and check the SSD handles it correctly. It's also a *scenario explorer* — e.g., if the device sets an Error bit in its SDB, or never sends the SDB, does the host resend? How many times? Does the driver start OOB? Does the app error out? *"Better to make trouble for yourself than let others find it."*
-
----
-
-## 7.4 Regression testing — pp. 27–29
-
-Firmware changes constantly — new features, bug fixes, requirement changes, performance tuning — and every change risks **breaking something that worked** (fixing Bug B reopens last month's Bug A, or creates Bug C). This is nearly unavoidable. **Regression testing** = ensuring new code hasn't broken existing function, by re-running some or all existing test cases.
-
-The catch (p. 28): you *can't* re-run everything on every firmware build — not enough people, drives, or time. So you **select** wisely *(p. 29)*: prioritize frequently-failing tests (e.g., stress tests), user-visible functions (benchmarks), core functions, in-progress/just-completed features, **data-integrity tests (R/W/C)**, and **boundary-value tests**. The book cites that effective regression testing saves ~60% of bug-fix time and ~40% of cost — and invokes the parable of the physician Bian Que: treat illness early.
+**The jammer is the answer.** If the analyzer is a wiretap, the **jammer is a corrupt mail carrier**: all traffic passes through it, and it can open, alter, or replace packets in flight. Turn a good `R_RDY` into `R_ERR`; inject a CRC error into a Data FIS; swallow an SDB entirely — then watch: does the device recover? does the host retry, and how many times? does the driver restart the link? *Better to make trouble for yourself than to let customers find it.* (The animation above has a working Jammer scene — corrupt the wire and watch ACK/NAK save the day.)
 
 ---
 
-## 7.5 DevSleep testing — pp. 29–32
+## 7.4 Regression testing
 
-**DevSleep (DevSlp)** is the ultra-low-power SATA state from Chapter 1 (<10 mW). Testing it needs two abilities: get the device *into* DevSleep, and *detect* the state. Detection uses the **SATA Status Register** — bits [11:8] map to Interface Power Management (IPM), so reading it tells you what state the host is commanding *(p. 29–30, Table 7-1)*. Register reads confirm entry/exit, but the *physical-layer timing parameters* (MDAT, DETO, etc.) need a proper instrument — a LeCroy SATA analyzer with a **special DevSleep-supporting cable** *(p. 30, Fig 7-18)*.
+Firmware changes constantly — features, fixes, tuning — and every change risks resurrecting last month's bug or hatching a new one. **Regression testing** re-runs existing cases to prove the new build didn't break the old behavior.
 
-Two test cases *(p. 30–32)*:
-- **IPM-12 (entering DevSleep):** put the SSD in DevSleep, then keep sending packets while DevSleep is asserted and confirm the SSD **does not respond**, and that timing params are in range. Key numbers: **MDAT** — the host must assert DevSleep (the "lullaby") for at least **10 ms**; **DXET** — the device must be asleep within **100 ms** (example: it slept at 60 ms). Crucially, while DevSleep is asserted, the host hammers **COMRESET** to try to wake it — if the device *detects* COMRESET and wakes, **the test fails** (it must stay asleep).
-- **IPM-13 (exiting DevSleep):** exit doesn't need a full power-up — a **COMWAKE** signal brings the link quickly to PHY Ready. **DETO** — the device must respond to the OOB signal within **20 ms** of DevSleep de-assertion. (Just *responding* passes IPM-13; whether OOB completes is a separate OOB test.)
+You can't re-run everything on every build — not enough people, drives, or hours. So select: frequently-failing tests (stress), user-visible functions (benchmarks), core paths, features just completed or in flight, **data-integrity (R/W/C) tests**, and **boundary-value tests**. Done well, regression testing saves on the order of 60% of bug-fix time and 40% of cost — the physician Bian Que's principle: treat the disease while it's still in the skin.
 
 ---
 
-## 7.6 PCIe InterOp — pp. 32–36
+## 7.5 DevSleep testing
 
-**PCI-SIG** (the PCIe standards body) runs **Compliance Workshops** where companies test products. Two parts:
+**DevSleep** is the <10 mW SATA state from [Ch 1 §1.5.5](ch1-overview.md#155-power-thermals). Testing it needs two abilities: put the drive to sleep, and *prove* it's asleep. State detection reads the **SATA Status Register** (bits [11:8] = interface power-management state); but the physical-layer timing parameters need a real instrument — a SATA analyzer with a DevSleep-capable interposer cable.
 
-**Compliance testing (p. 33) — "you fight only your future spouse":** your product is tested against the *spec* across five areas — **Electrical** (PHY Tx/Rx), **Configuration** (config space), **Link Protocol**, **Transaction Protocol**, and **Platform BIOS**. Pass all, and PCI-SIG adds your device to the **Integrators List** (the "honor roll").
+Two canonical cases:
 
-**Interoperability testing (p. 34–36) — "the sword-fighting summit":** here you test your product *against other companies' products* to check they team up correctly. The book's worked example of interop steps with a hypothetical partner (Synopsys, an IP vendor): (1) read each side's **Link Capability Register** for speed [3:0] and width [9:4]; (2) say your SSD is Gen3×4, partner RC is Gen3×16; (3) plug into the partner's dev board; (4) power on, confirm the OS sees the SSD and the **Link Status Register** shows Gen3×4; (5) if the SSD supports narrower widths (×1), physically reduce lanes (tape/reducer) and re-verify; (6) run a simple data transfer to confirm data flows. Upload results to PCI-SIG. The prep lesson *(p. 36)*: before the workshop, test against many real RCs/motherboards yourself — grab ~10 recent Intel/ASUS/Gigabyte boards, power-cycle each ~200 times (needs **automation**), checking link speed/width.
-
----
-
-## 7.7 Write Amplification testing — pp. 36–37 ⭐ *simple and practical*
-
-Recall from Chapter 4: **WA = data written to flash ÷ data written by host.** To measure it, you need both numbers, and they come from **SMART** data. *(p. 36–37)*
-- **Host-written data** is reported directly (e.g., SandForce SMART attribute *241: Lifetime writes from host*).
-- **Flash-written data** often isn't reported directly, so use a second formula: **flash-written = average Wear Leveling count × SSD capacity.** The Wear Leveling count is the average P/E cycles across blocks (e.g., Micron's SMART *173: Wear Leveling Count*).
-
-The practical tip: in internal testing this is trivial — just ask the firmware team to **expose both attributes** in SMART, and the test engineer can compute the drive's WA directly. *(This is exactly the kind of firmware↔test collaboration your internship involves.)*
+- **IPM-12 (entry):** assert DevSleep and keep talking to the drive — it must **not** answer. Timing: the host must hold the DevSleep signal ≥ **10 ms** (MDAT — the length of the lullaby); the device must be asleep within **100 ms** (DXET). The cruel twist: while DevSleep is asserted, the host hammers **COMRESET** — if the device notices and wakes, **it fails**. A proper sleeper sleeps through the doorbell.
+- **IPM-13 (exit):** waking needs no full power-up — a **COMWAKE** brings the link to PHY-Ready. The device must respond to the OOB signal within **20 ms** of DevSleep de-assertion (DETO). Responding at all passes IPM-13; completing OOB is a separate test.
 
 ---
 
-## 7.8 Endurance testing — pp. 37–46 ⭐⭐ *the formula-heavy core*
+## 7.6 PCIe InterOp
+
+**PCI-SIG** runs Compliance Workshops with two distinct sports:
+
+**Compliance — you fight only your future spouse:** the product is tested against *the spec*, in five areas — **Electrical** (PHY Tx/Rx), **Configuration** (config space), **Link Protocol**, **Transaction Protocol**, **Platform BIOS**. Pass all five and the device joins the **Integrators List** — the honor roll.
+
+**Interoperability — the sword-fighting summit:** your product against *everyone else's*. The canonical session, step by step: read both sides' **Link Capability Registers** (speed [3:0], width [9:4]); note your SSD is Gen3 ×4 and the partner RC Gen3 ×16; plug in; power on and confirm the OS enumerates the drive and the **Link Status Register** reports Gen3 ×4; physically mask lanes down to ×1 and re-verify (the link must negotiate down gracefully); run a data transfer. Results go to PCI-SIG.
+
+The preparation lesson: before the workshop, do it yourself against ~10 recent motherboards (Intel/ASUS/Gigabyte…), power-cycling each ~200 times while checking negotiated speed and width — which is only feasible with **automation**.
+
+---
+
+## 7.7 Measuring write amplification ⭐
+
+[Chapter 4](ch4-ftl.md#432-write-amplification) defined WA = flash writes ÷ host writes. Measuring it is a SMART-data exercise:
+
+- **Host-written bytes** — usually reported directly (e.g., SandForce SMART attribute 241, *Lifetime writes from host*).
+- **Flash-written bytes** — often *not* reported directly. Derive it: **flash-written ≈ average wear-leveling count × capacity**, where the WL count is the average P/E cycles across blocks (e.g., Micron SMART attribute 173).
+
+In internal testing this becomes trivial with one conversation: ask the firmware team to **expose both counters** in SMART, and any test engineer can compute the drive's real WA from a bench run. A tiny example of the firmware ↔ test collaboration that this whole chapter runs on.
+
+---
+
+## 7.8 Endurance testing ⭐⭐
 
 ??? example "🎬 Animate this — The SSD Calculator Bundle"
 
@@ -163,59 +172,58 @@ The practical tip: in internal testing this is trivial — just ask the firmware
     <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
 
 
-Every SSD must pass strict **endurance** testing before shipping. **JEDEC** provides two specs: **JESD218A** (the *method*) and **JESD219** (the *workload*). *(p. 37–38)*
+**JEDEC** governs endurance qualification with two specs: **JESD218A** (the *method*) and **JESD219** (the *workload*). The vocabulary:
 
-**Key concepts:**
-- **TBW** — total bytes written (the endurance rating).
-- **FFR (Functional Failure Requirement)** — allowed cumulative functional failures during the whole write process.
-- **Data Retention** — ability to hold data while powered off.
-- **UBER** — Uncorrectable Bit Error Rate = data errors ÷ bits read.
+- **TBW** — the endurance rating ([Ch 1 §1.5.3](ch1-overview.md#153-endurance)).
+- **FFR (Functional Failure Requirement)** — allowed cumulative functional failures across the whole test.
+- **Data retention** — holding data unpowered ([Ch 3 §3.3.6](ch3-nand-flash.md#336-data-retention-how-long-does-data-survive)).
+- **UBER** — uncorrectable errors ÷ bits read.
 
-Enterprise vs consumer requirements differ across **operating time, operating temperature, UBER, and retention temperature/time** *(p. 38, Table 7-5)*. Importantly, **JESD218A tests both endurance AND data retention.** Two methods: **Direct** ("straight-ahead") and **Extrapolation** ("roundabout"); the book focuses on Direct.
+Enterprise and client requirements differ on operating time, temperatures, UBER, and retention. Crucially, **JESD218A tests endurance *and* retention together** — write the drive to its TBW, then prove it still holds data. Two methods: **Direct** (straight-ahead) and **Extrapolation** (the shortcut); Direct first.
 
-**Direct method essentials (p. 38–39):** write hard, read hard — *"push the SSD to the limit"* — with (a) required high/low temperatures, (b) the specified workload, and (c) a **retention test immediately after** endurance.
+**Direct method:** hammer the drive to its rated limit — at the required high/low temperatures, with the JESD219 workload (for client drives, ~**400 million** write/trim/flush commands with read-back verification), and a **retention test immediately after** the writes end.
 
-**How many drives to test? — the sample-size calculation (p. 39–41). This is the part to actually understand:**
-- **Requirement 1:** if it's the series' *first* test, pull samples from **≥3 non-consecutive production lots**; otherwise one lot is fine.
-- **Requirement 2:** two formulas govern sample size **SS**:
-  - `UCL(functional_failures) ≤ FFR × SS`
-  - `UCL(data_errors) ≤ min(TBW, TBR) × 8×10¹² × UBER × SS`
-  - **UCL** = Upper Confidence Limit — don't derive it, just look it up in a table *(Table 7-6)*. With **AL=0** (zero accepted functional failures), UCL = **0.92**.
+**The sample-size calculation — the part to actually master:**
 
-**Worked example (p. 40):** FFR=3%, UBER=10⁻¹⁶, TBW=100:
-- SS ≥ 0.92 ÷ 0.03 = **30.1** (functional-failure requirement)
-- SS ≥ 0.92 ÷ (100 × 1 × 8×10¹² × 10⁻¹⁶) = **11.5** (data-failure requirement)
-- Take the **larger** → 30.1 → round up → **31 drives.**
-- Plug SS=31 back: UCL(data_errors) ≤ 100 × 1 × 8×10¹² × 10⁻¹⁶ × 31 = **2.48** → reverse-look-up *(Table 7-7)* → **max allowed data errors = 1.**
-- **Conclusion:** test 31 drives; to pass, allow **zero functional failures and at most 1 data error.**
+- **Rule 1:** a product family's *first* qualification pulls samples from **≥3 non-consecutive production lots**; repeats can use one lot.
+- **Rule 2:** two constraints on sample size **SS**, using **UCL** (Upper Confidence Limit — a lookup table value, not something you derive; with zero accepted failures, UCL = 0.92):
 
-The **JESD219 workload** for consumer SSDs is ~**400 million** write/trim/flush commands, with read-back verification after each write.
+\[
+\mathrm{UCL_{FF}} \le \mathrm{FFR} \times SS
+\qquad\qquad
+\mathrm{UCL_{DE}} \le \min(\mathrm{TBW},\mathrm{TBR}) \times 8\times10^{12} \times \mathrm{UBER} \times SS
+\]
 
-**Temperature acceleration (p. 41–43) — the clever part.** Endurance/retention testing uses controlled high/low temperatures (enterprise requirements much stricter than consumer). Two strategies: **Ramped-Temperature** (all drives together, cycling hot/cold) vs **Split-Flow** (half hot, half cold). Low temp ≤ 25°C; high temp is a range (e.g., client SSD: 40°C ≤ T ≤ Tmax). **Higher temperature accelerates aging**, so you can simulate a year of use in less time *(Table 7-9)*: e.g., at **86°C**, **50 hours** of the official workload = **1 year** at room temp; but at only **48°C**, you'd need **3000 hours** for the same effect.
+!!! example "Worked example — the 31-drive answer"
+    FFR = 3%, UBER = 10⁻¹⁶, TBW = 100 TB:
 
-**Determining Tmax (p. 43) — a worked chain worth following:**
-- 160 GB TLC SSD at 500 P/E cycles → TBW = **80 TB**.
-- One workload pass = 1 TBW → need **80 passes**.
-- One pass takes ~5 hours → total = **400 hours**.
-- Look up 400 hours in Table 7-9 → **66°C** (client, ramped) → that's **Tmax**.
+    - Functional-failure constraint: SS ≥ 0.92 ÷ 0.03 = **30.1**
+    - Data-error constraint: SS ≥ 0.92 ÷ (100 × 8×10¹² × 10⁻¹⁶) = **11.5**
+    - Take the larger, round up → **31 drives**.
+    - Plug SS = 31 back into the data-error side: UCL ≤ 100 × 8×10¹² × 10⁻¹⁶ × 31 = 2.48 → reverse lookup → **at most 1 data error allowed**.
+    - **Verdict: test 31 drives; pass = zero functional failures and ≤1 data error.** (The calculator bundle above reproduces this computation with sliders.)
 
-The full **Direct Method / Ramped flow (p. 43–45, Fig 7-23):** (1) sample selection → (2) endurance test → (3) optional component-level room-temp retention → (4) write data for retention test → (5) optional product-level room-temp retention → (6) high-temp retention → (7) data comparison → (8) pass/fail (check FFR and data-errors against the two formulas). Steps 3–7 are the retention test, run *immediately* after endurance: **write → power off → high temp → power on → compare.**
+**Temperature acceleration — the clever part.** Heat ages flash faster, so time compresses: at **86 °C**, ~50 hours of workload ≈ one year at room temperature; at 48 °C the same year costs ~3,000 hours. Strategies: **ramped** (all drives cycle hot/cold together) or **split-flow** (half hot, half cold); low leg ≤ 25 °C, high leg bounded by Tmax.
 
-**Extrapolation method (p. 45–46):** shortcuts to finish faster — modify the workload to inflate P/E cycles quickly, or **shrink the drive** via firmware (limit a 160 GB SSD to 40 GB → endurance time drops from 400h to 100h, with high-temp adjusted 66°C → 79°C). **Critical caveat:** when firmware shrinks the drive, it must shrink the internal **OP proportionally** too — otherwise the reduced drive has artificially generous over-provisioning and the WA (and thus wear) won't match the real product.
+**Determining Tmax — a worked chain:** a 160 GB TLC drive at 500 P/E → TBW = 80 TB → one workload pass ≈ 1 TBW → 80 passes → at ~5 h/pass, **400 hours** → the JESD218A table maps 400 h (client, ramped) to **Tmax = 66 °C**.
 
----
+**The full direct/ramped flow:** sample selection → endurance writes → (optional component-level room-temp retention) → write the retention data set → (optional product-level check) → **high-temperature bake** → power on and compare → judge against the two formulas. The retention tail is the point: **write → power off → bake → power on → compare.**
 
-## 7.9 Certification — pp. 46–50 ⭐ *the external bodies*
-
-Beyond internal testing, SSDs go out for third-party certification:
-
-- **SATA-IO (p. 46–48)** runs two event types. **Plugfest** — *development-stage* products, informal vendor-to-vendor testing, results not submitted. **IW (Interoperability Workshop)** — *production* products, SATA-IO-led with fixed procedures; results submitted, and passing devices join the **Integrators List**.
-- **PCI-SIG Compliance Program (p. 48)** — the five test areas from §7.6 (Electrical, Configuration [tool: PCIE CV], Link Protocol, Transaction Protocol, Platform BIOS); passing joins the Integrators List.
-- **UNH-IOL NVMe (p. 48–50)** — the University of New Hampshire InterOperability Laboratory, a famous public test lab. Defines **NVMe Conformance** and **NVMe Interoperability** test suites (updated alongside the NVMe spec) and provides tools: **IOL INTERACT PC Edition** (open-source, GUI, easy) and **IOL INTERACT Teledyne-LeCroy Edition** (advanced; drives a LeCroy PCIe Exerciser+Analyzer to auto-run conformance tests and auto-capture traces). Completing conformance (both tools) plus interoperability (VDbench) gets you onto the **NVMe Integrators List**.
+**Extrapolation method:** finish faster by inflating P/E per hour — modify the workload, or **shrink the drive in firmware** (a 160 GB drive limited to 40 GB drops from 400 h to 100 h, with the bake adjusted 66 °C → 79 °C). The critical caveat: shrinking user capacity **must shrink internal OP proportionally**, or the test drive enjoys artificially luxurious over-provisioning, its WA drops below the real product's ([Ch 4 §4.3.2](ch4-ftl.md#432-write-amplification)'s arithmetic working against you), and the whole test flatters.
 
 ---
 
-## 7.10 SSD Performance testing — pp. 50–54 ⭐⭐ *the SNIA methodology*
+## 7.9 Certification
+
+The external gauntlet, body by body:
+
+- **SATA-IO** — two event tiers: **Plugfest** (development-stage, informal vendor-to-vendor, results private) and **IW / Interoperability Workshop** (production hardware, SATA-IO-run procedures, results submitted; passing joins the **Integrators List**).
+- **PCI-SIG Compliance Program** — §7.6's five areas (the Configuration area has a dedicated tool, PCIE CV); passing lists the device.
+- **UNH-IOL** — the University of New Hampshire InterOperability Laboratory, the public test lab of record for NVMe. It maintains **Conformance** and **Interoperability** suites tracking the NVMe spec, with two tool tiers: **IOL INTERACT PC Edition** (open-source, GUI) and the **Teledyne-LeCroy Edition** (drives a PCIe exerciser/analyzer, auto-runs conformance, auto-captures traces). Conformance + interoperability (VDbench) earns the **NVMe Integrators List**.
+
+---
+
+## 7.10 Performance testing: the SNIA methodology ⭐⭐
 
 ??? example "🎬 Animate this — The Toy SSD Sandbox"
 
@@ -226,65 +234,91 @@ Beyond internal testing, SSDs go out for third-party certification:
     <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Toy SSD Sandbox"></iframe>
 
 
-**SNIA** publishes performance-test specs for both client and enterprise SSDs. The whole methodology rests on one truth from Chapter 1: **SSD performance changes as the drive is used**, so you must measure in a controlled, repeatable state.
+**SNIA**'s performance-test specification rests on the truth from [Ch 1 §1.5.2](ch1-overview.md#152-performance): **SSD performance depends on drive state**, so honest measurement requires a controlled, repeatable state.
 
-**The three performance phases (p. 50–51, Fig 7-27) — the core concept:**
-- **FOB (Fresh Out of Box)** — a brand-new drive; performance is inflated ("power level over 9000 but not sustainable") — *not* representative of real long-term use.
-- **Transition** — after some read/write, performance declines toward stability.
-- **Steady State** — performance stabilizes in a band; **all reported metrics (throughput, IOPS, latency) MUST be measured here.** The rule: steady state = performance varies **≤ ±10%** over the measurement window.
+**The three phases** (watch them emerge live in the sandbox's throughput sparkline):
 
-**Four setup concepts (p. 51–52):**
-- **Purge** — before *every* performance test, erase the drive to a known state (removes the influence of prior operations — e.g., small-block random writes distorting a following large-block sequential test). Think of Purge as **"return the drive to FOB."** Methods: ATA **Security Erase / Sanitize (Block Erase)**, SCSI **Format Unit**, or a vendor tool.
-- **Precondition** — drive the drive into steady state in two steps: **WIPC (Workload-Independent Preconditioning)** first (write *without* the test workload), then **WDPC (Workload-Dependent Preconditioning)** (write *with* the test workload).
-- **Active Range** — the LBA range you send I/O to during the test.
-- **Data pattern** — performance tests **must use random (incompressible) data** written to flash.
+- **FOB (Fresh Out of Box)** — inflated, unsustainable numbers; never report these.
+- **Transition** — performance declining toward its true level as GC awakens ([Ch 4 §4.3](ch4-ftl.md#43-garbage-collection)).
+- **Steady state** — performance settles into a band; **every reported metric must be measured here.** Definition: variation **≤ ±10%** across the measurement window.
 
-**The IOPS test procedure (p. 52–54) — the canonical example:**
-1. **Purge** the SSD.
-2. **WIPC:** write the whole drive twice with 128 KB sequential.
-3. **WDPC + Test:** run **Random I/O** across a matrix of **7 R/W mixes** (100/0, 95/5, 65/35, 50/50, 35/65, 5/95, 0/100) × **8 block sizes** (1024K, 128K, 64K, 32K, 16K, 8K, 4K, 512B) = **56 combinations per round**, each run 1 minute. Use the **0/100 (100% write), 4 KB** result to judge steady state. Record data in the **measurement window** (the round where steady state is reached, call it x; Round 1→x is the convergence interval, Round (x−4)→x is the 4-round measure window). If steady state isn't reached in 25 rounds, either continue or just take x=25. **Steps 2→3 must not be interrupted.**
+**Four setup concepts:**
 
-**Throughput and Latency tests (p. 54):** same skeleton, different matrices.
-- **Throughput:** only two combos — 1024K sequential write and 1024K sequential read; judge steady state on sequential write.
-- **Latency:** only 3 R/W mixes (100/0, 65/35, 0/100) × 3 block sizes (8K, 4K, 512B), with **queue depth and thread count both set to 1** (to measure true per-command latency, not throughput).
+- **Purge** — before every test, return the drive to a known clean state ("back to FOB"): ATA Security Erase / Sanitize (Block Erase), SCSI Format Unit, or a vendor tool. Otherwise the previous test's write history contaminates this one's results.
+- **Precondition** — drive it *into* steady state deliberately: **WIPC** (workload-independent — generic writes) then **WDPC** (workload-dependent — the test workload itself).
+- **Active range** — the LBA span the test targets.
+- **Data pattern** — **random (incompressible) data, always** (§7.1.2's lesson, codified).
 
-**Write Saturation Test (WST, optional):** long-duration random 4K writes to see behavior after sustained writing. The book cites TechReport's famous 18-month endurance experiment — 6 drives written **over 2 PB** each. The full config matrix is in *(Table 7-10)*.
+**The canonical IOPS procedure:**
 
----
+1. **Purge.**
+2. **WIPC:** write the full drive **twice**, 128 KB sequential.
+3. **WDPC + measure:** random I/O over a matrix of **7 R/W mixes** (100/0, 95/5, 65/35, 50/50, 35/65, 5/95, 0/100) × **8 block sizes** (1024K…4K, 512B) = **56 cells per round**, one minute each. Judge steady state on the **4 KB, 100%-write** cell; when round *x* reaches steady state, rounds (x−4)…x form the measurement window. Not steady by round 25? Continue, or accept x = 25. **No interruptions between steps 2 and 3.**
 
-## 📌 Modern developments (post-2018 supplement)
+**Throughput and latency variants:** same skeleton, smaller matrices. Throughput: just 1024 K sequential read and write (judge on write). Latency: 3 mixes × 3 block sizes, with **queue depth = threads = 1** — because latency means *per-command* time, and any queuing would measure throughput wearing latency's clothes.
 
-*Testing methodology is more stable than the hardware — the JEDEC endurance specs, the SNIA performance methodology, and the certification bodies are all still current and still used essentially as described. But the tooling has moved on, and one change echoes Chapter 6 so neatly it's worth calling out. This section is drawn from current knowledge of the storage-testing landscape.*
-
-**The async-I/O story got a sequel — io_uring, and it mirrors NVMe.** The book's FIO discussion centers on **libaio** as *the* Linux async engine. Since then, **Jens Axboe (FIO's author, still the Linux block-layer maintainer, now at Meta) created `io_uring`** — a new async-I/O interface that merged into the Linux kernel in 2019 and has become the high-performance path that supersedes libaio for demanding storage work. Here's the elegant part: **io_uring is built on two ring buffers shared between application and kernel — a submission queue and a completion queue** — which is *exactly the SQ/CQ producer-consumer design you learned for NVMe in Chapter 6.* The same architectural idea (rings + doorbells, batch submissions, minimize expensive syscalls/context-switches) that made NVMe fast at the device interface was applied to the *software* I/O path. Practically, **FIO now ships an `io_uring` ioengine** (`-ioengine=io_uring`), and for maximum-IOPS testing of a fast NVMe drive it typically beats `libaio` by cutting per-I/O overhead. If you benchmark a modern drive, io_uring is the current best-practice engine.
-
-**Tool landscape updates.** FIO and IOMeter remain the workhorses (FIO is *the* standard for serious/Linux testing; IOMeter's original project is old but forks/derivatives persist). Among the GUI consumer tools, **CrystalDiskMark** is actively maintained and now defaults to modern NVMe-oriented test patterns (its current versions use a random-4K test at high queue depth, `RND4K Q…T…`, reflecting how NVMe parallelism is exercised). **PCMark Vantage is obsolete** — the current whole-PC storage benchmark is **PCMark 10** with a dedicated storage test using real application traces, and **3DMark Storage** exists for gaming-focused drive testing. ATTO and AS SSD are still around and still carry the compressible-vs-incompressible-data caveat the book emphasizes.
-
-**Standards are current, with newer additions.** **JESD218/219** are still the endurance/retention references; **SNIA's** performance test spec is still the methodology for FOB→transition→steady-state measurement. **UNH-IOL** still runs the NVMe Integrators List and has extended its suites to cover **NVMe 2.x**, **NVMe/TCP**, and **NVMe-oF** (the transports from Chapter 6's supplement) — so the same conformance/interoperability model now spans the modular NVMe family. **PCI-SIG** compliance now covers the newer PCIe generations (the Gen4/5/6 drives from Chapter 5's supplement need compliance at those speeds, which is a much harder electrical test — PAM4 signaling at Gen6 raises the bar significantly).
-
-**One practical note for your internship.** The two things this chapter describes that you're most likely to *do* are (1) run **FIO/IOMeter** performance and R/W/C integrity tests following the **SNIA** purge→precondition→steady-state discipline, and (2) participate in **JEDEC endurance** runs with the temperature-acceleration and sample-size logic above. The firmware↔test collaboration in §7.7 (asking firmware to expose SMART attributes so you can compute WA) is exactly the kind of cross-team interaction the chapter is preparing you for.
+**Write Saturation Test (optional):** sustained random 4K writes for days, watching behavior degrade and stabilize — the methodology behind the famous 18-month TechReport experiment that pushed six consumer drives past **2 PB** written each.
 
 ---
 
-## 📖 Closing note — the whole book
+## 7.11 Modern developments: io_uring and today's toolbox
 
-That completes all seven chapters. Here's the arc you've worked through, and how the pieces lock together:
+*Test methodology ages slower than hardware: JEDEC's endurance specs, SNIA's performance discipline, and the certification bodies all remain current essentially as described. The tooling moved — and one change rhymes beautifully with Chapter 6.*
 
-1. **Overview** — what an SSD is, and the one fact that drives everything: *flash can't be overwritten in place.*
-2. **Controller & Arrays** — the brain (channels × dies = parallelism) and what happens when you build arrays of SSDs.
-3. **Flash physics** — how a cell traps electrons to store a bit, and every way that goes wrong (the failure catalog).
-4. **FTL** — the software that tames the fragile medium: mapping, garbage collection, write amplification, wear leveling, power-loss recovery. *The heart of the book.*
-5. **PCIe** — the road: tree topology, layered packets, how bits travel.
-6. **NVMe** — the traffic protocol on that road: queues, doorbells, the 8-step command flow.
-7. **Testing** — how it's all validated before it ships.
+**The async-I/O sequel: io_uring.** §7.1's async story centered on `libaio`. Its successor came from the same author — **Jens Axboe** built **io_uring** into the Linux kernel in 2019, and it has become the high-performance I/O path for demanding storage work. The elegant part: io_uring is built on **two ring buffers shared between application and kernel — a submission queue and a completion queue** — *exactly the SQ/CQ producer-consumer design of [Chapter 6 §6.3](ch6-nvme.md#63-the-three-treasures-in-detail)*. The idea that made the device interface fast (rings, batched submissions, minimal expensive transitions) was applied to the software stack above it. Practically: FIO ships an `io_uring` engine (`-ioengine=io_uring`), and for maximum-IOPS testing of a fast NVMe drive it beats `libaio` on per-I/O overhead. It is the current best-practice engine.
 
-The single thread connecting Chapters 3→4→7: flash is unreliable and wears out (Ch3), so firmware compensates with clever algorithms (Ch4), and testing proves those algorithms actually work under stress (Ch7). And the thread connecting Chapters 5→6→7: PCIe carries the bits (Ch5), NVMe gives them meaning (Ch6), and analyzers/jammers let you watch and stress that conversation (Ch7). The modern supplements traced how the book's 2018 snapshot evolved — host-managed flash became **ZNS/FDP**, PCIe reached **Gen7**, NVMe **restructured and added TCP**, and even the async-I/O path (**io_uring**) borrowed NVMe's ring design.
+**Tool landscape.** FIO remains *the* serious standard; IOMeter persists through forks. **CrystalDiskMark** is actively maintained and now defaults to NVMe-shaped patterns (high-queue-depth `RND4K Q…T…` tests). **PCMark Vantage is obsolete** — its successors are **PCMark 10**'s storage test (real application traces) and **3DMark Storage** for gaming workloads. ATTO and AS SSD live on, still carrying the compressible-data caveat.
 
-You now have a complete, self-consistent mental model of how a modern SSD works, from trapped electrons to test bench.
+**Standards.** JESD218/219 still govern endurance; SNIA's spec still governs performance measurement. **UNH-IOL**'s suites now track **NVMe 2.x, NVMe/TCP, and NVMe-oF** — the modular family from [Ch 6 §6.9](ch6-nvme.md#69-modern-developments-the-nvme-2x-era). **PCI-SIG** compliance extends to Gen4/5/6 — and Gen6's PAM4 signaling ([Ch 5 §5.14](ch5-pcie.md#514-modern-developments-pcie-40-70)) makes the electrical leg dramatically harder.
 
 ---
 
-## Key vocabulary — for decoding the original figures
+## 7.12 FTL-module and power-loss testing
+
+*Second-edition additions — both squarely in firmware-validation territory, and both direct validations of Chapter 4's machinery.*
+
+### 7.12.1 Testing the FTL's modules
+
+**Garbage collection.** Fill the drive past FOB into steady state and confirm **foreground GC** engages at the free-block threshold — the §7.10 transition curve *is* GC becoming visible. Confirm **background GC** runs during idle with a neat trick: idle-time GC is invisible in I/O but plainly visible in the **power trace** — the drive draws active power while "doing nothing." Then measure WA under sequential vs random patterns to validate victim selection ([Ch 4 §4.3.3](ch4-ftl.md#433-gc-implementation-three-steps)): random-workload WA must stay within design targets.
+
+**Wear leveling.** Run a deliberately skewed workload — hammer a small hot LBA range while a large cold region sits frozen (exactly [Ch 4 §4.5](ch4-ftl.md#45-wear-leveling)'s nightmare scenario) — then dump **per-block erase counts** via vendor command or SMART. Pass = the max−min spread (or max/mean ratio) stays within spec, proving static WL genuinely relocates cold data onto worn blocks instead of letting the hot range burn through.
+
+### 7.12.2 Power-loss recovery testing ⭐⭐
+
+The validation of [Ch 4 §4.6](ch4-ftl.md#46-power-loss-recovery) — the most firmware-intensive reliability feature a drive has. If you work on PLR, journaling, or mount-time code paths, this is the suite that judges that work.
+
+**Device-level test.** A **programmable power module** cuts the drive's power at *random instants* during active writes — thousands of automated cycles. Each cycle:
+
+1. Write tracked, verifiable data — FIO `verify=meta` (embedding LBAs and sequence stamps) or a journaling tool recording exactly which writes were **acknowledged**.
+2. Cut power without warning (Ch 4's "abnormal power loss," made routine).
+3. Restore power. The drive must **enumerate** (bricking is never acceptable), **rebuild its map** (the metadata-scan + snapshot mechanism), and become ready within a bounded time.
+4. Verify: every **acknowledged** write intact (especially Flush/FUA-completed data); in-flight unacknowledged data may die (allowed); and **no previously committed data destroyed** — i.e., no Lower-Page corruption ([Ch 3 §3.3.4](ch3-nand-flash.md#334-mlcs-rules-and-the-lower-page-corruption-trap)), the classic failure this test exists to catch.
+
+Aim the cuts at the **nasty windows** deliberately: mid-GC, mid-map-flush, mid-SLC-cache-migration, mid-firmware-update — the moments with maximum state in flight. For enterprise drives, also validate the **capacitor**: measure hold-up time on a scope and confirm it covers the worst-case cache flush ([Supplement D](../supplements/d-power-management.md) designs what's being measured).
+
+**Whole-system test.** Cut **AC to the entire host** mid-workload. This exercises the full stack — page cache, filesystem journal ([Supplement C](../supplements/c-flash-file-systems.md)), driver, *then* drive — and reproduces the real event (blackout, yanked cord). Its diagnostic value is separation: **device-level loss** (the SSD's fault) vs **OS-level loss** (data that never left the page cache — not the drive's fault). Exactly the distinction you need when a customer says "the power went out and my file is gone."
+
+---
+
+## Coda: the whole book
+
+Seven chapters, one arc:
+
+1. **Overview** — what an SSD is, and the fact that generates the field: *flash cannot be overwritten in place.*
+2. **Controller & arrays** — the brain; channels × dies = parallelism; and what changes when you stack whole drives into arrays.
+3. **Flash physics** — electrons trapped behind an insulator, and the complete catalog of how that goes wrong.
+4. **FTL** — the software that turns a fragile medium into a reliable disk: mapping, GC, WA, wear leveling, power-loss recovery. *The heart of the subject.*
+5. **PCIe** — the road: a tree of point-to-point serial links carrying dressed-up packets.
+6. **NVMe** — the traffic system: rings, doorbells, eight steps.
+7. **Testing** — proof that all of it works under abuse.
+
+Two threads run through everything. **Chapters 3 → 4 → 7:** flash is unreliable and wears out; firmware compensates with algorithms; testing proves the algorithms survive contact with reality. **Chapters 5 → 6 → 7:** PCIe carries the bits; NVMe gives them meaning; analyzers and jammers let you watch — and sabotage — the conversation. And the modern sections traced how 2018's snapshot evolved: host-managed flash became **ZNS/FDP**, PCIe reached **Gen7** via PAM4, NVMe **modularized and gained TCP**, and even the OS's I/O path (**io_uring**) borrowed NVMe's ring design.
+
+From trapped electrons to test bench: the model is complete. The [supplements](../supplements/a-ecc-coding-theory.md) go deeper where the chapters pointed — ECC theory (A), UFS (B), flash file systems (C), power management (D), and storage in space (E) — and the [reference section](../reference/glossary.md) keeps the glossary, formulas, and quizzes one click away.
+
+---
+
+## Key vocabulary
 
 | 中文 | English |
 |---|---|
@@ -334,37 +368,27 @@ You now have a complete, self-consistent mental model of how a modern SSD works,
 11. In the SNIA IOPS test, what's the purpose of Purge and the two-step Precondition (WIPC then WDPC)?
 12. Why does the SNIA *latency* test set queue depth and thread count to 1, unlike the IOPS test?
 13. **(Modern)** io_uring's design mirrors something you learned in Chapter 6. What is it, and why did applying that idea to the software I/O path improve performance?
+14. **(Modern)** In power-loss testing, acknowledged writes must survive and in-flight writes may die — but a third category of failure is never acceptable. What is it, and which Chapter 3 mechanism causes it?
 
 ---
 
----
+??? info "📖 Book page map — for readers of 《深入淺出SSD》"
 
-## 📘 2nd-Edition Addendum (their §11.3–11.4)
+    This chapter follows Chapter 7 of《深入淺出SSD》(SSDFans, 2018), pp. 1–54;
+    §7.11 is a post-2018 supplement and §7.12 covers 2nd-edition topics
+    (their §11.3–11.4). Original figures by section:
 
-*The 2nd edition adds two test categories the 1st edition lacked — both squarely in firmware-validation territory.*
+    | Section | Book pages | Key figures/tables |
+    |---|---|---|
+    | 7.1 Software tools | pp. 1–15 | FIO output listings |
+    | 7.2 V&V | pp. 15–16 | — |
+    | 7.3 Equipment | pp. 16–27 | Figs 7-9…7-16 |
+    | 7.4 Regression | pp. 27–29 | — |
+    | 7.5 DevSleep | pp. 29–32 | Table 7-1, Fig 7-18 |
+    | 7.6 PCIe InterOp | pp. 32–36 | — |
+    | 7.7 WA testing | pp. 36–37 | — |
+    | 7.8 Endurance | pp. 37–46 | Tables 7-5…7-9, Fig 7-23 |
+    | 7.9 Certification | pp. 46–50 | — |
+    | 7.10 Performance | pp. 50–54 | Fig 7-27 (three phases), Table 7-10 |
 
-## A1. FTL function-module testing (their §11.3)
-
-Beyond the WA test (§7.7), the 2nd edition tests the FTL's other modules directly:
-
-**Garbage-collection test.** Verify the Chapter-4 GC machinery behaves: fill the drive past FOB into steady state and confirm **foreground GC** triggers at the free-block threshold (watch performance step down as it kicks in — the Ch7 §7.10 steady-state transition *is* GC becoming visible); confirm **background GC** runs during idle — a neat trick: you often can't see background GC in I/O, but you *can* see it in the **power trace** (the drive draws active power while "idle"); and measure WA under sequential vs random patterns to validate victim selection is working (random WA should still stay within design targets).
-
-**Wear-leveling test.** Run a deliberately *skewed* workload — hammer a small hot LBA range while a large cold region sits static (the exact scenario from Ch4 §4.5) — then dump **per-block erase counts** via vendor command or SMART. Pass criteria: the max−min erase-count spread (or max/mean ratio) stays within spec, proving static WL is actually relocating cold data onto worn blocks rather than letting the hot region burn out.
-
-## A2. Power-loss recovery testing (their §11.4) ⭐⭐ *the big addition — pure Chapter 4 §4.6 validation*
-
-**Device-level test (their 11.4.1).** The method: a **programmable power module** (the Quarch PPM class of equipment from §7.5's power testing) cuts the drive's power at *random instants* during active writes — repeated for **thousands of cycles**, automated. Each cycle:
-1. Write tracked, verifiable data (FIO with `verify=meta` — the Ch7 §7.1.1 mode that embeds LBAs and sequence stamps — or a dedicated journaling tool that records exactly which writes were *acknowledged*).
-2. Cut power without warning (this is the "abnormal power loss" of Ch4 §4.6).
-3. Restore power. The drive must **enumerate** (no bricking — ever), **rebuild its mapping table** (the Ch4 metadata-scan + snapshot mechanism), and come ready within a bounded recovery time.
-4. Verify: **every acknowledged write is intact** — especially anything completed under Flush/FUA semantics; unacknowledged in-flight data may be lost (that's allowed); and critically, **no previously-committed data was destroyed** — i.e., no Lower-Page corruption (Ch3 §3.3.4), the classic failure this test exists to catch.
-
-Target the *nasty windows* deliberately: cut power **during GC**, **during a map-table flush**, **during SLC-cache migration**, and **during a firmware update** — the moments when the most internal state is in flight. For enterprise drives, also validate the **capacitor (power-loss protection)**: measure the hold-up time on a scope/power module and confirm it covers the worst-case cache-flush (Ch4 §4.6's "capacitor supplies tens of milliseconds").
-
-**Whole-system test (their 11.4.2).** Cut **AC power to the entire host** mid-workload instead of just the drive. This exercises the full stack — OS page cache, filesystem journal (Supplement C!), driver, *then* the drive — and matches the real user event (blackout, yanked cord). Its diagnostic value: it separates **device-level data loss** (the SSD's fault) from **OS-level loss** (data that never left the page cache — not the drive's fault), which is exactly the distinction you need when a customer reports "the power went out and I lost my file."
-
-**Why this matters for you:** power-loss recovery is the single most firmware-intensive reliability feature (Ch4 §4.6), and this is its validation. If your internship touches PLR/journaling/mount-time code paths in the BiCS8 firmware, this is the test suite that judges that code.
-
----
-
-*That's the whole book. If you'd like, I can now build cross-chapter study aids — a master glossary, a one-page "exam cram" sheet, flashcards, or an interactive diagram of how the pieces fit — or go deeper on any single topic for your patent-research project.*
+*The core chapters end here. Next: [Supplement A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md), building Hamming → BCH → LDPC from first principles.*
