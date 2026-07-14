@@ -46,7 +46,7 @@ Third lesson: the figures worth the most effort are the ones **juniors reliably 
 
 ## Part 1 — The ten animation clusters (the build plan)
 
-### 🏆 Cluster A — The Vt Distribution Playground *(the crown jewel of Ch3, and your patent-presentation asset)*
+### 🏆 Cluster A — The Vt Distribution Playground *(the crown jewel of Ch3)*
 
 **Figures absorbed (≈17):** 3-1, 3-2, 3-52 (cell + tunneling), 3-3/3-4/3-5 (SLC/MLC/TLC distributions), 3-9/3-10/3-11 (op voltages), 1-27 (lower/upper RBER), 3-44/3-45 (read/program disturb), 3-46/3-47/3-48 (endurance drift), 3-50/3-53/3-54/3-55/3-56 (retention & disturb shifts, neighbor effects), 3-57 (read retry), 3-60 (randomization effect), plus side-plots 1-24/1-25/1-26 (UBER/RBER/PE curves).
 
@@ -58,7 +58,7 @@ Third lesson: the figures worth the most effort are the ones **juniors reliably 
 3. **Scene 2 — SLC/MLC/TLC selector.** 2, 4, or 8 bells crammed into the same voltage window. Watch the margins collapse as bits/cell rises — the entire SLC>MLC>TLC story in one toggle.
 4. **Scene 3 — the physics sliders.** Three sliders, three failure modes: **P/E cycles** (bells widen + shift — Figs 3-46/48/53), **retention time** (bells drift *left* — Fig 3-54), **read count** (bells drift *right* — Fig 3-55). Overlap regions glow red; a live RBER counter ticks up. Optional: randomization toggle (Fig 3-60 — off = some bells fatten).
 5. **Scene 4 — read references & retry.** Draggable read-voltage lines. As bells drift, the fixed lines misread cells (errors flash). "Read Retry" button auto-walks the reference to the new valley (Fig 3-57) — errors vanish *as long as the bells haven't merged.* That last clause is the entire limit of hard-decision reading, made visible.
-6. **Scene 5 — soft reads & LLR bridge.** Multiple read strobes subdivide the overlap region; each cell gets an LLR color (confident blue → uncertain gray). One button hands the LLR vector to your existing LDPC visualizer. **This scene is your patent-presentation centerpiece** — it *shows* the exact mechanism the LDPC/soft-read patents optimize.
+6. **Scene 5 — soft reads & LLR bridge.** Multiple read strobes subdivide the overlap region; each cell gets an LLR color (confident blue → uncertain gray). One button hands the LLR vector to the LDPC visualizer. **This scene is the centerpiece** — it *shows* the exact mechanism the LDPC/soft-read patents optimize.
 
 **Node pre-verify:** the histogram statistics and RBER computation (sample Gaussians, count misreads vs reference positions) — trivial to verify numerically before HTML.
 
@@ -163,7 +163,7 @@ Third lesson: the figures worth the most effort are the ones **juniors reliably 
 Not animations — interactive number-crunchers realizing the book's formula figures:
 1. **PCIe bandwidth & IOPS ceiling** (Ch5 §5.1 + §5.13): gen/lanes/encoding → GB/s; then the full §5.13 overhead model with **MPS and Max-Read-Request sliders** — reproduce the book's 1689→1912 MB/s result live (Fig 5-66's registers as the controls). Extend to Gen4–7 from the modern supplement.
 2. **OP ↔ WA ↔ TBW/DWPD** (Fig 4-25 + Ch1 §1.5.3 formulas): capacity, P/E, OP, workload → WA estimate, TBW, DWPD. The S3710 worked example as a preset.
-3. **Endurance sample-size + temperature acceleration** (Ch7 §7.8, Fig 7-24, Tables 7-6→7-9): FFR/UBER/TBW → drives needed & allowed errors; hours ↔ temperature lookup. Your Ch7 guide's worked examples as presets.
+3. **Endurance sample-size + temperature acceleration** (Ch7 §7.8, Fig 7-24, Tables 7-6→7-9): FFR/UBER/TBW → drives needed & allowed errors; hours ↔ temperature lookup. The Ch7 worked examples as presets.
 4. **QoS percentile explorer** (Fig 1-20): a latency histogram where you drag the "nines" cursor — ties directly to reading FIO's clat percentiles (§7.1.1).
 
 ---
@@ -343,4 +343,4 @@ Tier-2 pool for spare evenings, in the order I'd pick them: **PI bodyguard demo*
 4. **Playwright-screenshot each finished scene** as you already do, and keep the screenshots — they become presentation slides for free.
 5. **Scope ruthlessly.** Each cluster above lists more scenes than its minimum viable version needs. A shipped three-scene sandbox beats a planned seven-scene one. Ship, then accrete.
 
-*That's the whole territory. My honest bottom line as your mentor: clusters A and B alone, done well, would carry both your five-minute intro and half your patent presentation — everything else is compounding interest.*
+*That's the whole territory. The honest bottom line: clusters A and B alone, done well, carry most of the teaching value — everything else is compounding interest.*
