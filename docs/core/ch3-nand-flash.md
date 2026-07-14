@@ -14,39 +14,40 @@ tags:
 source_anchor: "CH3 file"
 ---
 
-# SSD Deep Dive — Chapter 3: The Storage Medium — Flash (閃存)
-## English Study Companion
+# Chapter 3 — The Storage Medium: NAND Flash (閃存)
 
-**Where we are:** Chapter 1 gave the whole-drive picture; Chapter 2 dissected the controller. This chapter goes all the way down to the **physics of a single flash cell** — how one bit is actually held as trapped electrons — then builds back up through chip architecture, the electrical protocols, and finally the many ways flash *fails* and how firmware fights back. Chapter 3 runs pages 1–69 of your file (p. 70 is empty website comments).
+[Chapter 1](ch1-overview.md) saw the whole drive; [Chapter 2](ch2-controllers-afa.md) dissected the controller. This chapter goes all the way down — to the **physics of a single flash cell**, where one bit of your data is a few dozen electrons trapped behind an insulator — then builds back up through chip architecture, the electrical protocols, and the many ways flash *fails*.
 
-**How to use this guide:** Section numbers match the book. Page references like *(p. 3, Fig 3-3)* point into your CH3 file so you can view the original diagram beside the explanation. Glossary at the end. This chapter has more physics than the others, so I've leaned on the book's own analogies (they're genuinely good) and added a few of my own.
+Two physical facts about flash generate almost everything else in this book:
 
-**The chapter's shape — four movements:**
-- **3.1** = the physics (how a cell stores a bit; the cell→block→die hierarchy; 3D flash; alternatives)
-- **3.2** = the electrical reality (how the controller actually talks to a chip — timing, commands, addresses)
-- **3.3** = why flash is hard (all the ways it degrades and fails)
-- **3.4** = fighting back (ECC, RAID, retry, scrubbing, randomization)
+1. **You must erase before you can write — nothing is overwritten in place.** This single constraint forces garbage collection and the whole FTL of [Chapter 4](ch4-ftl.md).
+2. **Each block survives only a limited number of erase cycles.** This forces wear leveling and the entire reliability apparatus.
 
-If your time is limited, **3.1.1–3.1.4** and **3.3** are the heart of it. 3.2 is reference-grade detail you can skim.
+Everything from write amplification to enterprise endurance ratings is downstream of those two sentences.
+
+!!! abstract "In this chapter — four movements plus a modern coda"
+    - **The physics** — how a cell stores a bit; SLC/MLC/TLC; the cell → block → die hierarchy; 3D stacking; charge trap; PCM (§3.1)
+    - **The electrical reality** — timing modes, the command set, addressing, ONFI vs Toggle (§3.2, reference-grade; skim freely)
+    - **Why flash is hard** — bad blocks, read/program disturb, wear, retention, the Lower-Page trap (§3.3) ⭐
+    - **Fighting back** — Read Retry, ECC, in-drive RAID, randomization (§3.4) ⭐
+    - **Modern NAND** — independent plane reads and wafer-bonded dies, the BiCS8-era additions (§3.5)
+
+    Short on time? §3.1.1–3.1.4 and §3.3 are the heart.
 
 ---
 
-## 3.1 Flash physical structure — pp. 1–32
+## 3.1 Flash physical structure
 
-### 3.1.1 How a flash cell works (p. 1–3) ⭐ *the foundational idea*
+### 3.1.1 How a flash cell works ⭐
 
-Nearly all SSDs use **NAND flash**, a **non-volatile** memory (keeps data with power off). The reason SSDs behave the way they do traces entirely to two physical facts about flash, both stated on p. 1:
-1. **You must erase before writing — you cannot overwrite in place.** → this forces garbage collection.
-2. **Each block survives only a limited number of erase cycles**, after which it becomes a bad block or holds unreliable data. → this forces wear leveling.
+Nearly all SSDs use **NAND flash**, a **non-volatile** memory — it keeps data with the power off. The basic unit is a **cell**: an NMOS-like transistor with an extra **floating gate (浮柵)** sandwiched between insulating layers, sitting between the control gate above and the channel below. Electrons trapped in the floating gate stay put when power disappears — that isolation *is* the non-volatility.
 
-The basic storage unit is a **cell (Cell)** — an NMOS-like transistor with a **floating gate (浮柵)** *(p. 1–2, Figs 3-1/3-2)*. Between the source and drain sits a gate that can trap electrons, wrapped above and below by insulating layers. Electrons trapped inside **don't leak away when power is lost** — that's why flash is non-volatile.
+- **Write (program):** apply a positive voltage to the control gate → electrons tunnel *through* the insulator *into* the floating gate.
+- **Erase:** apply a positive voltage to the substrate → electrons are pulled back *out* of the floating gate.
 
-- **Write (program):** apply positive voltage to the control gate → electrons tunnel *through* the insulator *into* the floating gate.
-- **Erase:** apply positive voltage to the substrate → electrons are pulled *out* of the floating gate.
+The floating-gate transistor was invented at Bell Labs in 1967 by **Dawon Kahng and Simon Sze (施敏)** — by the story, inspired over lunch by a layered cheesecake: *what if we put something extra in the middle of a MOSFET?* Sze received a lifetime achievement award at the 2014 Flash Memory Summit, and there's a fair case he deserved more — the discoverers of GMR, the effect that kept the *hard disk* dominant, won a Nobel Prize for it.
 
-*(A charming aside, p. 2–3: the floating-gate transistor was invented in 1967 by Simon Sze (施敏) and Dawon Kahng at Bell Labs — reportedly inspired over lunch by a cheesecake, imagining "what if we put something in the middle of a MOSFET?" Sze received a lifetime achievement award at the 2014 Flash Memory Summit; the author argues he deserves a Nobel, since the discoverer of GMR — the effect behind HDDs — already won one.)*
-
-### 3.1.2 SLC / MLC / TLC — the voltage picture (p. 3–5) ⭐
+### 3.1.2 SLC / MLC / TLC: the threshold-voltage picture ⭐
 
 ??? example "🎬 Animate this — The Vt Distribution Playground"
 
@@ -57,17 +58,17 @@ The basic storage unit is a **cell (Cell)** — an NMOS-like transistor with a *
     <iframe src="../../animations/files/vt_playground.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Vt Distribution Playground"></iframe>
 
 
-The names describe **how many bits one cell stores**, which physically means **how finely you subdivide the electron count** in the floating gate:
+SLC/MLC/TLC describe **how many bits one cell stores** — which physically means **how finely you subdivide the electron count** in the floating gate.
 
-The key diagram to understand is the **threshold-voltage distribution** *(p. 3–5, Figs 3-3/3-4/3-5)*: the x-axis is threshold voltage, the y-axis is the number of cells. Cells storing the same value don't all sit at exactly one voltage — they form a *bell curve* centered on a target. Reading means checking which range the cell's voltage falls into.
+The one diagram to internalize in this whole chapter is the **threshold-voltage (Vt) distribution**: x-axis = threshold voltage, y-axis = number of cells. Cells programmed to the same value don't sit at exactly one voltage — they form a *bell curve* around a target. Reading a cell means testing which voltage band it falls into.
 
-- **SLC (1 bit)** — two states, so one clean divide. After erase the cell reads **1**; after programming it reads **0**. (So writing a 1 means "do nothing"; writing a 0 means "inject charge.")
-- **MLC (2 bits)** — four states, so you must distinguish four electron-count bands (e.g., <10 electrons = state 0, 11–20 = 1, 21–30 = 2, >30 = 3).
+- **SLC (1 bit)** — two states, one clean divide. Erased reads **1**, programmed reads **0**. (Writing a 1 means "do nothing"; writing a 0 means "inject charge.")
+- **MLC (2 bits)** — four states: four electron-count bands to tell apart (think: <10 electrons = state A, 11–20 = B, 21–30 = C, more = D).
 - **TLC (3 bits)** — eight states, finer still.
 
-**The fundamental trade-off (p. 5, Table 3-2):** on the same silicon area, SLC→MLC→TLC store 1→2→3 bits, so capacity rises. But more bands means (a) writing must control electron count more precisely → **slower writes**, (b) reading must try more reference voltages → **slower reads**, and (c) the bands sit closer together → **less margin for error → shorter endurance**. So performance and lifespan go **SLC > MLC > TLC**, while capacity-per-area and cheapness go the other way. 3D TLC is now mainstream; QLC (4 bits) was arriving — slower and less reliable still.
+**The fundamental trade-off:** on the same silicon, SLC → MLC → TLC stores 1 → 2 → 3 bits, so cost per GB falls. But more bands means (a) programming must place the electron count more precisely → **slower writes**, (b) reading must test more reference voltages → **slower reads**, and (c) the bells sit closer together → **less margin → shorter endurance**. Performance and lifespan rank **SLC > MLC > TLC**; capacity-per-dollar ranks the other way. 3D TLC is today's mainstream; QLC (4 bits, sixteen bands) continues the same trade.
 
-### 3.1.3 Flash chip architecture — the hierarchy (p. 5–9) ⭐ *memorize this*
+### 3.1.3 The hierarchy: cell → page → block → plane → die ⭐
 
 ??? example "🎬 Animate this — Why SSDs need an FTL — NAND flash, animated"
 
@@ -78,87 +79,91 @@ The key diagram to understand is the **threshold-voltage distribution** *(p. 3�
     <iframe src="../../animations/files/nand-flash-animation.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Why SSDs need an FTL — NAND flash, animated"></iframe>
 
 
-A flash chip is millions of cells organized in a strict nesting *(p. 6–7, Figs 3-6/3-7)*. From smallest to largest:
+A flash chip is millions of cells in a strict nesting — memorize this ladder:
 
 **cell → (page) → wordline → block → plane → die/LUN → chip**
 
-- A **wordline** corresponds to one or more **pages**: SLC = 1 page/wordline; MLC = 2 (a pair: **Lower Page** + **Upper Page**); TLC = 3 (Lower, Upper, Extra).
-- A **block (Block)** is the group of wordlines that **share one substrate** — this is why erase happens at block granularity (more below).
-- A **die/LUN** is **the basic unit that receives and executes a flash command.** Two LUNs can execute *different* commands simultaneously — this is a key source of parallelism — but within one LUN, only one operation runs at a time (you can't read one page while writing another on the same LUN).
-- A **plane** (commonly 1, 2, or now 4 per die) each has its own **Cache Register** and **Page Register**, each the size of one page.
+- A **wordline** carries one or more **pages**: SLC = 1 page per wordline; MLC = 2 (**Lower Page** + **Upper Page**); TLC = 3 (Lower, Upper, Extra).
+- A **block** is the set of wordlines **sharing one substrate** — which is exactly why erase happens at block granularity (§3.1.4).
+- A **die (LUN)** is **the basic unit that receives and executes a flash command.** Two dies can run *different* commands simultaneously — a key source of parallelism — but within one die, classically only one operation runs at a time. (§3.5.1 shows how modern flash relaxes this for reads.)
+- A **plane** (1, 2, now commonly 4 per die) has its own **Cache Register** and **Page Register**, each one page in size.
 
-**The two registers and why they exist (p. 7–9, Fig 3-8).** To write, the controller sends data into the target plane's **Cache Register**, then it's written to the flash array; to read, data goes flash → register → controller. Crucially, **transfers between flash media and register always happen a whole page at a time.** Two registers exist to **overlap bus transfer with media access**: while page N is being handed to the controller (Cache Register → controller), page N+1 can already be loading from the media (media → Page Register). This hides the slower operation behind the faster one (**Cache Read / Cache Program**).
+**Why two registers?** All media transfers happen **a whole page at a time**: writes go controller → Cache Register → flash array; reads go array → register → controller. Two registers let the chip **overlap bus transfer with media access**: while page N streams out of the Cache Register to the controller, page N+1 is already loading from the media into the Page Register (**Cache Read / Cache Program**). The slower operation hides behind the faster one.
 
-**Important definitional subtlety (p. 9):** the quoted "flash write time" and "read time" refer *only* to moving a page between the flash media and the Page Register — **not** the register↔controller transfer. This matters when you reason about timing.
+!!! note "A definitional subtlety that bites timing calculations"
+    Quoted flash "read time" and "program time" cover only the media ↔ Page Register hop — **not** the register ↔ controller bus transfer. Keep the two separate when you reason about throughput (the timing-lab animation in §3.2.5 draws them as separate bars).
 
-**Multi-Plane (Dual-Plane) operation — a big performance lever (p. 8–9).** Instead of writing planes one at a time, the controller loads several planes' Cache Registers, then commits them together. The book's worked numbers: if writing a page = 1.5 ms and transferring = 50 μs, then two pages single-plane = (1.5 ms + 50 μs) × 2, but dual-plane = 1.5 ms + 50 μs × 2 — **nearly half the time, ~2× write speed.** Reads similarly speed up (two planes' pages load in one read time).
+**Multi-plane operation — a big cheap win.** Load several planes' Cache Registers, then commit them together. With a 1.5 ms program and 50 µs transfer: two pages single-plane = (1.5 ms + 50 µs) × 2; dual-plane = 1.5 ms + 2 × 50 µs — **nearly 2× the write speed**. Reads gain the same way.
 
-**Why erase is per-block (p. 9):** all cells in a block share one substrate, so applying the strong erase voltage to that substrate pulls electrons out of *every* floating gate at once. Max erase cycles fall SLC (up to 100K) → MLC (a few K to tens of K) → TLC (hundreds to a few K). As process shrinks (into the 1Xnm era), capacity rises but performance and reliability worsen — pushing more work onto firmware.
+**Endurance by cell type:** maximum erase cycles fall from SLC (up to ~100K) → MLC (thousands to tens of thousands) → TLC (hundreds to a few thousand). And as process nodes shrank into the 1X nm era, capacity rose while raw performance and reliability *worsened* — pushing ever more of the burden onto firmware. That's the recurring theme of this book: **the medium gets worse; the algorithms get better.**
 
-### 3.1.4 Read / write / erase — the actual voltages (p. 9–12, Figs 3-9/3-10/3-11)
+### 3.1.4 Read, write, erase: the actual voltages
 
-- **Erase:** apply ~20 V to the Pwell; quantum tunneling pulls electrons from the floating gates into the channel; the whole block's threshold voltage becomes −VT = state "1". (Blocks not being erased have their gates left floating, so no tunneling.)
-- **Write:** the target cell's wordline gets high voltage with bitline = 0 V → electrons tunnel into the floating gate → "0". Cells *not* being written get bitline = 2 V, which suppresses tunneling.
-- **Read:** unread wordlines get 5 V (keeping those transistors conducting); the target wordline gets 0 V. An erased (−VT) cell conducts → the bitline sensor reads "1"; a programmed (+VT) cell doesn't conduct → "0".
+- **Erase:** ~20 V on the P-well; quantum tunneling pulls electrons out of every floating gate in the block; the whole block reads "1" (−Vt). Blocks not being erased float their gates — no field, no tunneling.
+- **Write:** the target wordline gets a high voltage with its bitline at 0 V → electrons tunnel into the floating gate → "0". Cells to be left alone get their bitline at ~2 V, suppressing tunneling.
+- **Read:** all *other* wordlines get ~5 V (forcing those transistors to conduct regardless of state); the target wordline gets 0 V. An erased cell (−Vt) conducts → the bitline sense amp reads "1"; a programmed cell (+Vt) stays off → "0".
 
-*(You don't need to memorize the exact voltages — they vary by chip — but internalize the pattern: **erase = all 1s via substrate**, **write = inject charge to make 0s**, **read = sense conduction at 0 V**.)*
+Don't memorize the numbers — they vary by chip. Internalize the pattern: **erase = whole block to all-1s via the substrate; write = inject charge to make 0s; read = sense conduction at 0 V.**
 
-### 3.1.5 3D flash (p. 13–21)
+### 3.1.5 3D flash
 
-**The problem 3D solves (p. 13–14, Fig 3-12).** For a decade, 2D (planar) flash shrank cells to cut cost — but as cells got smaller, **cell-to-cell interference got worse**, until shrinking further no longer reduced cost-per-bit. A wall.
+**The wall 2D hit.** For a decade, planar flash shrank cells to cut cost — but smaller cells sit closer together, and **cell-to-cell interference grows** as spacing shrinks, until shrinking further stopped reducing cost-per-good-bit.
 
-**The 3D idea (p. 14–16, Figs 3-13/3-14).** Instead of shrinking cells in a plane, **stack layers vertically** — the channel stands upright and wordlines are stacked "floor by floor" like a building. Each generation adds ~40% more stacked gate layers, effectively shrinking cost ~40% per generation *without* shrinking the individual cell — so **interference actually drops** (the cells got *bigger* again). This is why 3D flash rapidly pushed 2D out and SSDs displaced HDDs (SSD share of the flash market rose 23%→43%, 2013–2017).
+**The 3D answer: stop shrinking, start stacking.** Stand the channel upright and stack wordlines "floor by floor" like a building. Each generation adds roughly 40% more gate layers — cutting cost ~40% per generation *without* shrinking the cell. The cells actually got *bigger* again, so **interference dropped** even as density soared. This is the technology that let SSDs chase HDDs out of the mainstream (flash-market share of SSDs rose from 23% to 43% between 2013 and 2017).
 
-**Two milestone technologies (p. 16, Fig 3-15):** **BiCS** (Bit Cost Scalable, 2007) and **TCAT** (Terabit Cell Array Transistor, 2009). They differ in cell-string structure, stacking, program/erase window, and erase method — BiCS uses polysilicon gates and GIDL erase with a narrow P/E window; TCAT uses metal gates and bulk erase with a wide window. Versus 2D, TCAT *(p. 16, Fig 3-16)*: **−84% interference, >10× endurance, half the program time, −67% threshold-voltage shift.** Layer counts marched 24 → 32 → 48 → 64, roughly doubling density each generation *(p. 16, Fig 3-17)*.
+**Two milestone architectures:** **BiCS** (Bit Cost Scalable, Toshiba 2007) and **TCAT** (Terabit Cell Array Transistor, Samsung 2009). They differ in cell-string structure and erase method — BiCS: polysilicon gates, GIDL erase, narrower program/erase window; TCAT: metal gates, bulk erase, wider window. Against 2D, TCAT delivered **−84% interference, >10× endurance, half the program time, −67% threshold-voltage shift**. Layer counts marched 24 → 32 → 48 → 64, roughly doubling density each step — and kept going (§3.5.2 picks the story up at 218 layers).
 
-**3D's own challenges (p. 17–21, Figs 3-18/3-19):**
-1. **More layers** → smaller string current, and **growing differences between top and bottom cells**. More pages per block also means more accumulated reads per block → worse read disturb → need lower Vread → weaker signal.
-2. **Layer-to-layer variation:** the channel-hole size and gate thickness differ top vs bottom, causing differences in program/erase speed, interference, and retention. (Bottom cells: smaller channel hole → higher coupling → faster erase, but thinner gate → shorter retention.)
+**3D's own headaches:**
 
-### 3.1.6 Charge Trap flash (p. 21–24) — the other way to store a bit
+1. **More layers → smaller string current** and **growing top-vs-bottom differences**. More pages per block also concentrates more reads per block → worse read disturb → lower read-pass voltages → weaker signal margins.
+2. **Layer-to-layer variation:** the etched channel hole tapers — bottom cells have smaller holes (higher coupling → faster erase) and thinner gate films (shorter retention). The firmware increasingly has to treat *layers* differently, not just blocks.
 
-**Charge Trap (CT, 電阱)** replaces the floating gate's *conductor* with an **insulator** (usually silicon nitride, Si₃N₄) full of "traps" that catch electrons *(p. 22, Fig 3-20)*. The book's analogy *(p. 22, Fig 3-21)*: a floating gate is like **water** — electrons move freely inside; CT is like **cheese** — electrons get stuck and move only with great difficulty.
+### 3.1.6 Charge-trap flash: the other way to hold an electron
 
-**Why "stuck" is an advantage (p. 23–24, Figs 3-22/3-23):**
-- **Insensitive to tunnel-oxide wear.** In a floating gate, once the oxide thins (smaller process) or ages (many erases), the free-moving electrons leak out easily. In CT, the electrons are already trapped, so even a degraded oxide doesn't let them escape easily.
-- **Less cell-to-cell coupling.** A floating gate is a conductor, so any two nearby floating gates form a capacitor (C = εS/4πkd) — one cell's charge disturbs its neighbors, and this worsens as cells shrink. CT's insulator storage largely avoids this.
-- **Lower program/erase voltage.** A CT cell is physically shorter (control gate to substrate), so the same tunneling field needs less voltage (E = U/d) → less oxide stress, slower wear, lower power.
+**Charge Trap (CT, 電荷捕捉)** replaces the floating gate's *conductor* with an **insulator** — usually silicon nitride, Si₃N₄ — riddled with "traps" that catch electrons. The classic analogy: a floating gate stores electrons like **water** (they slosh freely inside the container); charge trap stores them like **cheese** (each electron is stuck where it landed).
 
-**CT's weaknesses:** worse at **Read Disturb** and **Data Retention** than floating gate. CT is now the dominant 3D technology — **every major vendor except Micron uses CT for 3D flash** (Micron sticks with floating gate).
+**Why "stuck" wins:**
 
-### 3.1.7 3D XPoint and other emerging memories (p. 24–32)
+- **Insensitive to tunnel-oxide wear.** In a floating gate, once the oxide thins or ages, the free-sloshing electrons leak out through any weak point. Trapped electrons can't reach the weak point.
+- **Far less cell-to-cell coupling.** Two nearby *conductors* form a capacitor (C = εS/4πkd) — so floating-gate neighbors disturb each other, worse as distance d shrinks. An insulator mostly opts out of this.
+- **Lower program/erase voltage.** The CT stack is physically shorter, and the same tunneling field needs less voltage across less distance (E = U/d) → less oxide stress, slower wear, lower power.
 
-**The gap 3D XPoint targets (p. 24–25).** There's a speed chasm: DDR4 DRAM does ~61/46 GB/s but loses data on power-off; a 4-channel PCIe 3.0 SSD tops out ~4 GB/s and SATA ~600 MB/s. The dream is **DRAM-like speed that survives power loss.** Candidates listed: ReRAM (memristor), FeRAM, MRAM, PRAM/PCM (phase-change), cbRAM/PMC, SONOS, CMOx.
+**The cost:** CT is *worse* at read disturb and data retention than floating gate. The market's verdict anyway: **every major vendor except Micron builds 3D flash on charge trap** (Micron held to floating gate).
 
-**Phase-Change Memory (PCM/PRAM)** is the most mature *(p. 26–31)*. The physics: a material (Intel used chalcogenides; the common one is **GST**, Ge₂Sb₂Te₅) switches between an **amorphous (glass-like, high-resistance)** state and a **crystalline (ordered, low-resistance)** state — like water freezing into ordered snow crystals *(p. 27–28, Figs 3-25/3-26)*. These two states are **bistable and non-reversible along the same path** — exactly what you need to represent 0 and 1.
-- **Read:** measure the voltage/resistance at the GST node — low resistance (crystalline) = "0", high resistance (amorphous) = "1" *(p. 29, Fig 3-27)*.
-- **Write:** a tiny heater passes current to melt/reshape the GST; different temperature+time pulses yield different phases (a short, very-hot pulse → amorphous; a longer, hot pulse → crystalline) *(p. 29–30, Figs 3-28/3-29)*.
+### 3.1.7 3D XPoint and the emerging-memory zoo
 
-PCM's attractions vs flash *(p. 28, Table 3-3)*: non-volatile, **byte-addressable**, simple software, **no erase-before-write**, low power, fast, and **far longer endurance** than flash. It's organized in a bitline/wordline matrix like flash *(p. 31–32, Fig 3-30)*.
+**The gap being targeted:** DDR4 DRAM moves ~46–61 GB/s but forgets everything at power-off; a 4-lane PCIe 3.0 SSD tops out ~4 GB/s and SATA at ~600 MB/s. The dream: **DRAM-class speed that survives power loss.** The candidate list: ReRAM/memristor, FeRAM, MRAM, PRAM/PCM, cbRAM/PMC, SONOS, CMOx.
+
+**Phase-Change Memory (PCM)** is the most mature. The physics: a chalcogenide (typically **GST**, Ge₂Sb₂Te₅) switches between an **amorphous** state (disordered like glass — high resistance) and a **crystalline** state (ordered like snowflakes — low resistance). Two stable, distinguishable states = one bit.
+
+- **Read:** measure resistance — low (crystalline) = "0", high (amorphous) = "1".
+- **Write:** a microscopic heater melts and re-forms the material — a short, very hot pulse freezes it amorphous; a longer, gentler pulse lets it crystallize.
+
+PCM's attractions over flash: byte-addressable, **no erase-before-write**, fast, low power, and orders-of-magnitude longer endurance — organized in a familiar bitline/wordline matrix. Intel/Micron's 3D XPoint (Ch 1 §1.3, 2015) was the first mass-market attempt to fill the DRAM-flash gap with this class of memory.
 
 ---
 
-## 3.2 Flash practical guide (the electrical protocols) — pp. 32–44
+## 3.2 Talking to a flash chip: the electrical protocols
 
-*This section is reference-grade detail on how the controller physically talks to a flash chip. Skim it unless you're doing hardware work; the one genuinely important idea for everyone is the ONFI-vs-Toggle story in 3.2.6.*
+*Reference-grade detail on how the controller physically drives a chip. Skim unless you do hardware or firmware work — but read §3.2.6, which everyone should know.*
 
-### 3.2.1 Asynchronous timing (p. 32–35, Figs 3-31/3-32/3-33)
+### 3.2.1 Asynchronous timing
 
-Flash interfaces are **async** (slow, no clock) or **sync** (fast, clocked). In async, each data read is triggered by an **RE_n** pulse and each write by a **WE_n** pulse. Key signals: **CLE** (Command Latch Enable — bytes on the IO bus are a command), **ALE** (Address Latch Enable — bytes are an address), **CE_n** (Chip Enable — selects which logical chip/"Target"; the industry calls a Target a "CE"), **WE_n** (Write Enable), **RE_n** (Read Enable), **R/B_n** (Ready/Busy — the chip is busy during internal reads). Timing parameters (tWP, tWH, tWC, tDS, tDH) describe pulse widths and data setup/hold windows.
+Flash interfaces come **async** (slow, no clock) and **sync** (fast, clocked). Async: each data-out is triggered by an **RE_n** pulse, each data-in by **WE_n**. The signal cast, which you met from the controller side in [Chapter 2](ch2-controllers-afa.md#213-back-end): **CLE** (bytes on the bus are a command), **ALE** (bytes are an address), **CE_n** (chip select — the industry calls one selectable target "a CE"), **WE_n**, **RE_n**, **R/B_n** (ready/busy). Datasheet timing parameters (tWP, tWH, tWC, tDS, tDH) specify pulse widths and setup/hold windows.
 
-### 3.2.2 Synchronous timing (p. 35–37, Figs 3-34/3-35)
+### 3.2.2 Synchronous timing
 
-Sync uses a clock (**CLK**) and a data strobe (**DQS**). Modern flash uses **DDR** — data on both clock edges — so 100 MHz → 200 MT/s. **DQS** marks each transfer window (generated by the flash on reads, by the controller on writes) so the receiver samples correctly. **W/R_n** picks direction.
+Sync adds a clock (**CLK**) and a **data strobe (DQS)**, and modern flash runs **DDR** — data on both clock edges, so 100 MHz → 200 MT/s. DQS frames every transfer window (driven by the flash on reads, by the controller on writes) so the receiver samples at the right instant; **W/R_n** sets direction.
 
-### 3.2.3 Flash command set (p. 37–38, Table 3-5)
+### 3.2.3 The command set
 
-The controller drives flash via a command set (ONFI 2.3 example). Commands you'll see repeatedly: **Read (00h–30h)**, **Read Multi-plane (00h–32h)**, **Change Read Column (05h–E0h** — read only part of a page from an offset), **Block Erase (60h–D0h)**, **Read Status (70h)**, **Read Status Enhanced (78h** — for multi-LUN), **Page Program (80h–10h)**, **Page Program Multi-plane (80h–11h** — multiplies write performance), **Read ID (90h)**, **Read Parameter Page (ECh** — reports the chip's capabilities), **Get/Set Features (EEh/EFh)**.
+The controller drives flash with two-phase command sequences (ONFI 2.3 shown): **Read (00h–30h)**, **Multi-plane Read (00h–32h)**, **Change Read Column (05h–E0h** — fetch from an offset within the loaded page), **Block Erase (60h–D0h)**, **Read Status (70h)** and **Read Status Enhanced (78h**, multi-LUN), **Page Program (80h–10h)**, **Multi-plane Program (80h–11h)**, **Read ID (90h)**, **Read Parameter Page (ECh** — the chip describes its own geometry and capabilities), **Get/Set Features (EEh/EFh)**.
 
-### 3.2.4 Flash addressing (p. 38–40, Figs 3-36/3-37/3-38)
+### 3.2.4 Addressing
 
-Flash uses a **Row Address** and a **Column Address**. The **column address is the offset within a page.** The **row address**, high bits to low, is **LUN → Block → Page**. Where's the plane? It sits in the **lowest bit(s) of the block address** — so multi-plane operations tend to split into odd/even planes. A vendor quirk: for multi-plane, all planes must share the same *page* address; Intel/Micron and Toshiba allow different *blocks*, but Samsung requires the same block address.
+Two coordinates: the **column address** is the byte offset *within* a page; the **row address**, high bits to low, is **LUN → block → page**. The plane number hides in the **lowest bit(s) of the block address** — which is why multi-plane operations pair odd/even blocks. Vendor quirk: all planes in a multi-plane op must share the same *page* address; Intel/Micron and Toshiba allow different *block* addresses, Samsung requires the same.
 
-### 3.2.5 Read / write / erase timing (p. 40–41, Figs 3-39/3-40/3-41)
+### 3.2.5 Read / write / erase on the wire
 
 ??? example "🎬 Animate this — The Flash Timing & Parallelism Lab"
 
@@ -169,93 +174,98 @@ Flash uses a **Row Address** and a **Column Address**. The **column address is t
     <iframe src="../../animations/files/flash_timing_lab.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>
 
 
-- **Read:** send 00h, then 2 column + 3 row address bytes, then 30h; the status bit SR[6] goes Busy, then Ready, then data can be read.
-- **Write:** send 80h, then the address (**column is usually 0 — you must fill a whole page from the start, or you risk data errors**), then data into the register, then 10h to commit; SR[6] Busy→Ready.
-- **Erase:** just LUN + block row address between 60h and D0h (block granularity).
+- **Read:** 00h → 2 column bytes + 3 row bytes → 30h; status bit SR[6] goes Busy while the array loads the register, then data streams out.
+- **Program:** 80h → address (**column normally 0 — pages must be filled from the start, or you risk data errors**) → data into the register → 10h to commit; SR[6] Busy → Ready.
+- **Erase:** 60h → LUN + block row address → D0h. Block granularity only.
 
-### 3.2.6 ONFI vs Toggle — the protocol war (p. 41–44) ⭐ *the one story to read here*
+### 3.2.6 ONFI vs Toggle: the protocol war ⭐
 
-There are **two** flash interface standards, and the book tells their rivalry as a playful allegory borrowed from China's Warring States period (the "vertical alliance vs. horizontal alliance" strategies) — but the real facts:
+There are **two** flash interface standards, and the split is pure industry politics. Flash was long dominated by **Samsung and Toshiba** (~70% share together). In 2006, **Intel and Micron formed the ONFI alliance** (Open NAND Flash Interface) to standardize the interface — pulling in flash makers (Hynix, SanDisk), controller vendors (LSI, Marvell, SMI, JMicron, Phison), system makers (Kingston, Seagate, WD…), and IP firms (Synopsys). Samsung and Toshiba answered by allying with *each other* — cross-licensing and co-developing **Toggle NAND**.
 
-Flash tech was long dominated by **Samsung and Toshiba** (~70% share). In 2006, **Intel and Micron led the formation of the ONFI (Open NAND Flash Interface) alliance** to standardize the flash interface — joined by flash makers (Intel, Micron, Hynix, SanDisk), controller vendors (LSI, Marvell, SMI, JMicron, Phison), product makers (Kingston, Seagate, WD, etc.), and IP firms (Synopsys). Samsung and Toshiba responded by allying with each other (cross-licensing their OneNAND/LBA-NAND technologies) and co-developing **Toggle NAND**.
-
-Where they landed *(p. 42–43, Table 3-6, Fig 3-42)*: ONFI 4.0 (2014) and the latest Toggle both hit **800 MT/s**; market share is roughly **50/50** (Samsung/Toshiba slightly ahead). The pin definitions aren't that different. The technical distinction: **Toggle** (sync) uses no clock — writes triggered by the **DQS** differential-signal edges, reads by the controller's **REN** differential signal; **ONFI** (sync) uses a clock with everything synchronized to it, but its DQS/Clock aren't differential (so edges are more noise-prone). Notably, **ONFI 3.0's NV-DDR2 mode dropped the clock and adopted DQS+REN differential signals — converging toward Toggle.** (The open question the book poses: will JEDEC eventually unify them?)
+Where it landed: ONFI 4.0 (2014) and contemporary Toggle both reached **800 MT/s**; market share split roughly **50/50** (Samsung/Toshiba slightly ahead); the pinouts aren't even very different. The real technical distinction: **Toggle** has no free-running clock — writes are strobed by **DQS** differential edges, reads by the controller's **REN** differential signal; **ONFI** synchronizes everything to a clock, but its strobe/clock weren't differential, making edges more noise-prone. Tellingly, **ONFI 3.0's NV-DDR2 mode dropped the clock and adopted differential DQS + REN — converging on Toggle's approach.** The two standards have been drifting together ever since; whether JEDEC one day unifies them formally remains open.
 
 ---
 
-## 3.3 Flash characteristics — why flash is hard — pp. 44–58 ⭐ *the core failure modes*
+## 3.3 Why flash is hard: the failure modes ⭐
 
-### 3.3.1 The problems flash faces (p. 44–48) — *a catalog worth knowing cold*
+### 3.3.1 The five problems — a catalog to know cold
 
-Five ways flash misbehaves. Note which are **permanent** vs **non-permanent (fixable by erasing)**:
+Note which are **permanent** and which are **non-permanent** (cured by erasing the block):
 
-1. **Bad blocks (p. 44–45, Fig 3-43)** — blocks have finite life; nearing/exceeding max erase count can **permanently** damage cells. Flash also ships with **factory bad blocks**, and accumulates new ones in use — hence mandatory **bad-block management**. All written data needs **ECC** protection so occasional bit-flips are correctable; when flips exceed ECC's power, the block should be retired.
-2. **Read Disturb (讀干擾) (p. 45–46, Fig 3-44)** — reading a page requires putting positive voltage on the *other* wordlines in the block (to keep them conducting). Doing this repeatedly slightly injects electrons into those cells — a "light write" that eventually flips bits. **Non-permanent** (erase fixes it). Crucially, it affects the *other* pages in the block, not the page being read.
-3. **Program Disturb (寫干擾) (p. 46–47, Fig 3-45)** — writing also causes light-writes on neighbors. When writing a page, cells being written to 0 ("Programmed Cells") sit on grounded strings, while cells staying 1 ("Stressed Cells") sit on strings at positive voltage — the stressed cells get lightly written. **Non-permanent.** Unlike read disturb, program disturb affects **both** other pages *and* the page itself.
-4. **Cell-to-cell coupling (p. 47–48)** — floating gates are conductors, so neighboring cells form capacitors; one cell's charge can unexpectedly shift a neighbor's, causing read errors.
-5. **Charge leakage (p. 48)** — charge stored a long time slowly leaks. **Non-permanent.**
+1. **Bad blocks** — blocks have finite life; wear can damage cells **permanently**. Chips also ship with **factory bad blocks** and grow new ones in service — hence mandatory bad-block management ([Chapter 4](ch4-ftl.md) §4.5), ECC on everything, and retirement of blocks whose error counts exceed correction capacity.
+2. **Read disturb (讀干擾)** — reading a page puts pass voltage on all *other* wordlines in the block (to force them conducting, §3.1.4). Each read is a faint program pulse on those neighbors; enough reads flip bits. **Non-permanent.** Affects the block's *other* pages, not the one being read.
+3. **Program disturb (寫干擾)** — programming also lightly writes neighbors: cells meant to stay "1" ("stressed cells") sit on strings at positive voltage while their wordline fires. **Non-permanent.** Unlike read disturb, it can hit **both** other pages *and* the page being written.
+4. **Cell-to-cell coupling** — floating gates are conductors; neighbors form capacitors; one cell's charge shifts another's apparent threshold (§3.1.6 explained why charge trap suffers less).
+5. **Charge leakage** — stored charge slowly escapes over time. **Non-permanent.** (This is data retention, expanded in §3.3.6.)
 
-These afflict all flash (SLC/MLC/TLC); different vendors/processes/2D-vs-3D add their own. Firmware's job is to overcome or mitigate them (methods in Chapter 4).
+All flash suffers all five; process node, 2D vs 3D, and vendor recipes shift the mix. Firmware's whole job ([Chapter 4](ch4-ftl.md)) is living with them.
 
-### 3.3.2 Endurance — the physics of wearing out (p. 48–51, Figs 3-46/3-47/3-48)
+### 3.3.2 Endurance: the physics of wearing out
 
-Recall the read mechanism: an erased cell (−Vt) conducts at 0 V gate → "1"; a programmed cell (+Vt) doesn't → "0". For correct reads, the 0 and 1 distributions must stay **well separated**. As erase cycles accumulate, **three failure modes** appear:
-1. Erased cells' threshold voltage drifts up (−Vt → 0 V) → weaker channel current → sensor misses it → error.
-2. Programmed cells' threshold drifts down (+Vt → 0 V) → misread as erased.
-3. Programmed cells' threshold drifts *too high* (>5 V) → the transistor stays off even at 5 V, which can shut off the entire bitline during other cells' reads.
+For a correct read, the erased (−Vt) and programmed (+Vt) distributions must stay **separated** (§3.1.2). Accumulating erase cycles blurs that separation in three ways:
 
-**Why it happens:** the tunnel oxide is sensitive to thinning (smaller process) and aging (many erases). With use, the oxide develops **charge traps** that "eat" electrons, so fewer electrons reach the floating gate on writes — pushing the 0 and 1 distributions toward each other. After many erases the *erased-state* threshold rises noticeably, so drives verify after erase (set all wordlines to 0 V, check each bitline's current; a zero-current bitline means a cell's erase threshold is near 0 V → mark the block bad).
+1. Erased cells' threshold drifts *up* toward 0 V → weaker channel current at read → sensed as programmed.
+2. Programmed cells' threshold drifts *down* toward 0 V → sensed as erased.
+3. Programmed cells' threshold drifts *too high* (> read-pass voltage) → the cell won't conduct even as a "pass" transistor — which corrupts reads of *every other page* on its bitline.
 
-**How SSDs extend life in practice (p. 50):** **wear leveling** (spread erases evenly so no block dies early), **lower write amplification** (less wear per unit of user data), and **better ECC** (tolerate a higher raw error rate).
+**The mechanism:** the tunnel oxide degrades with every erase. The aging oxide accumulates **charge traps** that swallow electrons in transit, so programs place less charge than intended and the distributions creep toward each other. Because the *erased* threshold rises with wear, drives verify erases (all wordlines at 0 V; any bitline with no current ⇒ some cell failed to erase ⇒ retire the block as bad).
 
-### 3.3.3 Flash testing (p. 51–52, Fig 3-49)
+**The three levers that extend life in practice:** **wear leveling** (no block dies early), **lower write amplification** (less wear per byte of user data), and **stronger ECC** (tolerate a higher raw error rate). All three are Chapter 4's business.
 
-*Why do SSD makers test flash — isn't that the flash vendor's job?* "Very naive." Because: (a) shipped flash isn't guaranteed defect-free; (b) SSD manufacturing has yield issues (imperfect soldering — Fig 3-49 shows a void in a BGA solder ball); (c) makers buy cheap flash from various channels needing screening. So every chip is tested pre-ship: check each CE (Reset, Read ID), then read/write-test each LUN/plane with different data patterns (all-0s, all-1s) accounting for bit-flip rates. Bad chips get replaced; the removed ones might be repurposed into USB drives. **A useful hierarchy to remember:** flash quality demands rise USB drive → consumer SSD → enterprise SSD (as write intensity rises). Enterprise SSDs use the most expensive original flash; USB drives use the worst.
+### 3.3.3 Flash testing
 
-### 3.3.4 MLC usage characteristics (p. 52–54) ⭐ *the Lower-Page-corruption problem*
+Why do SSD makers test flash — isn't that the fab's job? Three reasons: shipped flash isn't guaranteed defect-free; SSD assembly has its own yield problems (BGA solder voids are a classic); and cheaper flash from secondary channels needs screening. So every chip is exercised before a drive ships: per-CE Reset + Read ID, then read/write tests per LUN and plane with multiple data patterns (all-0s, all-1s), tracking flip rates. Failing chips are replaced — and often live a second life in USB drives.
 
-For MLC/TLC, pages within a block **must be written in strict sequential order** (Page 0, 1, 2, 3… — no random order). Two reasons: (a) one cell holds two pages, and you must write **Lower Page before Upper Page**; (b) cell coupling requires that earlier pages already be written before later ones. (Reads have no such restriction; SLC has no restriction.)
+!!! tip "The flash quality ladder"
+    Required flash quality rises **USB drive → consumer SSD → enterprise SSD**, in step with write intensity. Enterprise drives get the best original flash; USB sticks get what's left. Worth remembering when a bargain drive seems too cheap.
 
-MLC's specific problems:
-- Smaller max erase count → more need for wear leveling.
-- **The Lower Page corruption problem** — this is the big one. Writing the Upper Page changes the whole cell's state *based on* the existing Lower Page. If **power is lost mid-Upper-Page-write, the already-safely-written Lower Page data can be destroyed too.** In other words, failing to write one page can corrupt a *different, already-committed* page.
-- Can't write out of order (Upper before Lower) → constrains flexibility.
-- Lower Page writes are fast, Upper Page writes are slow → uneven per-page write speed.
+### 3.3.4 MLC's rules — and the Lower-Page corruption trap ⭐
 
-**Why Lower Page corruption is a serious design problem (p. 53–54).** It breaks two sacred storage rules: (1) once a write returns "success," the data is supposed to be safe; (2) if power is lost *during* a write, losing *that* write is acceptable. Lower Page corruption violates rule 1 — data you were told was safely written can later be destroyed by an unrelated power loss during a subsequent Upper Page write.
+MLC/TLC blocks must be written **in strict page order** (0, 1, 2, 3…). Two reasons: one physical cell carries two (or three) pages, and the **Lower Page must be programmed before the Upper Page**; and coupling compensation assumes earlier pages are already in place. (Reads have no ordering rule; SLC has no rule at all.)
 
-**Mitigations (p. 54):**
-- *Consumer drives:* write Lower Page only (costly); pack Lower+Upper together (needs One-Pass Programming); **periodically flush pending Upper Pages before entering sleep**; **back up Lower Page data to another block until its Upper Page is written**; or **use MLC blocks as SLC** then migrate via garbage collection.
-- *Enterprise drives:* they can't nap constantly, so they use a **large capacitor** — on power loss it supplies tens of milliseconds, enough to finish the in-flight flash writes, flush the cache, and write critical management data (like the mapping table).
+The consequences stack up:
 
-### 3.3.5 Read Disturb, revisited (p. 54–56, Fig 3-50)
+- Lower max erase counts → wear leveling matters more.
+- Lower Pages program fast, Upper Pages slow → per-page write latency is uneven.
+- No out-of-order writes → less scheduling freedom.
+- And the big one:
 
-A real war story: a customer's read performance kept dropping over time; the culprit was read disturb. **Why it hurts performance:** read disturb injects electrons → threshold voltage drifts **right** (Data Retention drifts it *left*). If the chip keeps using the old reference voltage, it misjudges the data. The drift rate depends on **read count** (more reads → more drift) and **erase count** (more wear → easier electron entry). The fix: **track each block's read count**, and before it hits the vendor's threshold, **refresh the block** (read out, erase, rewrite) or move the data elsewhere. That refreshing consumes back-end bandwidth — which is exactly why heavy read disturb *drops performance*. (One research mitigation — lowering Vpass — helps but vendors don't expose that control, and too-low Vpass causes read failures.)
+!!! warning "Lower-Page corruption"
+    Programming the Upper Page re-shapes the *whole cell's* charge based on the Lower Page already in it. **Lose power mid-Upper-Page-program, and the previously committed Lower Page data is destroyed too.** This violates storage's most sacred rule — *data acknowledged as written stays written* — because a page that succeeded long ago dies in someone else's power failure. (Losing the write that was actually in flight is considered acceptable; losing a *different, older* write is not.)
 
-### 3.3.6 Data Retention — how long data survives (p. 56–58, Figs 3-51/3-52)
+**Mitigations.** Consumer drives: write Lower Pages only (expensive); pair Lower+Upper in one pass (needs One-Pass Programming support); flush pending Upper Pages before entering sleep; keep a backup copy of Lower-Page data in another block until its Upper Page lands; or run MLC blocks in SLC mode as a staging cache and migrate later via GC. Enterprise drives can't nap, so they carry **capacitors**: tens of milliseconds of reserve power — enough to finish in-flight programs, flush caches, and save the mapping table ([Supplement D](../supplements/d-power-management.md) designs that circuit; [Chapter 4](ch4-ftl.md) §4.9 covers the recovery logic).
 
-*(The book opens philosophically: even the world's oldest paper map, ~2000 years old, has decayed; even giant text carved in rock vanishes over millions of years. No storage lasts forever.)* In flash, the retention limit is reached when read data can no longer be ECC-corrected. Flash errors fall into three kinds: electrical (bad solder/chip — caught at factory test), read/write/erase command failures (rare, reported via status bits), and **ECC-uncorrectable errors** (error rate exceeds ECC power — **Data Retention is a prime cause**).
+### 3.3.5 Read disturb in the field
 
-**The physics (p. 57–58):** electrons tunnel into the floating gate on write and stay — but over time they have some probability of leaking back to the channel. Enough leakage makes a written cell read like an erased one. Retention depends on tunnel-oxide thickness (thicker → slower leak; ~4.5 nm theoretically gives ~10-year retention). **Why does worn flash retain data for less time?** An effect called **Trap-Assisted Tunneling (TAT)**: with many erase cycles, the aging oxide traps charges and gains slight conductivity, so electrons escape the floating gate faster. Hence more erase cycles → shorter retention; near end-of-life (~3000 cycles) even freshly-written data errors easily. (SLC retention is years; TLC can be under a year, sometimes months.)
+A war story that generalizes: a customer's read performance sagged steadily over weeks; the culprit was read disturb. The mechanism connects §3.3.1 to performance: read disturb injects electrons → the Vt distribution drifts **right** (retention drifts it **left**); with the old reference voltage, reads start failing and the drive burns time on error recovery. Drift rate scales with **read count** and with **wear** (aged oxide admits electrons more easily).
 
-**The fix — Read Scrub (p. 58).** Named after the scrub feature in Sun's ZFS filesystem (which scans data and pre-corrects bit-rot before it's needed). SSD Read Scrub scans the whole drive when idle; if a page's flip count exceeds a threshold, it rewrites the data elsewhere — heading off retention-induced errors before they exceed ECC's power.
+The management strategy: **count reads per block**, and before the count reaches the vendor's threshold, **refresh** — read the data out, erase the block, rewrite (or move the data elsewhere). Refreshing consumes back-end bandwidth, which is precisely *why* heavy read disturb shows up as a performance drop. (Research suggests lowering the pass voltage helps; vendors don't expose that knob, and too low causes read failures.)
+
+### 3.3.6 Data retention: how long does data survive?
+
+No storage lasts forever — the oldest surviving paper maps are ~2,000 years old and fading; even words carved in rock erode. Flash's version: **retention ends when accumulated bit-flips exceed what ECC can correct.**
+
+**The physics.** Programmed electrons sit behind the tunnel oxide, but each has some probability of leaking back to the channel. Enough leakage and a programmed cell reads erased. Retention depends on oxide thickness (~4.5 nm theoretically yields ~10-year retention) — and on wear, through **Trap-Assisted Tunneling (TAT)**: an aged, trap-riddled oxide becomes slightly conductive, so electrons escape *faster* from worn cells. Hence the double squeeze: more erase cycles → shorter retention. Near end of life (~3,000 cycles for the MLC of this era), even freshly written data errors easily. Rules of thumb: SLC retains for years; TLC can be months.
+
+**The countermeasure — Read Scrub.** Named for ZFS's scrub feature: patrol the data *before* it's needed. The SSD scans itself during idle time; any page whose correctable-flip count crosses a threshold gets rewritten to a fresh location. Retention errors are headed off while they're still correctable.
 
 ---
 
-## 3.4 Flash data integrity — fighting back — pp. 58–69 ⭐
+## 3.4 Fighting back: the data-integrity stack ⭐
 
-Because flash bit-flips grow with use, retention time, and shrinking process, SSDs deploy a stack of integrity techniques: **ECC, RAID, Read Retry, Read Scrub, and data randomization.**
+Flash error rates grow with wear, retention time, and process shrink — so SSDs stack defenses: **Read Retry, ECC, internal RAID, Read Scrub, and randomization.**
 
-### 3.4.1 Sources of read error (p. 59–63) — a consolidated summary
+### 3.4.1 Sources of read error, consolidated
 
-Five causes, each shown as a threshold-voltage distribution shift *(Figs 3-53 to 3-56)*:
-1. **Erase-cycle wear** — aging oxide → charge anomalies → errors.
-2. **Data Retention** — leaking electrons → whole distribution shifts **left**.
-3. **Read Disturb** — accumulated light-writes → distribution shifts **right**.
-4. **Cell-to-cell interference** — a neighbor's state shifts the center cell's threshold.
-5. **Write errors (p. 63)** — mainly in MLC/TLC 2-pass writes: if the Lower Page is already wrong when the Upper Page is written (and note: **the Lower Page is *not* ECC-checked during the internal Upper-Page write**), the cell lands in the wrong state. (TLC 1-pass programming avoids this, since Lower and Upper are written together.)
+Five causes, all visible as Vt-distribution movements (and all reproducible in the playground animation below):
 
-### 3.4.2 Read Retry (p. 63–64, Fig 3-57)
+1. **Erase-cycle wear** — trap buildup distorts programming (§3.3.2).
+2. **Data retention** — leakage shifts distributions **left**.
+3. **Read disturb** — accumulated soft-programming shifts them **right**.
+4. **Cell-to-cell interference** — a neighbor's state nudges the victim's apparent Vt.
+5. **Write errors** — mainly the MLC two-pass sequence: if a Lower Page is already corrupt when its Upper Page programs, the cell lands in the wrong final state — and **the internal Upper-Page program does not ECC-check the Lower Page it builds on**. (TLC one-pass programming sidesteps this by writing all pages of a wordline together.)
+
+### 3.4.2 Read Retry
 
 ??? example "🎬 Animate this — The Vt Distribution Playground"
 
@@ -266,9 +276,9 @@ Five causes, each shown as a threshold-voltage distribution shift *(Figs 3-53 to
     <iframe src="../../animations/files/vt_playground.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Vt Distribution Playground"></iframe>
 
 
-For the *distribution-shift* problems (retention, read disturb), data is still cleanly separated — just misread with the old reference voltage. **Read Retry keeps changing the reference voltage** until it finds a point that reads the data correctly. As long as the states haven't *overlapped*, retry can recover the data. A fancier variant, **Advanced Read Retry**, first reads nearby cells to determine their states, then reads the target twice with different references, choosing based on the neighbors.
+The drift failures (retention, read disturb) share a saving grace: the distributions moved, but they're usually still *separated* — the data is intact, just misread against a stale reference voltage. **Read Retry re-reads with shifted reference voltages** until one lands between the bells. As long as adjacent states haven't overlapped, retry recovers everything. The refinement, **Advanced Read Retry**, first reads the *neighboring* cells, then reads the target twice with different references and picks the result the neighbors vote for.
 
-### 3.4.3 ECC — error-correcting codes (p. 64–65) ⭐
+### 3.4.3 ECC: error-correcting codes ⭐
 
 ??? example "🎬 Animate this — Stronger ECC in action — BCH & LDPC"
 
@@ -279,11 +289,11 @@ For the *distribution-shift* problems (retention, read disturb), data is still c
     <iframe src="../../animations/files/ecc_bch_ldpc.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Stronger ECC in action — BCH & LDPC"></iframe>
 
 
-Every SSD controller (and some flash chips) has an **ECC** module. The common algorithms are **BCH** (named for Bose, Ray-Chaudhuri, Hocquenghem) and **LDPC** (Low-Density Parity Check) — **LDPC is the growing trend** (BCH still common today). ECC parity is stored in each page's **spare/reserved area**; stronger correction needs more parity, so **correction strength is limited by that spare space** — more spare = stronger ECC.
+Every controller carries an ECC engine ([Chapter 2](ch2-controllers-afa.md#213-back-end) placed it in the back end). The algorithms: **BCH** (Bose–Ray-Chaudhuri–Hocquenghem) and **LDPC** (Low-Density Parity-Check), with LDPC taking over as flash got denser. Parity lives in each page's **spare area**, so **correction strength is capped by spare-area size** — more spare bytes, stronger code. [Supplement A](../supplements/a-ecc-coding-theory.md) derives both algorithms from first principles.
 
-**Static vs dynamic ECC.** Most drives use **static** ECC — fixed user-data-size and parity-size for the whole drive life, so correction strength never changes. But since young flash flips few bits and old flash flips many, some drives use **dynamic ECC**: start with *less* parity (fitting more user data per page), then strengthen correction as the drive ages. Benefits: early on, more user data per page = effectively more **OP** (lower write amplification) and better channel-bandwidth utilization. Dynamic ECC can also **vary by location** — good dies/Lower Pages get weaker ECC, weak dies/Upper Pages get stronger ECC.
+**Static vs dynamic ECC.** Most drives fix the user-data/parity split for life (**static**). But young flash barely errs while old flash errs constantly — so some drives run **dynamic ECC**: start with less parity (more user data per page → effectively more OP → lower write amplification, better bus utilization), then strengthen the code as wear accumulates. Dynamic schemes can also vary **by location**: strong dies and Lower Pages get light parity; weak dies and Upper Pages get heavy parity.
 
-### 3.4.4 RAID inside the SSD (p. 65–67) ⭐ *harder than it looks*
+### 3.4.4 RAID inside the SSD ⭐
 
 ??? example "🎬 Animate this — Stripe RAID & the Chained Warships"
 
@@ -294,21 +304,62 @@ Every SSD controller (and some flash chips) has an **ECC** module. The common al
     <iframe src="../../animations/files/stripe_raid.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Stripe RAID & the Chained Warships"></iframe>
 
 
-When bit-flips exceed ECC's power, ECC fails — so many drives add **RAID** (typically **RAID 5**) *across dies*, treating the internal flash array like a disk array *(p. 65, Fig 3-58)*. Example: 5 dies, Die 0–3 hold user data, Die P holds their **XOR** parity; if Die 1 becomes ECC-uncorrectable, XOR the others to rebuild it. (RAID 5 recovers only a *single* uncorrectable failure; costs user space for parity — "no free lunch.")
+When flips exceed ECC's power, the last line of defense is **RAID across dies** (typically RAID 5): dies 0–3 hold data, die P holds their **XOR**; when one die's page turns uncorrectable, XOR the survivors to rebuild it. Limits apply — RAID 5 absorbs exactly *one* uncorrectable member per stripe, and parity costs user capacity. No free lunch.
 
-**Why SSD RAID is genuinely hard (p. 66–67, Fig 3-59).** Traditional disk RAID writes data in stripes and updates parity in place. But **SSDs can't overwrite** — every new write goes to a new location. That's tolerable *as long as the old data isn't erased* (the stripe stays valid). The real danger: **what if one die's block in a stripe gets garbage-collected?** The stripe breaks — catastrophic. So the central problem of SSD RAID is **garbage collection: the entire RAID stripe must be garbage-collected together.** The book's vivid image: internal RAID blocks are "chained together like Cao Cao's warships at the Battle of Red Cliffs" — written together, garbage-collected together, erased together. Chaining is *stable* but *inflexible*: the big RAID blocks waste space (e.g., before sleep you must pad unfinished stripes with random data → higher write amplification), and sometimes a stripe must be garbage-collected wholesale even though one block still holds lots of valid data. (And, as at Red Cliffs, chained ships share fate — one fire burns them all.)
+**Why in-SSD RAID is genuinely hard.** Disk RAID updates parity *in place* — and flash can't overwrite (§3.1.1). New writes land at new locations, which is survivable *while the old stripe members stay put*. The catastrophe scenario: **garbage collection moves one block out of a stripe** — the parity equation now points at reclaimed space. So the central rule of SSD RAID is that **the whole stripe garbage-collects together**: written together, moved together, erased together. Like the chained warships at Red Cliffs — stable in formation, but inflexible (unfinished stripes must be padded before sleep → extra write amplification; sometimes a stripe full of valid data must be collected wholesale) — and sharing fate by design.
 
-### 3.4.5 Data randomization (p. 67–69, Figs 3-60/3-61/3-62)
+### 3.4.5 Data randomization
 
-If you write raw data + ECC straight to flash, you hit many errors — because **flash is sensitive to data patterns.** Long runs of all-0s or all-1s cause **charge imbalance** inside the flash, degrading noise immunity and reliability. Two physical reasons randomization helps:
-1. **Better 0/1 separation** *(Fig 3-60)* — randomized data keeps each state's distribution tight and well-isolated; un-randomized data widens some distributions, which drift into their neighbors over time and cause errors.
-2. **Lower coupling impact** *(Fig 3-61)* — the four directly-adjacent cells most affect a cell's threshold; randomizing evens this out.
+Write raw user data straight to flash and errors climb, because **flash is pattern-sensitive**: long runs of 0s or 1s create **charge imbalance** that degrades noise margins. Randomization fixes two physical problems:
 
-So controllers (or the flash) include a **randomizer** that scrambles user data so the bits written are roughly balanced 0/1 — vendors often recommend **AES** for this. Placement in the data flow *(Fig 3-62)*: randomization happens **just before the data is written to flash, after ECC parity is added** (though the ECC and randomization order can be swapped).
+1. **Cleaner state separation** — scrambled data keeps every Vt bell tight and isolated; patterned data fattens some bells until, with drift, they invade their neighbors.
+2. **Evened-out coupling** — a cell's threshold is most disturbed by its four direct neighbors; random data statistically balances those influences.
+
+So a **randomizer** (vendors often suggest AES simply as a good scrambler) sits in the write path, keeping the physical bit stream near 50/50. Order of operations: ECC parity is computed, then the whole payload is randomized just before hitting flash (some designs swap the two stages).
 
 ---
 
-## Key vocabulary — for decoding the original figures
+## 3.5 Modern NAND: two BiCS8-era innovations
+
+*The first edition ends at §3.4. These two topics arrived with recent flash generations and complete the picture — both matter enormously in current firmware work.*
+
+### 3.5.1 Independent plane operations (IPR / AIPR) ⭐
+
+**The classic constraint** (§3.1.3, §3.2.4): multi-plane operations run in lockstep — same command, same page address, issued together — and the die is "the basic unit that executes a command," one operation at a time.
+
+**Modern NAND relaxes this — for reads.** From roughly the BiCS5 / 6th-gen V-NAND era, standard by BiCS8, chips support **Independent Plane Read (IPR)**, usually in asynchronous form (**AIPR**): each plane executes its *own* read at its *own* address, *started at its own time*. A 4-plane die behaves like four smaller dies — **for reads**.
+
+**Why reads only?** Reads are short and dominate QoS; programs are long, power-hungry, and share the die's charge-pump budget. So programs stay lockstep while reads go independent.
+
+**Why it matters:**
+
+- **Random-read IOPS and tail latency.** The classic collision — a read queued behind another read on the same die — now happens only when both target the same *plane*. The unit of read parallelism drops from die to **plane**, extending Chapter 2's ladder: channels × dies × *planes-for-reads*. (Toggle AIPR on in the §3.2.5 timing-lab animation and watch the read bars unstack.)
+- **Firmware implications:** the flash scheduler tracks *per-plane* busy state; hot data wants to be **striped across planes** so reads don't collide; cache-read pipelining (§3.1.3's two registers) operates per plane.
+
+### 3.5.2 Peripheral circuits: beside → under → bonded ⭐
+
+A NAND die isn't just the array — it needs **peripheral CMOS**: charge pumps (the ~20 V of §3.1.4), sense amplifiers, page buffers, IO circuits, the command state machine. *Where that periphery lives* has become a defining architectural choice:
+
+- **Generation 1 — periphery beside the array** (2D and early 3D): CMOS sits next to the array, spending die area — array efficiency only ~70%.
+- **Generation 2 — CuA (CMOS under Array**; Micron from 64L, Samsung's "COP"): build the CMOS first, stack the array on top. Efficiency jumps — but the array's high-temperature process steps now *cook the finished CMOS*, degrading it, and it worsens as layer counts (and thermal budget) climb. The periphery is hostage to the array's process.
+- **Generation 3 — wafer bonding: CBA (CMOS Bonded to Array).** Build the **CMOS wafer and the array wafer separately**, each on its own optimal process, then bond them face-to-face through millions of micron-scale copper contacts. YMTC pioneered it as "Xtacking"; **KIOXIA/WD's CBA debuts with BiCS8 (218 layers)** — the first wafer-bonded NAND from that alliance. The wins: the CMOS is never cooked (BiCS8's headline ~3,600 MT/s interface speed comes straight from this), array efficiency approaches ideal (periphery takes no array-side area — leading bit density *without* the tallest stack), and the two wafers scale on independent roadmaps.
+
+**The takeaway:** the competitive lever in NAND is shifting from raw layer count to *architecture* — periphery placement, bonding, IO speed. BiCS8's spec sheet (moderate 218 layers, top-tier density and interface speed) only makes sense once you know CBA is under the hood.
+
+---
+
+## Key takeaways
+
+1. **Two physical facts rule everything:** erase-before-write (→ FTL, GC) and finite erase cycles (→ wear leveling, ECC). The rest of the book is corollary.
+2. **The Vt distribution is the master diagram.** Wear widens the bells, retention slides them left, read disturb slides them right, and every recovery trick (Read Retry, stronger ECC) is a way of still telling the bells apart.
+3. **Know the ladder**: cell → page/wordline → block (erase unit, shared substrate) → plane (registers) → die (command unit) → chip — and that modern flash breaks the "one op per die" rule for reads (AIPR).
+4. **MLC's ordering rules have teeth**: Lower-Page corruption breaks "written means safe," and enterprise capacitors exist largely because of it.
+5. **The integrity stack layers cheap-to-expensive**: randomize always, ECC every read, Retry when references drift, RAID-rebuild when ECC fails — and scrub in the background before any of it is needed.
+6. **The medium keeps getting worse as density rises; the system keeps getting better.** 3D stacking, charge trap, and wafer bonding are how the industry keeps that bargain going.
+
+---
+
+## Key vocabulary
 
 | 中文 | English |
 |---|---|
@@ -359,42 +410,25 @@ So controllers (or the flash) include a **randomizer** that scrambles user data 
 6. Why is building RAID *inside* an SSD harder than building it across ordinary disks? What single operation is the central problem, and what must be done about it?
 7. Why must user data be randomized before writing to flash — give one of the two physical reasons.
 8. A floating gate stores charge in a conductor; Charge Trap stores it in an insulator. Give two advantages CT gains from that, and one thing it does *worse*.
+9. With AIPR, what replaces the die as the unit of read parallelism — and what new data-placement concern does that create for firmware?
 
 ---
 
----
+??? info "📖 Book page map — for readers of 《深入淺出SSD》"
 
-## 📘 2nd-Edition Addendum (their §5.4.3 and §5.5.4)
+    This chapter follows Chapter 3 of《深入淺出SSD》(SSDFans, 2018);
+    §3.5 covers 2nd-edition additions (their §5.4.3 and §5.5.4). Original
+    figures by section:
 
-*Two topics the 2nd edition adds to the flash chapter that the 1st edition (your PDF) doesn't have. Both are directly relevant to your BiCS8 work.*
+    | Section | Book pages | Key figures/tables |
+    |---|---|---|
+    | 3.1.1–3.1.2 Cell & Vt | pp. 1–5 | Figs 3-1…3-5, Table 3-2 |
+    | 3.1.3–3.1.4 Hierarchy & voltages | pp. 5–12 | Figs 3-6…3-11 |
+    | 3.1.5 3D flash | pp. 13–21 | Figs 3-12…3-19 |
+    | 3.1.6 Charge trap | pp. 21–24 | Figs 3-20…3-23 |
+    | 3.1.7 PCM / 3D XPoint | pp. 24–32 | Figs 3-25…3-30, Table 3-3 |
+    | 3.2 Protocols | pp. 32–44 | Figs 3-31…3-42, Tables 3-5/3-6 |
+    | 3.3 Failure modes | pp. 44–58 | Figs 3-43…3-52 |
+    | 3.4 Integrity stack | pp. 58–69 | Figs 3-53…3-62 |
 
-## A1. Asynchronous / Independent Plane Operations (their §5.4.3) ⭐
-
-**Recall the classic constraint.** In §3.1.3 and §3.2.4 you learned that multi-plane operations run in *lockstep*: all planes get the same command at the same time, with the same page address (only the block may differ, vendor-depending). And in Chapter 2, the **die/LUN was "the basic unit that executes a flash command"** — one operation per die at a time.
-
-**Modern NAND relaxes this — for reads.** Recent generations (roughly BiCS5 / 6th-gen V-NAND era onward, standard by BiCS8) support **Independent Plane Read (IPR)**, often in its **asynchronous** form (**AIPR**): each plane can execute its *own* read, at a *different* page address, *started at a different time* — fully independently. A 4-plane die effectively behaves like four smaller dies **for reads**.
-
-**Why reads only (mostly)?** Reads are short and dominate QoS; programs are long, power-hungry, and share the die's charge-pump budget — so writes generally stay lockstep multi-plane while reads go independent.
-
-**Why it matters:**
-- **Random-read IOPS and tail latency.** The classic collision — a read stuck waiting because *another* read is busy on the same die — now only happens if both target the same *plane*. The effective unit of read parallelism drops from the die to the **plane**, extending the Chapter-2 parallelism ladder: channels × dies × (now) planes-for-reads.
-- **Firmware implications (your world):** the flash scheduler must track *per-plane* busy state instead of per-die, interleave independent reads, and — more subtly — **data placement across planes now matters for read QoS** (striping hot data across planes avoids plane-level collisions). Cache-read pipelining (§3.1.3's two registers) also operates per plane.
-
-## A2. 3D peripheral-circuit architectures (their §5.5.4) ⭐ *BiCS8's headline feature*
-
-A NAND die isn't just the memory array — it needs **peripheral CMOS**: charge pumps (the ~20 V for erase, §3.1.4), sense amps, page buffers/registers, IO circuits, and the command state machine. *Where you put that periphery* has become a defining architectural choice:
-
-**Generation 1 — periphery beside the array** (2D and early 3D): the CMOS sits next to the array on the same silicon, wasting die area — array efficiency only ~70%.
-
-**Generation 2 — CuA (CMOS under Array; Micron from 64L, Samsung's "COP"):** build the CMOS first, then stack the 3D array *on top of it*. Array efficiency jumps (the periphery hides under the array). **The catch:** the array's high-temperature processing steps come *after* the CMOS is built, degrading those transistors — and it worsens as layer counts (and thermal budget) grow. The periphery's performance is hostage to the array's process.
-
-**Generation 3 — wafer bonding: CBA (CMOS directly Bonded to Array).** Build the **CMOS wafer and the array wafer separately**, each on its own *optimal* process, then bond them face-to-face with millions of tiny copper contacts. YMTC pioneered the approach as "Xtacking"; **KIOXIA/WD's version, CBA, debuts with BiCS8 (218 layers)** — i.e., *your target flash is the industry's first KIOXIA/WD wafer-bonded NAND.* The wins:
-- **Each wafer gets its best process** — the CMOS is no longer cooked by array thermal steps, so IO circuits can be much faster (BiCS8's headline ~3600 MT/s interface speed comes directly from this).
-- **Higher array efficiency and density** (periphery consumes ~no array-side area) — BiCS8 achieves leading bit density *without* the tallest layer count.
-- **Independent scaling** — the CMOS and the array can evolve on separate roadmaps.
-
-**The takeaway:** as stacking matures, the competitive lever is shifting from raw layer count to *architecture* — periphery placement, bonding, and IO speed. When you see BiCS8's specs (moderate 218 layers, top-tier density and interface speed), CBA is the reason.
-
----
-
-*Next up: Chapter 4 — SSD Core Technology: the FTL (Flash Translation Layer) — how firmware turns this fragile, can't-overwrite, wears-out medium into a reliable disk.*
+*Next: [Chapter 4 — The FTL](ch4-ftl.md) — how firmware turns this fragile, can't-overwrite, wears-out medium into a reliable disk.*
