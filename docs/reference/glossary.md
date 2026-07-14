@@ -22,7 +22,7 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | APST | — | Autonomous Power State Transition (controller self-idles at NVMe layer) | [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary) |
 | ASPM | — | Active State Power Management (hardware-autonomous link idling) | [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary) |
 | atomic operation | 原子操作 | — | [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
-| bad block | 壞塊 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| bad block | 壞塊 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | bad block management | 壞塊管理 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | bandwidth | 帶寬 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | Base Address Register | 基地址寄存器 (BAR) | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
@@ -32,10 +32,10 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | bit-flipping | — | hard-decision iterative decoder | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | block / inode bitmap | — | free/used tracking in EXT4 | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | block / page | 塊 (Block) / 頁 (Page) | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
-| block / page / hybrid mapping | 塊映射 / 頁映射 / 混合映射 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| block / page / hybrid mapping | 塊映射 / 頁映射 / 混合映射 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | block group | — | EXT4's fixed volume subdivision | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | boundary-value test | 邊界值測試 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
-| burst performance | 突發性能 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| burst performance | 突發性能 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | cache / buffer | 緩存 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | cache register / page register | 緩存/頁寄存器 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
 | capacity | 容量 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
@@ -49,7 +49,7 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | cleaning | — | F2FS garbage collection (greedy / cost-benefit victim; ≈ SSD GC, Ch4) | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | CLKREQ# | — | PCIe sideband pin gating deep link states (≈ SATA DEVSLP) | [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary) |
 | code rate R = k/n | — | data bits ÷ total bits | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
-| cold data / hot data | 冷數據 / 熱數據 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| cold data / hot data | 冷數據 / 熱數據 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | command decode/parsing | 命令解析 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
 | command set | 命令集 | — | [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
 | compatibility | 兼容性 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
@@ -81,7 +81,7 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | Doorbell Register | 門鈴寄存器 (DB) | — | [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
 | dual port | 雙端口 | — | [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
 | dual-simplex / full-duplex / half-duplex | 雙單工 / 全雙工 / 半雙工 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
-| dynamic / static wear leveling | 動態/靜態磨損平衡 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| dynamic / static wear leveling | 動態/靜態磨損平衡 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | dynamic power management | — | host changes power state on the fly | [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary) |
 | EDAC / scrubbing | — | Error Detection And Correction; periodic read-correct-rewrite (≈ Read Scrub, Ch3) | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
 | eMMC | — | predecessor; parallel, half-duplex, no queuing | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
@@ -94,14 +94,14 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | endurance test | 耐久度測試 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
 | enumeration | 枚舉 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | erase / write (program) / read | 擦除 / 寫入(編程) / 讀取 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
-| erase count (EC) | 擦除次數 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| erase count (EC) | 擦除次數 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | error correction (ECC) | 糾錯 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
 | error handling | 錯誤處理 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
 | error-correcting code (ECC) | 糾錯碼 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
 | error-locator polynomial | — | BCH: its roots locate the errors | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | extent | — | contiguous block range (start, start, length) — EXT4 range mapping | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | F2FS | — | Flash-Friendly File System (flash-native LFS) | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
-| factory / grown bad block | 出廠/增長壞塊 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| factory / grown bad block | 出廠/增長壞塊 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | fetch (a command) | 取指 | — | [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
 | filesystem | — | OS layer mapping files onto a block device | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | firmware | 固件 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
@@ -109,14 +109,14 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | flash chips (colloquial: "grains") | 顆粒 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | flash controller | 閃存控制器 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
 | flash memory (NAND) | 閃存 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
-| Flash Translation Layer (FTL) | 閃存轉換層 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| Flash Translation Layer (FTL) | 閃存轉換層 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | floating gate | 浮柵 (浮柵極) | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
 | flow control | 流控<br>流量控制 / 流控 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | FOB (Fresh Out of Box) | 全新盤 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
-| foreground / background GC | 前臺/後臺垃圾回收 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| foreground / background GC | 前臺/後臺垃圾回收 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | front end / back end | 前端 / 后端 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
 | garbage collection | 垃圾回收 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
-| garbage collection (GC) | 垃圾回收 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| garbage collection (GC) | 垃圾回收 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | GCR | — | Galactic Cosmic Rays (high-energy interstellar particles) | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
 | generator matrix G | — | encodes: c = u·G | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | GF(2) | — | binary field; `+` is XOR | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
@@ -126,7 +126,7 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | head / tail | 頭部 / 尾部 | — | [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
 | HIBERN8 | — | deep low-power M-PHY link state (≈ DevSleep) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
 | host interface | 主機接口 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
-| host-based / device-based | 主機端 / 設備端 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| host-based / device-based | 主機端 / 設備端 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | hot / warm / cold data | 熱/溫/冷數據 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | hot-plug | 熱插拔 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | HPB | — | Host Performance Booster (host caches L2P; ≈ HMB, Ch4) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
@@ -154,21 +154,21 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | LLR | — | log-likelihood ratio; sign = guess, magnitude = confidence | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | log-on-log | — | inefficiency of a log-structured FS atop a log-structured FTL | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | logic analyzer | 邏輯分析儀 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
-| logical / physical address | 邏輯地址 / 物理地址 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| logical / physical address | 邏輯地址 / 物理地址 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | Logical Block Address | 邏輯塊地址 (LBA) | — | [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
-| logical page / physical page | 邏輯頁 / 物理頁 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| logical page / physical page | 邏輯頁 / 物理頁 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | Logical Unit (LU) | — | addressable storage space (≈ NVMe Namespace / SCSI LUN) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
 | M-PHY | — | UFS physical layer (differential serial, "Gears") | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
 | MAC / HMAC | — | message authentication code (signs RPMB access) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
 | (main) controller | 主控 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
 | managed NAND | — | controller + flash + firmware in one package | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
-| mapping / map table | 映射 / 映射表 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| mapping / map table | 映射 / 映射表 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | mapping table | 映射表 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | MBU / MEU | — | Multiple-Bit Upset — one strike flips adjacent bits (challenges ECC) | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
 | MCQ | — | Multi-Circular Queue (≈ NVMe multi-queue) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
 | mechanical hard drive (HDD) | 機械硬盤 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | memory mapping | 內存映射 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
-| metadata | 元數據 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) · [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
+| metadata | 元數據 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) · [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
 | min-sum | — | hardware-friendly approximation of sum-product | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | minimum distance dmin | — | smallest distance between any two codewords | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | MIPI | — | consortium behind mobile interface specs | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
@@ -181,13 +181,13 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | NAT (Node Address Table) | — | node ID → physical address indirection (≈ FTL map, Ch4) | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | node | — | F2FS metadata unit: inode / direct node / indirect node | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | non-volatile | 非易失性 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
-| normal / abnormal power loss | 正常/異常掉電 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| normal / abnormal power loss | 正常/異常掉電 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | normalized / offset min-sum | — | corrected min-sum variants | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | NVMe power state (PS0–PS31) | — | up to 32 controller power states in Identify data | [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary) |
 | operational / non-operational | — | NVMe states that can / cannot process I/O | [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary) |
 | ordered / writeback / journal mode | — | EXT4 journaling modes | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | original flash manufacturer (fab) | 原廠 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
-| over-provisioning (OP) | 預留空間 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| over-provisioning (OP) | 預留空間 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | overwrite-in-place | 覆蓋寫 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | packet | 數據包 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | parity-check matrix H | — | checks: H·cᵀ = 0 | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
@@ -206,7 +206,7 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | power consumption | 功耗 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | power loss / power on | 掉電 / 上電 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | power-loss protection | 掉電保護 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
-| power-loss recovery | 掉電恢復 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| power-loss recovery | 掉電恢復 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | power-vs-latency tradeoff | — | deeper state = less power but slower wake (the core principle) | [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary) |
 | preconditioning | 預處理 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
 | producer / consumer | 生產者 / 消費者 | — | [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary-for-decoding-the-original-figures) |
@@ -235,7 +235,7 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | regression test | 回歸測試 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
 | regular / irregular | — | uniform vs varied row/column weights | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | reliability | 可靠性 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
-| remap table | 重映射表 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| remap table | 重映射表 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | replay attack | — | re-sending a recorded message to undo a security state | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
 | retransmission (retry) | 重傳 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | RHA | — | Radiation Hardness Assurance | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
@@ -268,13 +268,13 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | sideband signal | 邊帶信號 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | simulation / emulation | 仿真 / 模擬 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
 | SIT (Segment Info Table) | — | valid-block counts/bitmaps (≈ SSD VPC/VPBM, Ch4) | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
-| skip / replace strategy | 略過 / 替換策略 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| skip / replace strategy | 略過 / 替換策略 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | SMP / AMP | 對稱/非對稱多處理 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
-| snapshot / checkpoint | 快照 / 檢查點 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
-| software-defined flash (SDF) | 軟件定義閃存 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| snapshot / checkpoint | 快照 / 檢查點 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
+| software-defined flash (SDF) | 軟件定義閃存 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | SOI | — | Silicon-On-Insulator (latchup-resistant substrate) | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
 | solid-state drive (SSD) | 固態硬盤 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
-| source block / destination block | 源閃存塊 / 目標閃存塊 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| source block / destination block | 源閃存塊 / 目標閃存塊 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | South Atlantic Anomaly | — | LEO region of elevated radiation | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
 | SPE | — | Solar Particle Event (flare/CME particle burst) | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
 | SSA (Segment Summary Area) | — | block → owning node (≈ SSD P2L, Ch4) | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
@@ -298,14 +298,14 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | threshold voltage | 閾值電壓 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
 | throughput / bandwidth | 吞吐量 / 帶寬 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) |
 | TID | — | Total Ionizing Dose — cumulative radiation damage (≈ radiation-driven wear, Ch3) | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
-| timestamp | 時間戳 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| timestamp | 時間戳 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | TMR | — | Triple Modular Redundancy (triplicate + vote) | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
 | topology | 拓撲結構 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | Transaction Layer | 事務層 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | tree structure | 樹形結構 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | trigger | 觸發 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
 | tunnel oxide | 隧道氧化層 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
-| two-level mapping (L2P) | 二級映射 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| two-level mapping (L2P) | 二級映射 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | UECC | — | uncorrectable ECC error → UBER event | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | UFS | — | Universal Flash Storage (JEDEC mobile storage standard) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
 | UIC | — | UFS Interconnect (UniPro + M-PHY) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
@@ -316,18 +316,18 @@ Every term from all 12 guides' Key-vocabulary tables, merged and alphabetized. S
 | upstream / downstream port | 上游 / 下游端口 | — | [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary-for-decoding-the-original-figures) |
 | user space / kernel space | 用戶態 / 內核態 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
 | UTP | — | UFS Transport Protocol (makes UPIUs) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
-| valid data / invalid (garbage) data | 有效數據 / 無效(垃圾)數據 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| valid data / invalid (garbage) data | 有效數據 / 無效(垃圾)數據 | — | [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | Van Allen belts | — | Earth's trapped-radiation regions | [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary) |
 | variable node (VN) | — | one per codeword bit | [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary) |
 | verification / validation | 驗證 / 確認 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
 | VFS | — | Virtual File System (uniform kernel API above all filesystems) | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
 | wandering tree | — | LFS cascade of pointer updates; solved by NAT | [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) |
-| wear leveling | 磨損平衡 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| wear leveling | 磨損平衡 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | Well-Known LU | — | special LUs: Boot, RPMB, Device, Report | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |
 | with computation capability | 帶計算功能 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
 | wordline / bitline | 字線 / 位線 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
 | write amplification | 寫放大 | — | [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) |
-| write amplification (WA) | 寫放大 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary-for-decoding-the-original-figures) |
+| write amplification (WA) | 寫放大 | — | [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) |
 | write buffer / buffer | 寫緩存 / 緩沖 | — | [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) |
 | write saturation test | 飽和寫測試 | — | [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary-for-decoding-the-original-figures) |
 | WriteBooster | — | UFS pseudo-SLC turbo write buffer (≈ SLC Cache, Ch4) | [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary) |

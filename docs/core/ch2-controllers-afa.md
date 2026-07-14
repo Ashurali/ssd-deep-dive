@@ -157,7 +157,7 @@ Its reliability toolbox is a checklist of enterprise-grade mechanisms:
 
 - **Per-channel ECC at 100 bits / 1 KB** — balancing decoder complexity, silicon area, power, and *deterministic* decode latency.
 - **Active fault management** — flash degrades gradually (error rates climb before hard failure), so TAI tracks per-page raw error rates in real time, proactively retires failing regions, and feeds real wear data into **wear leveling** decisions.
-- **Chip-to-chip redundancy** — RAID across dies: if one chip's block goes bad, rebuild it from the others ([Chapter 4](ch4-ftl.md) §4.8 shows the mechanism).
+- **Chip-to-chip redundancy** — RAID across dies: if one chip's block goes bad, rebuild it from the others ([Chapter 3](ch3-nand-flash.md#344-raid-inside-the-ssd) §3.4.4 shows the mechanism).
 - **Power-loss protection** — hardware monitors the supply and fails over to backup capacitors to preserve in-flight data ([Supplement D](../supplements/d-power-management.md) covers the circuit design).
 - **Thermal/power self-monitoring** — dynamic throttling to survive poorly ventilated installations.
 

@@ -229,7 +229,7 @@ Three metrics, in causal order:
 - **UBER (Uncorrectable Bit Error Rate)** — the probability that an error survives *even after* ECC. The number users actually experience.
 - **MTBF (Mean Time Between Failures)** — whole-product reliability, in hours.
 
-**Why flash flips bits at all:** ① program/erase wear (P/E cycling damages the cell oxide), ② **read disturb (讀取乾擾)** — reading a page slightly stresses its neighbors, ③ **program disturb (編程干擾)** — writing disturbs neighbors too, ④ **data retention (數據保持)** loss — the trapped charge slowly leaks. ([Chapter 3](ch3-nand-flash.md) §3.5–3.7 covers the physics of all four.) The controller fights back with **ECC** (BCH, and LDPC in newer designs — [Supplement A](../supplements/a-ecc-coding-theory.md) builds the theory from scratch) and sometimes an internal RAID layer across dies ([Chapter 4](ch4-ftl.md) §4.8).
+**Why flash flips bits at all:** ① program/erase wear (P/E cycling damages the cell oxide), ② **read disturb (讀取乾擾)** — reading a page slightly stresses its neighbors, ③ **program disturb (編程干擾)** — writing disturbs neighbors too, ④ **data retention (數據保持)** loss — the trapped charge slowly leaks. ([Chapter 3](ch3-nand-flash.md) §3.3 covers the physics of all four.) The controller fights back with **ECC** (BCH, and LDPC in newer designs — [Supplement A](../supplements/a-ecc-coding-theory.md) builds the theory from scratch) and sometimes an internal RAID layer across dies ([Chapter 3](ch3-nand-flash.md#344-raid-inside-the-ssd) §3.4.4).
 
 The relationships to internalize, all roughly exponential:
 

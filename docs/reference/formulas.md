@@ -11,13 +11,13 @@ a link to the section that derives it.
 
 **Write Amplification** — the ratio of what the SSD physically wrote vs what
 the host asked for; GC's extra internal writes push it above 1.
-*Derived in [Ch 4 §4.3.2](../core/ch4-ftl.md#432-write-amplification-p-2730-figs-4-23-to-4-25-know-this-cold).*
+*Derived in [Ch 4 §4.3.2](../core/ch4-ftl.md#432-write-amplification).*
 
 $$ WA = \frac{\text{data written to flash}}{\text{data written by the host}} $$
 
 **Over-Provisioning ratio** — the hidden reserve beyond user capacity; bigger
 OP → more garbage per reclaimed block → lower WA.
-*Same section, [Ch 4 §4.3.2](../core/ch4-ftl.md#432-write-amplification-p-2730-figs-4-23-to-4-25-know-this-cold).*
+*Same section, [Ch 4 §4.3.2](../core/ch4-ftl.md#432-write-amplification).*
 
 $$ OP = \frac{\text{flash space} - \text{user space}}{\text{user space}} $$
 
@@ -36,7 +36,7 @@ $$ DWPD = \frac{TBW}{365 \times \text{years} \times \text{Capacity}} $$
 **Map-table size rule of thumb** — with 4 KB logical pages and 4-byte
 entries, the L2P table is ~1/1000 of capacity (why 1 TB drives carry ~1 GB
 DRAM).
-*Derived in [Ch 4 §4.2.2](../core/ch4-ftl.md#422-how-mapping-works-and-the-dram-question-p-812-figs-4-6-to-4-9).*
+*Derived in [Ch 4 §4.2.2](../core/ch4-ftl.md#422-how-mapping-works-and-the-dram-question).*
 
 $$ \text{map table} \approx \frac{\text{Capacity}}{1000} $$
 
