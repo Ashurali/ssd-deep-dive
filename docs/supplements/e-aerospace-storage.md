@@ -8,126 +8,128 @@ tags:
 source_anchor: "supplement (no book chapter)"
 ---
 
-# SSD Deep Dive — Supplement E: Aerospace / Space Storage
-## English Study Companion (2nd-edition topic, reconstructed from standard references)
+# Supplement E — Aerospace / Space Storage
 
-**Why this exists:** This is the **2nd edition's §3.2 (航天存储 / Aerospace Storage)** — which sits, tellingly, in the same chapter as computational storage (the FPGA-SSD you met in the Chapter-2 guide). It's not in your PDFs. I've reconstructed it from the space-radiation-effects literature (NASA NEPP, IEEE NSREC), the radiation-tolerant-memory industry, and current research, in your usual format.
+Space is the ultimate reliability exam, and this closing supplement works by taking *everything [Chapter 3](../core/ch3-nand-flash.md) taught about how flash fails* — threshold-voltage drift, charge trapping in the oxide, retention loss, bit errors — and asking: **what happens when radiation accelerates all of it and adds brand-new failure modes on top?** (Reconstructed from the space-radiation-effects literature — NASA NEPP, IEEE NSREC — and the radiation-tolerant-memory industry; the 2nd edition gives the topic a section alongside computational storage.)
 
-**Why it's a fitting capstone:** Space is the **ultimate reliability challenge**, and this topic works by taking *everything you learned about how flash fails in Chapter 3* — threshold-voltage shift, charge trapping in the oxide, retention loss, bit errors — and asking: *what happens when radiation accelerates all of it, and adds brand-new failure modes on top?* Nearly every mitigation technique turns out to be a Chapter-3/4 concept pushed to an extreme: **memory scrubbing is the Read Scrub, redundancy is the internal RAID, the SLC preference is the SLC-margin argument, and even the "why solid-state at all" question has the same answer as Chapter 1 (no moving parts).** So this supplement both teaches something genuinely new (radiation physics) and consolidates the whole reliability thread of the book.
+The satisfying part: nearly every mitigation turns out to be a Chapter-3/4 concept pushed to its extreme. **Memory scrubbing is Read Scrub. Redundancy is the internal RAID. The SLC preference is the voltage-margin argument. Even "why solid-state at all" has the same answer as Chapter 1** — no moving parts. So this supplement teaches something genuinely new (radiation physics) while consolidating the reliability thread of the whole site.
 
-**Relevance to you:** This is more a breadth/interest topic than day-to-day bench work — unless a NAND company you're at pursues space-grade or industrial-rugged product, which does happen. For **patent research**, radiation-tolerant storage and single-event-effect mitigation are their own active patent niche. And regardless, it's the natural closing chapter: it shows why the fragile medium you've studied all book can be engineered to survive literally the worst environment there is.
-
-**How to use this guide:** Follows the 2nd edition's structure (3.2.1 background, 3.2.2 technology status & trends). No page refs (not from your PDF); instead I map each concept to its Chapter-3/4 twin. Glossary and self-quiz at the end, followed by a **closing wrap-up of the whole 7-chapter + 5-supplement journey.**
-
----
-
-## 3.2.1 Background — why space needs storage, and why solid-state ⭐
-
-**Every spacecraft needs non-volatile memory.** Satellites and probes must store **mission-critical data** — boot code, flight-control parameters, and (the big one) **payload/science data**: Earth-observation imagery, telescope data, sensor logs. A modern imaging satellite generates enormous data volumes that must be stored on board and downlinked when a ground station is in view. So on-board storage — historically called a **Solid State Recorder (SSR)** or **Mass Memory Unit (MMU)** — is core spacecraft equipment.
-
-**The tape-to-solid-state transition — the same story as Chapter 1.** Here's a lovely historical echo: decades ago, spacecraft non-volatile memory often meant a **tape recorder** — literally magnetic tape with moving parts, spinning in orbit. Per NASA's guideline, solid-state devices displaced tape because of **the increased reliability from having no moving parts** — a critical advantage in an environment where you can't send a repair technician. **This is exactly the SSD-vs-HDD argument from Chapter 1** (§1.2: shock resistance, no mechanical failure), just with far higher stakes: in space, "no moving parts to break" isn't a convenience, it's mission survival. So the storage evolution you studied — mechanical → solid-state for reliability — played out in orbit too, and for the same reason.
-
-**But space breaks the assumptions.** On Earth, flash's enemies are wear, read disturb, and retention loss (Chapter 3). In space, there's a new, dominant enemy: **radiation.** The rest of this supplement is about what radiation does to NAND and how engineers fight it.
-
-### The space radiation environment
-
-The threat comes from three main sources:
-- **Galactic Cosmic Rays (GCRs)** — high-energy particles (mostly protons and heavy ions) from outside the solar system. Low flux but extremely energetic — a single heavy ion can carry enough energy to disrupt or destroy a circuit node. Nearly impossible to shield against (they punch through spacecraft walls).
-- **Solar particle events** — bursts of protons and ions from solar flares and coronal mass ejections. Sporadic but intense; a big solar storm dramatically raises the particle flux.
-- **Trapped radiation (Van Allen belts)** — protons and electrons captured by Earth's magnetic field, forming intense radiation belts.
-
-**Orbit determines the dose — this is the key engineering variable:**
-- **LEO (Low Earth Orbit)** — relatively protected by Earth's magnetic field, but passes through the **South Atlantic Anomaly** (a dip in the field where the inner belt reaches low altitude, spiking radiation). Moderate requirements; ~100 krad tolerance suffices for several years.
-- **MEO / GEO (Medium / Geosynchronous)** — sit in or above the Van Allen belts; much harsher, longer missions, higher required tolerance.
-- **Interplanetary / deep space** — GCRs dominate, no magnetic protection; the most demanding.
-- **Extreme environments (e.g., Jupiter/Europa)** — brutal trapped-radiation belts requiring the most hardened designs.
-
-The dose is quantified two ways, matching the two categories of damage below: **cumulative dose** (total radiation absorbed over the mission) and **particle flux** (rate of individual strikes).
+!!! abstract "In this supplement"
+    - **Why spacecraft store, and why solid-state** ⭐ — the tape-to-SSR transition; the radiation environment; orbit sets the requirement (§E.1)
+    - **TID** ⭐ — cumulative dose as radiation-accelerated aging (§E.2.1) · **SEE** ⭐ — from bit-flips to chip-killing latchup (§E.2.2)
+    - **Where NAND is tough and where it's soft** (§E.2.3) · **Rad-hard vs COTS-plus-mitigation** ⭐⭐ (§E.2.4–E.2.5)
+    - **Current practice** — NewSpace, density pull, testing standards (§E.2.6)
+    - **Coda** — the complete map of the core chapters and supplements
 
 ---
 
-## 3.2.2 Radiation effects & mitigation (technology status & trends) ⭐⭐
+## E.1 Background: why space needs storage, and why solid-state ⭐
 
-Radiation damages electronics in **two fundamentally different ways** — a slow cumulative degradation and instantaneous particle-strike events. (A third, displacement damage, matters more for other devices than NAND.) Understanding the split is everything.
+**Every spacecraft needs non-volatile memory** — boot code, flight parameters, and above all **payload data**: Earth-observation imagery, telescope frames, sensor logs, stored on board and downlinked when a ground station comes into view. The equipment class is the **Solid State Recorder (SSR)** or **Mass Memory Unit (MMU)**.
 
-### Effect Type 1 — TID (Total Ionizing Dose): the cumulative one ⭐ *this is Chapter 3 wear, from radiation*
+**The tape-to-solid-state transition is Chapter 1's story, retold in orbit.** For decades, spacecraft storage often meant an actual **tape recorder** — magnetic tape and motors, spinning in space. Solid state displaced it, per NASA's own guidance, for **the reliability of having no moving parts** — the SSD-vs-HDD argument of [Ch 1 §1.2](../core/ch1-overview.md#12-ssd-vs-hdd) with the stakes raised: in orbit, "nothing mechanical to break" isn't a convenience, it's mission survival. No repair technicians make house calls at 700 km.
 
-**TID** is the **accumulated ionizing radiation absorbed over the mission lifetime**, measured in **rad** or **krad** (or Grays). As radiation passes through the chip's silicon-dioxide (oxide) layers, it creates **electron-hole pairs**, and some charge gets **trapped in the oxide** — permanently. Over time this trapped charge shifts transistor behavior and degrades the device until it eventually fails.
+**But space breaks the ground rules.** On Earth, flash's enemies are wear, disturb, and retention ([Ch 3 §3.3](../core/ch3-nand-flash.md#33-why-flash-is-hard-the-failure-modes)). In space a new, dominant enemy joins: **radiation.**
 
-**Here's why this should feel familiar:** in Chapter 3 (§3.3.2, endurance), you learned that *wear* damages flash by causing **charge traps to accumulate in the tunnel oxide**, shifting threshold-voltage distributions and degrading retention. **TID does the same kind of damage by a different cause** — radiation-induced oxide charge instead of program/erase stress. The symptoms are nearly identical to the aging you already understand:
+**The radiation environment**, three sources:
 
-Per recent (2024–2025) radiation testing of 3D NAND, TID causes:
-- **Rising raw bit error rate (RBER)** — the same RBER metric from Chapter 1, climbing with dose.
-- **Threshold-voltage shifts** — exactly the distribution drift from Chapter 3, now radiation-driven.
-- **Increased standby and read currents** — the trapped charge causes leakage.
-- **Degraded erase/program timing** — TID changes how long these operations take (because the charge pumps and cell physics shift).
-- **Worse data retention** — trapped charge accelerates the leakage that causes retention loss (Chapter 3 §3.3.6).
+- **Galactic Cosmic Rays (GCR)** — high-energy protons and heavy ions from outside the solar system. Sparse but ferocious: one heavy ion carries enough energy to disrupt or destroy a circuit node, and shielding barely helps — they punch through spacecraft walls.
+- **Solar particle events** — proton/ion bursts from flares and coronal mass ejections; sporadic, sometimes intense.
+- **Trapped radiation** — the **Van Allen belts**, particles caught in Earth's magnetic field.
 
-There's even an echo of **data randomization** (Chapter 3 §3.4.5): researchers found the **stored data pattern influences the post-irradiation bit-error count** — the same pattern-sensitivity that motivates scrambling on Earth shows up under radiation. And a connection to **charge-trap flash** (Chapter 3 §3.1.6): 3D charge-trap NAND has been found to have *superior TID resistance* in some studies — the insulator-based storage that helps with scaling also helps with radiation.
+**Orbit sets the dose — the key engineering variable:** **LEO** is comparatively protected (though it crosses the **South Atlantic Anomaly**, where the inner belt dips low) — ~100 krad tolerance covers years. **MEO/GEO** sit in or above the belts: much harsher. **Deep space** belongs to the GCRs, unshielded by any magnetosphere. **Jupiter-class environments** are the brutal end of the scale. Dose is quantified two ways, matching the two damage categories below: **cumulative dose** (TID) and **particle flux** (SEE rate).
 
-So **TID is, in effect, radiation-accelerated aging** — and the endurance/retention physics from Chapter 3 is the foundation for understanding it.
+---
 
-### Effect Type 2 — SEE (Single Event Effects): the instantaneous ones ⭐ *this is Chapter 3 bit errors, weaponized*
+## E.2 Radiation effects & mitigation ⭐⭐
 
-**SEE** are disruptions caused by a **single high-energy particle strike**. Unlike TID's slow accumulation, an SEE happens *instantly* when one heavy ion or proton hits a sensitive node, depositing charge along its ionized track. SEEs come in a family, and the crucial split is **soft (recoverable) vs hard (destructive)**:
+Radiation damages electronics in **two fundamentally different ways** — slow accumulation and instantaneous strikes. The split organizes everything.
 
-**Soft errors (non-destructive — recoverable):**
-- **SEU (Single Event Upset)** — the classic soft error: **a bit flips.** A particle strike deposits enough charge to flip a stored bit — in a memory cell, a register, a latch, or the controller's SRAM. Non-destructive: the bit can be corrected and rewritten. *This is a Chapter-3 bit error (§3.4), but caused by a particle instead of wear/disturb — and it's exactly what ECC exists to catch.*
-- **MEU / MBU (Multiple-Bit Upset)** — one particle flips **several adjacent bits** at once. **This is the nasty one for ECC:** the codes from your ECC supplement (BCH, LDPC) are designed assuming errors are somewhat independent; a single strike corrupting a *cluster* of neighboring bits can overwhelm a code's correction capability. This is why space storage uses **stronger and interleaved** ECC (below).
-- **SET (Single Event Transient)** — a momentary voltage glitch on a signal line that can propagate and get latched as a wrong value.
+### E.2.1 TID — Total Ionizing Dose: radiation-accelerated aging ⭐
 
-**Functional and hard errors (severe — need reset or cause damage):**
-- **SEFI (Single Event Functional Interrupt)** — a strike corrupts the device's **control logic or state machine**, so it **stops functioning correctly** (the controller hangs, or the flash enters a bad state) until it's **reset or power-cycled.** A major concern for complex NAND controllers — the more logic, the more targets. *This connects to the robustness/error-handling theme from Chapter 4 §4.6 (recovery) and the Jammer robustness testing from Chapter 7 — a SEFI is like a hardware-induced version of the malformed-command chaos you tested for.*
-- **SEL (Single Event Latchup)** — **the dangerous one.** A strike triggers a parasitic thyristor (SCR) structure inherent in CMOS, creating a **self-sustaining high-current short.** If not interrupted quickly (by cutting power), the excessive current can **permanently destroy the chip.** SEL is *potentially destructive* and demands active protection (below).
-- **SEGR / SEB (Single Event Gate Rupture / Burnout)** — destructive events in **high-voltage** nodes. **This matters specifically for NAND** because — recall Chapter 3 §3.1.4 — flash **erase requires ~20 V generated by on-chip charge pumps**, and those high-voltage nodes are exactly where a strike can rupture a gate oxide or burn out a junction. So the very mechanism that makes flash erasable (high internal voltages) creates a radiation vulnerability.
+**TID** is the accumulated ionizing dose over the mission, in **rad/krad** (or grays). Radiation crossing the chip's oxide layers creates electron-hole pairs, and some charge **traps in the oxide — permanently** — shifting transistor behavior until the device degrades out of spec.
 
-The umbrella term for the destructive subset (SEL/SEGR/SEB) is **catastrophic SEE (CSEE)** — the hardest to mitigate and the biggest risk to using commercial parts in space.
+This should feel familiar: [Ch 3 §3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out) taught that *wear* damages flash by accumulating **charge traps in the tunnel oxide**. **TID is the same damage by a different cause** — radiation instead of program/erase stress. Recent (2024–25) radiation testing of 3D NAND reads like Chapter 3's symptom list, radiation-driven:
 
-### Why NAND is *partly* robust — and where it's weak
+- **RBER climbs** with dose (Chapter 1's metric, new driver).
+- **Threshold-voltage distributions shift** — the Vt drift picture again.
+- **Standby and read currents rise** — trapped-charge leakage.
+- **Program/erase timings degrade** — charge pumps and cell physics shift.
+- **Retention worsens** — trapped charge accelerates the leakage of [Ch 3 §3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive).
 
-An important nuance: the **floating gate itself is relatively robust to SEU**, because the stored charge representing a bit is large compared to what a single particle deposits — so the *array* often survives strikes better than you'd expect. **The vulnerability is mostly in the peripheral circuitry:** the charge pumps (SEGR), the sense amplifiers and page buffers (SEU), and especially the **control logic / state machine** (SEFI). So in a NAND device, radiation often disrupts the *machinery around* the array before the stored data itself — the controller hangs, or a page buffer flips, more readily than the floating gates lose their bits.
+Two more Chapter-3 echoes: the **stored data pattern** influences post-irradiation error counts (the pattern-sensitivity that motivates [randomization](../core/ch3-nand-flash.md#345-data-randomization), reappearing under radiation), and **charge-trap** 3D NAND shows superior TID resistance in some studies — the insulator that helps scaling ([Ch 3 §3.1.6](../core/ch3-nand-flash.md#316-charge-trap-flash-the-other-way-to-hold-an-electron)) also helps in orbit.
 
-And the **SLC-vs-MLC/TLC** tradeoff from Chapter 3 §3.1.2 becomes a radiation issue: fewer bits per cell = larger voltage margins = more tolerance to radiation-induced threshold shift. **This is why space storage overwhelmingly uses SLC** (and avoids QLC entirely) — the same margin argument you learned, now for survival. The density cost is accepted for the reliability gain.
+**TID = aging on fast-forward**, and Chapter 3's endurance physics is the right lens for it.
 
-### Mitigation — two philosophies ⭐⭐
+### E.2.2 SEE — Single Event Effects: the instantaneous ones ⭐
 
-How do you build storage that survives this? Two broad approaches, and the industry has been shifting between them:
+An **SEE** is the work of **one particle strike** depositing charge along its ionized track. The family divides into **soft (recoverable)** and **hard (destructive)**:
 
-**Philosophy 1 — Radiation-Hardened (rad-hard).** Build the silicon itself to resist radiation:
-- **RHBD (Rad-Hardening By Design)** — special layout techniques: guard rings to prevent latchup, hardened memory-cell designs, redundant/enclosed-geometry transistors.
-- **RHBP (Rad-Hardening By Process)** — special fab processes like **Silicon-On-Insulator (SOI)** substrates that structurally prevent latchup.
-- **The catch:** rad-hard parts are **expensive, low-volume, and lag commercial technology by generations** — so they're low-density and slow compared to the consumer NAND you've studied. Historically (1980s–90s) this was the only option for critical missions.
+**Soft, recoverable:**
 
-**Philosophy 2 — COTS + system-level mitigation (the modern trend).** Use **commercial off-the-shelf** (or industrial/automotive-grade "upscreened") NAND — cheap, dense, fast — and handle radiation at the **system level** with redundancy, error correction, and active protection. This is **"radiation-tolerant"** rather than "radiation-hardened": you accept that individual parts *will* experience upsets, and engineer the system to detect and recover from them. Per the industry, this is now widely adopted for **LEO and NewSpace/CubeSat** missions where cost matters and the radiation environment is milder.
+- **SEU (Single Event Upset)** — the classic: **a bit flips** — in a cell, a register, the controller's SRAM. Correct it, rewrite it, move on. *A Chapter-3 bit error with a cosmic cause — exactly what ECC exists for.*
+- **MBU (Multiple-Bit Upset)** — one particle flips **several adjacent bits**. *The nasty one for ECC:* the codes of [Supplement A](a-ecc-coding-theory.md) assume errors scatter somewhat independently; a clustered strike can overwhelm a codeword. The defense is interleaving (§E.2.5).
+- **SET (Single Event Transient)** — a momentary voltage glitch that can propagate and latch as a wrong value.
 
-### System-level mitigation techniques — mostly Chapter 3/4 concepts, extremized ⭐
+**Functional and hard:**
 
-Here's where your book knowledge pays off — the COTS-mitigation toolkit is largely techniques you already know, hardened for space:
+- **SEFI (Single Event Functional Interrupt)** — the strike corrupts **control logic or a state machine**: the device hangs or misbehaves until **reset or power-cycled**. A first-order concern for complex NAND controllers — more logic, more targets. *(The robustness theme of [Ch 7 §7.3.3](../core/ch7-testing.md#733-jammer) — a SEFI is hardware-induced malformed-state chaos.)*
+- **SEL (Single Event Latchup)** — **the dangerous one**: the strike triggers CMOS's parasitic thyristor, creating a **self-sustaining high-current short**. Cut power fast or the chip cooks. Demands active protection.
+- **SEGR / SEB (Gate Rupture / Burnout)** — destructive events at **high-voltage nodes**. This one is NAND-specific in a poetic way: recall [Ch 3 §3.1.4](../core/ch3-nand-flash.md#314-read-write-erase-the-actual-voltages) — **erase needs ~20 V from on-chip charge pumps**, and precisely those nodes are where a strike can rupture an oxide. The mechanism that makes flash erasable creates its radiation soft spot.
+
+The destructive subset (SEL/SEGR/SEB) is collectively **catastrophic SEE (CSEE)** — the main obstacle to flying commercial parts.
+
+### E.2.3 Where NAND is tough, and where it's soft
+
+A crucial nuance: the **floating-gate array itself is relatively robust to strikes** — the stored charge per bit is large compared to what one particle deposits. **The vulnerability concentrates in the periphery**: charge pumps (SEGR), sense amps and page buffers (SEU), and above all the **control logic** (SEFI). Radiation usually breaks the *machinery around* the array before it erases your bits.
+
+And [Ch 3 §3.1.2](../core/ch3-nand-flash.md#312-slc-mlc-tlc-the-threshold-voltage-picture)'s trade-off becomes a survival rule: fewer bits per cell = wider voltage margins = more tolerance for radiation-induced Vt shift. **Space storage overwhelmingly flies SLC** and avoids QLC entirely — the margin argument, upgraded from economics to mission assurance.
+
+### E.2.4 Mitigation: two philosophies ⭐⭐
+
+**Philosophy 1 — Radiation-hardened (rad-hard): build resistant silicon.**
+
+- **RHBD** (by design): guard rings against latchup, hardened cells, enclosed-geometry transistors.
+- **RHBP** (by process): substrates like **SOI** that structurally preclude latchup.
+- **The catch:** rad-hard parts are expensive, low-volume, and **generations behind** commercial density and speed. Through the 1990s this was the only respectable option.
+
+**Philosophy 2 — COTS + system-level mitigation (the modern trend): accept upsets, engineer recovery.** Fly **commercial** (or upscreened industrial/automotive) NAND — cheap, dense, fast — and handle radiation at the system level with redundancy, strong ECC, scrubbing, and active protection. This is **"radiation-tolerant"** rather than radiation-hardened: individual parts *will* upset; the system detects and recovers. Now standard for LEO and the NewSpace/CubeSat world, where cost rules and the environment is milder.
+
+### E.2.5 The system-level toolkit — Chapter 3/4, extremized ⭐
 
 | Technique | What it does | You know it from… |
 |---|---|---|
-| **Memory scrubbing (EDAC)** | Continuously read-correct-rewrite all data to fix SEU *before* errors accumulate past ECC | **Read Scrub, Chapter 3 §3.3.6** — literally the same technique, triggered by radiation instead of retention |
-| **Strong / interleaved ECC** | Beyond normal LDPC/BCH — often Reed-Solomon or concatenated codes, with **bit interleaving** so an MBU's adjacent flips land in *different* codewords | **ECC, Chapter 3 §3.4 + your ECC supplement** — extended to handle multi-bit strikes |
-| **Redundancy / RAID** | Stripe data with parity across multiple flash devices so a failed/corrupted chip is recoverable | **Internal SSD RAID, Chapter 3 §3.4.4** — same die-level redundancy idea |
-| **TMR (Triple Modular Redundancy)** | Triplicate critical logic/registers and majority-vote the result, so one upset is outvoted | *New* — but conceptually like RAID for logic |
-| **SEL protection** | Current-limiting circuits that detect a latchup's current spike and **cut/cycle power** before damage (e.g., grouping chips on protected power rails) | *New* — the destructive-event defense |
-| **Watchdog + SEFI recovery** | Detect a hung controller (watchdog timer) and **reset/reinitialize** it | **Power-loss recovery robustness, Chapter 4 §4.6** + robustness testing, Chapter 7 |
-| **SLC + margin + derating** | Use SLC for large voltage margins; operate conservatively | **SLC-vs-MLC margins, Chapter 3 §3.1.2** |
-| **FPGA-based controllers** | Reconfigurable controllers implementing TMR + config-memory scrubbing; can be updated in orbit | **The FPGA computational-storage idea** from the book (Ch2 1st-ed / §3.1 2nd-ed) |
+| **Memory scrubbing (EDAC)** | continuously read-correct-rewrite so SEUs never accumulate past ECC | **Read Scrub**, [Ch 3 §3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive) — same technique, different trigger |
+| **Strong / interleaved ECC** | Reed-Solomon or concatenated codes with **bit interleaving**, so an MBU's clustered flips land in *different* codewords | **ECC**, [Ch 3 §3.4](../core/ch3-nand-flash.md#34-fighting-back-the-data-integrity-stack) + [Supplement A](a-ecc-coding-theory.md), extended for clustered strikes |
+| **Redundancy / RAID across chips** | parity striping so a dead or corrupted device rebuilds | **in-SSD RAID**, [Ch 3 §3.4.4](../core/ch3-nand-flash.md#344-raid-inside-the-ssd) |
+| **TMR (Triple Modular Redundancy)** | triplicate critical logic, majority-vote every output | new — RAID for logic gates |
+| **SEL protection** | current monitors that cut/cycle power at the latchup signature | new — the anti-destruction defense |
+| **Watchdog + SEFI recovery** | detect the hung controller, reset, reinitialize | recovery robustness, [Ch 4 §4.6](../core/ch4-ftl.md#46-power-loss-recovery) + [Ch 7 §7.12](../core/ch7-testing.md#712-ftl-module-and-power-loss-testing) |
+| **SLC + margin + derating** | wide margins, conservative operation | the SLC argument, [Ch 3 §3.1.2](../core/ch3-nand-flash.md#312-slc-mlc-tlc-the-threshold-voltage-picture) |
+| **FPGA controllers** | reconfigurable, TMR'd, config-scrubbed — updatable in orbit | the FPGA-controller thread, [Ch 2 §2.7](../core/ch2-controllers-afa.md#27-computational-storage-ssds-that-compute) / [Ch 4 §4.10](../core/ch4-ftl.md#410-host-based-ftl) |
 
-Notice how much of this is your existing knowledge: **scrubbing = Read Scrub, redundancy = RAID, strong ECC = the ECC supplement, SLC preference = the margin argument, SEFI recovery = power-loss robustness.** Space storage is, to a large degree, **the Chapter-3/4 reliability toolkit turned up to maximum**, plus a few genuinely new defenses (TMR, SEL protection) for the failure modes that have no Earth equivalent.
+Score it: scrubbing = Read Scrub, redundancy = RAID, strong ECC = Supplement A, SLC = margins, SEFI recovery = power-loss robustness. **Space storage is the terrestrial reliability toolkit at maximum volume**, plus two genuinely new defenses (TMR, SEL protection) for failure modes Earth doesn't serve.
 
-### Current practice & trends (the "development trends" part)
+### E.2.6 Current practice & trends
 
-**The spectrum, and "meet the spec but don't overdo it."** Real missions pick a point on a cost/reliability spectrum: **pure rad-hard** (deep space/GEO, most expensive) → **upscreened/careful COTS** (tested industrial/automotive parts) → **pure commercial** (cheapest, riskiest, short CubeSat missions). As one rad-hard supplier put it, the goal is to *meet the spec but not overdo it* — excess hardening wastes money, too little risks an on-orbit failure that could require a whole replacement launch. **Orbit and mission lifetime set the requirement**, and there's a "delicate balancing act" — which is itself a rich engineering (and business) problem.
+**A spectrum, not a binary.** Missions pick their point: pure rad-hard (deep space, GEO, most expensive) → upscreened COTS (tested industrial/automotive parts) → pure commercial (cheapest; short CubeSat missions). The industry maxim: *meet the spec, don't overdo it* — excess hardening burns budget; too little risks an on-orbit failure whose only fix is another launch. Orbit and mission life set the requirement; the balancing act is the job.
 
-**The COTS revolution — driven by NewSpace.** The explosion of small satellites and LEO constellations (thousands of satellites) has pushed the industry hard toward **COTS NAND with mitigation**, because rad-hard parts are too expensive and too low-density for mega-constellations. Products like **3D Plus's "Radiation Tolerant Intelligent Memory Stack" (RTIMS FLASH)** package high-density commercial NAND with built-in radiation protection as plug-and-play modules — high density *and* tolerance. Even short-duration CubeSat designers, the survey notes, are "giving rad-hard parts a second look" as reliability lessons accumulate.
+**NewSpace drove the COTS revolution.** Mega-constellations (thousands of LEO satellites) can't afford rad-hard prices or densities, so the market moved decisively to **COTS-plus-mitigation** — productized in modules like 3D Plus's radiation-tolerant memory stacks: commercial-density NAND, wrapped in built-in protection, sold plug-and-play. Meanwhile even CubeSat designers, after enough lessons, give rad-hard parts a second look for critical functions.
 
-**High-density mass memory is the pull.** Modern science and Earth-observation missions generate *huge* data (high-res imaging, SAR, hyperspectral), demanding **high-capacity** on-board storage — which only commercial-density NAND can provide affordably. So the trend is clear: **move up in density (toward commercial 3D NAND) while pushing mitigation harder** to keep it reliable. This is the space-storage version of the same density-vs-reliability tension you saw across the whole book (Chapter 3: more bits/cell = more capacity but worse reliability).
+**Density is the pull.** Modern imaging/SAR/hyperspectral missions generate torrents that only commercial-density 3D NAND can affordably hold — so the trend is *up in density, harder on mitigation*: the same density-vs-reliability tension that runs from [Ch 3](../core/ch3-nand-flash.md#312-slc-mlc-tlc-the-threshold-voltage-picture)'s SLC/MLC/TLC table to QLC's soft-decision LDPC, now with a launch manifest attached.
 
-**Testing & standards.** Space parts are radiation-tested per established protocols: heavy-ion and proton beam testing at accelerator facilities (measuring SEE cross-sections and the **LET threshold** — the linear-energy-transfer level above which upsets occur), and Co-60 gamma sources for TID. Bodies/standards: **NASA NEPP**, **IEEE NSREC / REDW** (the field's main conferences/data workshops), **ESA/ESCC**, **JESD57** (heavy-ion test procedures), **MIL-STD-883**. Notably — connecting to Chapter 7 — this is just **radiation-specific reliability testing**, an extreme cousin of the endurance and validation testing you already studied: same mindset (stress the device, characterize failure, qualify against a spec), different stressor.
+**Testing and standards.** Heavy-ion and proton beam campaigns at accelerator facilities measure SEE cross-sections and the **LET threshold** (the energy-deposition level where upsets begin); Co-60 gamma sources deliver TID. The institutions: NASA NEPP, IEEE NSREC/REDW, ESA/ESCC; the procedures: JESD57, MIL-STD-883. Connecting to [Chapter 7](../core/ch7-testing.md): this is reliability qualification with a different stressor — same mindset, stress → characterize → qualify, all the way to orbit. (And fittingly for a book by a Chinese engineering team: China's program practices the same COTS-plus-mitigation philosophy — the DAMPE "Wukong" dark-matter probe flew SEL-protected industrial-grade parts.)
 
-**A Chinese-program note** (fitting, since your book is from a Chinese team): China's space program has active radiation-tolerant-electronics development, and missions like **DAMPE (the "Wukong" dark-matter probe)** used carefully radiation-mitigated designs — including SEL-protection schemes on industrial-grade parts — illustrating exactly the COTS-plus-mitigation philosophy above.
+---
+
+## Key takeaways
+
+1. **Space chose solid-state for Chapter 1's reason** — no moving parts — and then had to solve problems Chapter 3 never met.
+2. **Two damage modes, two clocks:** TID accumulates like wear (trapped oxide charge, drifting Vt, fading retention); SEEs strike instantly, from correctable bit-flips to chip-killing latchup.
+3. **The array is tougher than its servants** — floating gates shrug off strikes that hang state machines and rupture charge-pump oxides. Periphery first.
+4. **SLC's wide margins graduate from economics to mission assurance** — space flies 1 bit per cell.
+5. **Rad-hard hardens the silicon; rad-tolerant hardens the *system***— and NewSpace economics moved the industry decisively toward COTS + scrubbing + interleaved ECC + RAID + TMR + SEL protection.
+6. **Almost the whole toolkit is Chapter 3/4 at maximum volume** — which is why this topic makes the perfect final exam for the rest of the site.
 
 ---
 
@@ -169,43 +171,39 @@ Notice how much of this is your existing knowledge: **scrubbing = Read Scrub, re
 2. Name the three sources of space radiation, and explain why orbit (LEO vs GEO vs deep space) determines the storage-reliability requirement.
 3. What is TID, and by what physical mechanism does it damage a chip? Name three of its effects on NAND, and explain why it's essentially "radiation-accelerated aging" (connect it to Chapter 3 wear).
 4. Distinguish soft SEEs from hard SEEs. Give an example of each and say which needs only correction, which needs a reset, and which can destroy the chip.
-5. Why is MBU (multiple-bit upset) especially dangerous for the ECC codes from your ECC supplement, and what ECC technique helps?
+5. Why is MBU (multiple-bit upset) especially dangerous for the ECC codes from Supplement A, and what ECC technique helps?
 6. Why is the NAND floating-gate array *relatively* robust to single strikes, while the device as a whole is still vulnerable? Where does the vulnerability actually concentrate?
 7. NAND has a specific SEGR/burnout vulnerability tied to one of its normal operations. Which operation, and why (recall Chapter 3 §3.1.4)?
 8. Why does space storage overwhelmingly use SLC rather than MLC/TLC/QLC? Connect this to the margin argument from Chapter 3.
 9. Contrast the two mitigation philosophies (rad-hard vs COTS-plus-mitigation). Why has the industry been shifting toward the second, and for which missions?
 10. Match each space-mitigation technique to its Chapter-3/4 twin: (a) memory scrubbing, (b) cross-device parity, (c) SLC margin, (d) watchdog/SEFI recovery.
 11. What does "meet the spec but don't overdo it" mean in the context of choosing radiation tolerance, and what's the risk on each side?
-12. **(Trend)** Why are modern missions pushing toward higher-density commercial NAND despite the reliability cost, and how is this the space-storage version of a tension you saw throughout the book?
+12. **(Trend)** Why are modern missions pushing toward higher-density commercial NAND despite the reliability cost, and how is this the space-storage version of a tension you saw throughout this site?
 
 ---
 
-## 🎓 Closing — the complete journey
+## 🎓 Coda: the complete journey
 
-That completes **all five supplements** and, with them, the **full expanded book** — the seven core chapters plus the five 2nd-edition topics. Here's the whole map you've now covered:
+This supplement closes the set — seven core chapters and five supplements. The whole map:
 
-**The seven core chapters (1st edition):**
-1. **Overview** — what an SSD is; the one fact that drives everything: *flash can't be overwritten in place.*
-2. **Controller & Arrays** — the brain (channels × dies = parallelism) and all-flash arrays.
-3. **Flash physics** — how a cell traps electrons, and every way that fails.
-4. **FTL** — the software taming the medium (mapping, GC, WA, wear leveling, recovery).
-5. **PCIe** — the road: topology, layered packets, routing.
-6. **NVMe** — the traffic protocol: queues, doorbells, the 8-step flow.
-7. **Testing** — how it's all validated.
+**The core chapters:** [1 — Overview](../core/ch1-overview.md) (what an SSD is; *flash can't overwrite in place*) · [2 — Controllers & AFA](../core/ch2-controllers-afa.md) (the brain; channels × dies) · [3 — NAND Flash](../core/ch3-nand-flash.md) (trapped electrons and every way they escape) · [4 — FTL](../core/ch4-ftl.md) (the software that tames the medium) · [5 — PCIe](../core/ch5-pcie.md) (the road) · [6 — NVMe](../core/ch6-nvme.md) (the traffic system) · [7 — Testing](../core/ch7-testing.md) (the proof).
 
-**The five supplements (2nd-edition additions):**
-- **A — ECC coding theory** — the *math* under Chapter 3's error correction (H/G matrices, Tanner graphs, bit-flipping & sum-product decoding). Your densest patent vein.
-- **B — UFS** — mobile storage; a synthesis of SCSI + PCIe + NVMe + Chapter-4 features (WriteBooster = SLC cache, HPB = HMB).
-- **C — Flash file systems** — the host layer; F2FS re-implements the FTL (cleaning = GC, NAT = mapping table), and the log-on-log problem that ZNS solves.
-- **D — Power management** — the layered power-vs-latency story (ASPM, APST, RTD3) the chapters kept deferring.
-- **E — Aerospace storage** — Chapter 3's reliability toolkit turned up to maximum, plus radiation's new failure modes.
+**The supplements:** [A — ECC theory](a-ecc-coding-theory.md) (the math under Chapter 3's codes) · [B — UFS](b-ufs.md) (the stack, re-derived for mobile) · [C — Flash file systems](c-flash-file-systems.md) (the FTL's mirror image in the OS, and log-on-log) · [D — Power management](d-power-management.md) (the layered power-vs-latency machine) · **E — Aerospace** (the reliability toolkit at maximum).
 
-**The threads that run through all of it:**
-- **Reliability:** flash is fragile (Ch3) → firmware compensates (Ch4) → testing proves it (Ch7) → ECC does the math (Supp A) → radiation is the extreme case (Supp E).
-- **The interface stack:** PCIe carries bits (Ch5) → NVMe gives them meaning (Ch6) → UFS re-applies it to mobile (Supp B) → power management runs underneath it all (Supp D).
-- **Host↔device cooperation:** the FTL hides flash (Ch4) → but the host can help (HMB/HPB, host-managed FTL) → F2FS cooperates from above (Supp C) → and ZNS/FDP formalize the partnership (the supplements' recurring modern theme).
-- **The eternal tension:** more bits per cell = more capacity but worse reliability, performance, and endurance — the thread from Chapter 3's SLC/MLC/TLC all the way to why space uses SLC and why QLC needs soft-decision LDPC.
+**The threads that run through everything:**
 
-You now have a complete, self-consistent model of solid-state storage — from a single trapped electron, up through the controller and its algorithms, across the interface protocols, out to the filesystem and the host, and all the way to orbit. For your patent-research project, the richest veins to dig into are **ECC/LDPC decoding (Supp A), host-managed placement (ZNS/FDP, Ch4/6 supplements), and the WriteBooster/HPB mobile features (Supp B)** — all flagged with 🔬 where the patent activity concentrates.
+- **Reliability:** fragile flash (Ch 3) → compensating firmware (Ch 4) → proof under stress (Ch 7) → the mathematics (Supp A) → the extreme case (Supp E).
+- **The interface stack:** PCIe carries bits (Ch 5) → NVMe gives them meaning (Ch 6) → UFS replays it for mobile (Supp B) → power management idles it all (Supp D).
+- **Host ↔ device cooperation:** the FTL hides flash (Ch 4) → the host starts helping (HMB, HPB) → the filesystem cooperates from above (Supp C) → ZNS/FDP formalize the partnership (§4.11, §6.9).
+- **The eternal tension:** more bits per cell = more capacity, worse everything else — from Chapter 3's SLC/MLC/TLC table, through QLC's mandatory soft-decision LDPC, to why space still flies SLC.
 
-*If you'd like, I can now build cross-cutting study aids across the whole set — a master glossary spanning all twelve topics, a one-page exam-cram sheet, flashcards, or an interactive diagram tying the layers together — or go deep on any single topic for the patent work. Whatever's most useful.*
+From a single trapped electron to a satellite's mass memory: the model is complete. The [glossary](../reference/glossary.md), [formula sheet](../reference/formulas.md), and [quizzes](../reference/quizzes.md) are one click away — and every chapter's animations are collected in the [gallery](../animations/index.md).
+
+---
+
+??? info "📖 Provenance"
+
+    Aerospace storage is a 2nd-edition topic (their §3.2), reconstructed here
+    from the space-radiation-effects literature (NASA NEPP, IEEE NSREC/REDW,
+    JESD57, MIL-STD-883) and radiation-tolerant-memory industry sources,
+    mapped throughout onto this site's Chapters 1, 3, 4, and 7.
