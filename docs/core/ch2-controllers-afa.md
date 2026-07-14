@@ -8,62 +8,66 @@ tags:
 source_anchor: "CH2 file"
 ---
 
-# SSD Deep Dive — Chapter 2: SSD Controllers & All-Flash Arrays (主控和全閃存陣列)
-## English Study Companion
+# Chapter 2 — SSD Controllers & All-Flash Arrays (主控和全閃存陣列)
 
-**Where we are:** Chapter 1 gave you the whole-drive picture; the three cores were controller + flash + firmware. This chapter zooms into the **controller (主控)** — the brain — then widens out at the end to show what happens when you build an array out of many whole SSDs. Chapter 2 runs pages 1–52 of your file (the last few lines of p. 52 are empty website comments — skip them).
+[Chapter 1](ch1-overview.md) reduced an SSD to three core technologies: controller + flash + firmware. This chapter zooms into the first of them — the **controller (主控)**, the SoC that talks to the host on one side, drives the flash on the other, and runs the FTL in between. A controller's quality directly determines a drive's performance, lifespan, and reliability.
 
-**How to use this guide:** Section numbers match the book. Page references like *(p. 6, Fig 2-6)* point into your CH2 file so you can view the original diagram alongside the explanation. Glossary at the end.
+The chapter has two halves. The first (§2.1–2.5) dissects **the controller chip**: its internal architecture, the vendors who make it, and three case studies of real silicon. The second (§2.6–2.7) widens out **beyond the single drive**: what happens when you build an enterprise array out of dozens of SSDs, and what happens when you put compute *inside* the storage. If your time is limited, §2.1 and §2.6 are the load-bearing sections.
 
-**The chapter's shape:** Two halves. First half (2.1–2.5) = **the controller chip** — its internal architecture, the vendors who make it, and three case studies. Second half (2.6–2.7) = **beyond the single drive** — all-flash arrays and computational storage. If your time is limited, 2.1 and 2.6 are the load-bearing sections.
-
----
-
-## Chapter opening (p. 1)
-
-An SSD is essentially controller + flash (+ optional cache). The controller is the brain, doing three jobs: (1) talk to the host over a standard interface, (2) talk to the flash, (3) run the internal FTL algorithms. A controller's quality directly determines the SSD's performance, lifespan, and reliability.
+!!! abstract "In this chapter"
+    - **SSD system architecture** ⭐ — front end, CPU cluster, back end, and the channel × die parallelism that sets performance (§2.1)
+    - **Who makes controllers** — Marvell, Samsung, and the Taiwanese/mainland-Chinese field (§2.2)
+    - **Three case studies** — a SATA speedster, the enterprise/consumer unification argument, an enterprise NVMe ASIC (§2.3–2.5)
+    - **All-flash arrays** ⭐ — XtremIO's content-addressed architecture, dedup, and zero-IO copies (§2.6)
+    - **Computational storage** — when the CPU becomes the bottleneck, move compute to the data (§2.7)
 
 ---
 
-## 2.1 SSD system architecture — pp. 1–11 ⭐ *the core of the chapter*
+## 2.1 SSD system architecture ⭐
 
-An SSD controller is a **SoC (System on Chip)** — a complete little computer on one chip *(p. 1–2, Fig 2-1)*: it has a CPU, RAM, hardware accelerators, buses, and data encode/decode units. This particular design uses an **ARM CPU** and splits into a **front end** and a **back end**, linked by buses (a fast **AXI** bus and a slow **APB** bus). The firmware sits on top, orchestrating all the hardware blocks to move data host↔flash.
+An SSD controller is a **SoC (System on Chip)** — a complete little computer on one chip: CPU cores, RAM, hardware accelerators, buses, and data encode/decode units. A typical design uses **ARM** cores and splits into a **front end** and a **back end**, linked by a fast **AXI** bus for data and a slow **APB** bus for peripherals. The firmware sits on top, orchestrating every hardware block to move data host ↔ flash.
 
-Think of it as an assembly line: the **front end** is the loading dock (receives orders from the host), the **CPU + FTL** is the manager (decides what to do), and the **back end** is the warehouse crew (actually stores/retrieves goods in the flash).
+Think of it as an assembly line: the **front end** is the loading dock (receives orders from the host), the **CPU + FTL** is the manager (decides what happens), and the **back end** is the warehouse crew (actually stores and retrieves goods in the flash).
 
-### 2.1.1 Front end (前端) — pp. 2–7
+### 2.1.1 Front end (前端)
 
-The front end is the **host interface controller** — where the drive talks to the computer. Three interfaces dominate; their speeds are in *(p. 2, Table 2-1)*:
+The front end is the **host interface controller** — where the drive talks to the computer. Three interfaces dominate:
 
-- **SATA** (Serial ATA) — the mature, ubiquitous consumer/low-end-enterprise interface. Established by an Intel/IBM/Dell/Seagate/etc. committee (SATA 1.0 in 2001). *(p. 3, Fig 2-2)*
-- **SAS** (Serial Attached SCSI) — the enterprise interface; the serial successor to parallel SCSI. **Key compatibility rule:** SAS is backward-compatible with SATA (a SATA drive works in a SAS environment, but not vice versa — a SATA controller can't drive a SAS disk). SAS uses three sub-protocols: SSP (carries SCSI commands), SMP (management), STP (SATA tunneling). *(p. 3–4, Fig 2-3)*
-- **PCIe** (PCI Express) — the high-speed interface, originally Intel's "3GIO" (2001), meant to replace PCI/PCI-X/AGP. Unlike a shared bus, PCIe is **point-to-point with dedicated per-device lanes** — each device gets its own bandwidth, not a shared slice. Comes in widths ×1 to ×32. Supports active power management, error reporting, hot-plug, and QoS. *(p. 4–5, Figs 2-4 AIC card, 2-5 U.2)*
+| Interface | Speed class | Where you find it |
+|---|---|---|
+| **SATA** (Serial ATA) | 6 Gbps (~560 MB/s usable) | consumer & low-end enterprise; SATA 1.0 dates to 2001 (Intel/IBM/Dell/Seagate committee) |
+| **SAS** (Serial Attached SCSI) | 12 Gbps per lane | enterprise; the serial successor to parallel SCSI |
+| **PCIe** (PCI Express) | ~1 GB/s per lane per direction (Gen3), ×1–×32 | the high-speed path; originally Intel's "3GIO" (2001), built to replace PCI/PCI-X/AGP |
 
-**What the front-end hardware does (p. 5–6):** The **PHY (physical layer)** receives the raw serial bit stream and converts it to digital signals. Downstream blocks parse NVMe/SATA/SAS commands, using **DMA** to move data. Commands queue up; data lands in fast **SRAM**. If encryption or compression is needed, dedicated hardware handles it — and if software had to do it instead, it would become a performance bottleneck.
+Two details worth keeping:
 
-**A concrete command walk-through — SATA Write FPDMA (p. 6–7, Fig 2-6).** This is worth understanding because it shows the front end isn't just "receiving" — there's a handshake. All SATA transfers use **FIS (Frame Information Structure)** packets:
+- **SAS is backward-compatible with SATA** — a SATA drive works in a SAS environment, never the reverse. SAS carries three sub-protocols: SSP (SCSI commands), SMP (management), STP (SATA tunneling).
+- **PCIe is point-to-point, not a shared bus** — each device gets dedicated lanes and therefore dedicated bandwidth, plus active power management, error reporting, hot-plug, and QoS. [Chapter 5](ch5-pcie.md) is devoted to it.
 
-1. Host sends a **Write FPDMA command FIS** onto the bus.
-2. SSD checks whether its write buffer has room. If yes → sends **DMA Setup FIS**; if no → sends nothing, host waits. *(This is flow control — 流控.)*
-3. Host sends a **Data FIS** of ≤8 KB.
-4. Repeat 2–3 until all data is sent.
-5. SSD sends a **Status FIS** (good, or bad/error) — from the protocol's view the write is now complete.
+**What the front-end hardware actually does.** The **PHY (physical layer)** receives the raw serial bit stream and recovers digital signals. Downstream blocks parse NVMe/SATA/SAS commands and move data by **DMA**; commands queue up and data lands in fast **SRAM**. Encryption and compression, when needed, run in dedicated hardware — done in software they would become the bottleneck.
 
-But the front end's job isn't done. The firmware's **command decoder** parses the FIS into things the FTL understands: is it read or write? what's the starting LBA and length? any special attributes (FUA? sequential or random vs. the previous command)? Once decoded, the command joins a queue for the FTL. Now that the FTL knows the starting LBA and length, it can map that logical range to physical flash.
+**A concrete walk-through — SATA Write FPDMA.** Worth internalizing, because it shows the front end isn't passively "receiving" — there's a handshake. All SATA transfers travel as **FIS (Frame Information Structure)** packets:
 
-### 2.1.2 Controller CPU (主控CPU) — pp. 7–8
+1. Host puts a **Write FPDMA command FIS** on the bus.
+2. The SSD checks whether its write buffer has room. If yes → it answers with a **DMA Setup FIS**; if no → it stays silent and the host waits. *(This is flow control, 流控.)*
+3. Host sends a **Data FIS** of up to 8 KB.
+4. Steps 2–3 repeat until all data has crossed.
+5. The SSD sends a **Status FIS** — success or error — and the write is complete at the protocol level.
 
-The controller SoC is like any embedded SoC: one or more CPU cores plus peripherals (I-RAM for code, D-RAM for data, PLL, IO, UART, buses). The firmware runs on these cores.
+The front end still isn't done: the firmware's **command decoder** parses the FIS into what the FTL understands — read or write? starting LBA and length? special attributes (FUA? sequential relative to the previous command)? Only then does the command join a queue for the FTL, which can now map that logical range to physical flash. (Watch this handshake play out packet-by-packet in the [Packet Dresser animation](../animations/packet-dresser.md).)
 
-**A design decision that matters — SMP vs AMP:**
-- **SMP (Symmetric Multi-Processing):** all cores share one OS and one copy of code; they share I-RAM/D-RAM. Simpler, but cores can contend for shared memory, slowing execution.
-- **AMP (Asymmetric Multi-Processing):** each core runs its *own* code with its *own* I-RAM/D-RAM; cores run independently with no memory contention.
+### 2.1.2 Controller CPU (主控CPU)
 
-When a controller needs more compute, AMP suits the "independent tasks" model better because it eliminates the resource-contention slowdown. A key firmware-architecture goal is **balancing load across cores** so no core is "worked to death while another sits idle" — that's how you extract maximum read/write performance.
+The CPU cluster looks like any embedded SoC: one or more cores plus peripherals — I-RAM for code, D-RAM for data, PLL, IO, UART, timers, DMA, temperature sensors, power regulators, and the debug ports (UART/GPIO/JTAG) every firmware engineer lives in.
 
-Peripheral blocks include UART/GPIO/JTAG (essential debug ports), timers, DMA, temperature sensors, and power regulators.
+**The design decision that matters — SMP vs AMP:**
 
-### 2.1.3 Back end (后端) — pp. 8–11
+- **SMP (Symmetric Multi-Processing):** all cores share one OS image and one copy of code, plus shared I-RAM/D-RAM. Simpler — but cores contend for the shared memory, and contention costs speed.
+- **AMP (Asymmetric Multi-Processing):** each core runs *its own* code out of *its own* I-RAM/D-RAM. Cores run independently, with no memory contention.
+
+SSD workloads decompose naturally into independent tasks, so when a controller needs more compute, AMP tends to win. Either way, the firmware architect's goal is **balancing load across cores** — no core worked to death while another idles — because that balance is where maximum throughput comes from.
+
+### 2.1.3 Back end (后端)
 
 ??? example "🎬 Animate this — The Flash Timing & Parallelism Lab"
 
@@ -74,188 +78,191 @@ Peripheral blocks include UART/GPIO/JTAG (essential debug ports), timers, DMA, t
     <iframe src="../../animations/files/flash_timing_lab.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>
 
 
-Two big blocks: the **ECC module** and the **flash controller** *(p. 8–9, Fig 2-7)*.
+Two big blocks: the **ECC module** and the **flash controller**.
 
-**ECC module (data codec).** Because flash has an inherent bit-error rate, every write gets ECC parity added (encoding); every read gets checked and corrected (decoding). If errors exceed the ECC's correcting power, the data is returned to the host flagged "uncorrectable." The main algorithms are **BCH** and **LDPC** — and **LDPC is becoming mainstream** (it corrects more errors for the same data, which matters as flash moves to denser 3D/TLC/QLC).
+**ECC module (the data codec).** Flash has an inherent bit-error rate, so every write gets ECC parity added (encoding) and every read gets checked and corrected (decoding). If errors exceed the code's correcting power, the data returns to the host flagged *uncorrectable*. The two algorithm families are **BCH** and **LDPC** — and LDPC has become the mainstream, because it corrects more errors per parity bit, which is exactly what denser 3D/TLC/QLC flash demands. ([Supplement A](../supplements/a-ecc-coding-theory.md) builds both from first principles.)
 
-**Flash controller.** Issues ONFI/Toggle-standard flash commands, managing reads/writes between cache and flash.
+**Flash controller.** Issues ONFI/Toggle-standard commands and manages the traffic between cache and flash ([Chapter 3](ch3-nand-flash.md) §3.3 covers the flash side of this conversation).
 
-**How the controller physically wires to flash (p. 9–11, Fig 2-8).** The basic unit that executes a flash command is a **Die/LUN**. The pin interface per die: 8 I/O pins (command, address, *and* data all share these 8 pins), 5 enable signals (ALE, CLE, WE#, RE#, CE#), 1 status pin (R/B#), 1 write-protect pin (WP#). CLE vs ALE tell the chip whether the bytes on the I/O pins are a command or an address.
+**How the controller physically wires to flash.** The unit that executes a flash command is a **die (LUN)**. Its pin interface is startlingly narrow: **8 I/O pins** carry command, address, *and* data — all multiplexed — plus 5 enable signals (ALE, CLE, WE#, RE#, CE#), a ready/busy status pin (R/B#), and write-protect (WP#). CLE vs ALE tell the chip whether the bytes currently on the I/O pins are a command or an address.
 
-**Channels and parallelism — the key performance idea.** For speed, the flash controller runs **multiple channels** in parallel, and each channel hosts multiple dies. More dies = more parallelism = more performance. Since all dies on a channel share the same bus, how does the controller pick which die to talk to? The **CE# (chip-enable) select signal** — it asserts the target die's CE# before sending commands/data. A channel typically has 4–8 CEs, giving flexibility in total capacity. *(This channel × die parallelism is the single biggest lever on SSD throughput — remember it.)*
-
----
-
-## 2.2 Controller vendors — pp. 11–22
-
-The controller is a chip product with both deep technical barriers and broad market reach. Early on, few players (chip design/fab barriers are high); as SSDs boomed, controller startups sprang up "like bamboo shoots after rain."
-
-### 2.2.1 Marvell (p. 11–14, Figs 2-9 to 2-11)
-
-The **world's #1 HDD and SSD controller vendor.** Entered SSD controllers in 2007, shipped its first SATA controller (Davinci) in 2008. Full product line across low/mid/high end. Key differentiators:
-- **NANDEdge** — its proprietary LDPC error-correction tech (now 3rd generation), used across all its latest SATA/SAS/NVMe controllers; works with 2D/3D and TLC/QLC.
-- **Artemis series (88NV1120/1160)** — the world's first PCIe NVMe controller needing **no DRAM cache**, supporting **HMB (Host Memory Buffer)**.
-- A rich **SDK** that lets partners focus their own software teams on differentiation.
-- Aggressive process migration: first to 28nm, moving the whole line to 16nm (others still on 40/55nm). The 88SS1074 SATA controller shipped 50M+ units in 18 months.
-
-### 2.2.2 Samsung (p. 14–15, Fig 2-12)
-
-Samsung's controllers are basically **only used in Samsung's own SSDs**. A lineage worth recognizing: MCX (830 series) → MDX (840/840 Pro) → MEX (850 Pro/840 EVO, added TurboWrite) → MGX/MFX (lower-capacity EVO drives). Rising core counts, clock speeds, and cache sizes across generations.
-
-### 2.2.3 Domestic (Chinese/Taiwanese) controllers (p. 15–22)
-
-The common **Taiwanese** controllers are from **JMicron, Silicon Motion (SMI, 慧榮), and Phison (群聯)** — cheap, popular with small/mid SSD makers. JMicron has faded; the book focuses on SMI and Phison.
-
-**Silicon Motion / SMI (p. 15–17).** A global leader in flash controllers since 2000 (CF/SD/USB → eMMC/UFS → SSD); shipped 5B+ flash controllers and 100M+ SSD controllers. Works with every major flash fab, which lets it see NAND roadmaps early and design matching controllers. Even Intel's consumer SSDs and Crucial's MX500 (SM2258H + Micron 64-layer TLC) use SMI. Advantages: full **turnkey** solutions (controller → firmware → board → flash pairing), **NANDExtend** ECC (LDPC + patents, extends life up to 3×, now 4th-gen), and **self-developed PHY** (moving to 28nm for PCIe Gen3, and the first vendor targeting **12nm** for PCIe Gen4).
-
-**Phison (p. 17–19, Table 2-2).** Founded Nov 2000; started with the world's first single-chip USB-drive controller, now a leader across USB/SD/eMMC/UFS/SATA. A **co-founder of ONFI** and an SD Association board member. Like SMI, popular with smaller makers and as big brands' entry-level choice.
-
-**Other Chinese players (p. 19–22)** — a survey worth skimming, not memorizing. Highlights: **HiSilicon** (very strong, but Huawei-internal only); **Unigroup/Ramaxel, Guoke Micro (GK2101, 40nm, SATA/NVMe/LDPC), Hualan Micro** (uses a bridge-chip approach — SATA-to-eMMC — so its controller needs no FTL, lowering dev difficulty at some cost to performance/life); **DERA (得瑞领新)** — TAI controller, NVMe 1.2/PCIe 3.0, 500K random-write / 1250K random-read IOPS (see 2.5); **Starblaze (憶芯)** — spun out of Memblaze (see STAR1000 in 2.4); plus Shandong Huaxin, Greenliant (from SST founder Bing Yeh), SiliconGo (硅格, see 2.3), and GigaDevice (兆易创新), which bought a Wuhan SSD fab and hired ex-SandForce staff. The theme: a crowded field where survival requires patience and good products.
+**Channels and parallelism — the key performance idea.** The flash controller runs **multiple channels** in parallel, and each channel hosts multiple dies sharing one bus. Which die is being addressed? Whichever one has its **CE# (chip enable)** asserted — a channel typically offers 4–8 CE lines. More channels × more dies per channel = more operations in flight = more throughput. **This channel × die parallelism is the single biggest lever on SSD performance** — it's why the timing-lab animation above is worth ten minutes of play, and why thermal throttling (Ch 1 §1.5.5) works by *reducing* that parallelism.
 
 ---
 
-## 2.3 Case study: SiliconGo SG9081 (a SATA controller) — pp. 22–23, Fig 2-14
+## 2.2 Controller vendors
 
-How a real controller achieves high performance — three techniques:
+The controller is a chip business with high technical barriers (chip design and fabrication) and broad market reach. Early on there were few players; as SSDs boomed, controller startups sprang up like bamboo shoots after rain. A field guide:
 
-1. **HAM + GoCache accelerate random IOPS.** HAM (Hardware Acceleration Module) moves parts of algorithms into hardware, freeing the MCU and speeding small-data handling. GoCache (SiliconGo-proprietary) efficiently manages the mapping table, boosting small-data transfer. Together they raise random performance.
-2. **DMAC accelerates sequential throughput.** The DMA Controller lets large sequential transfers proceed *without* tying up the MCU: when a DMA request fires, the bus arbiter hands control to the DMAC, high-speed transfer runs, the MCU does other work, then the DMAC returns the bus. Result: excellent sequential read/write.
-3. **LDPC + RAID for reliability.** As flash goes 2D→3D, BCH can't keep up; LDPC corrects more errors and extends flash life. RAID adds a second layer — parity that can rebuild original data when needed.
+### 2.2.1 Marvell
 
-*(Notice the recurring pattern: hardware-accelerate the small random stuff, DMA the big sequential stuff, and layer LDPC + RAID for reliability. Nearly every controller in this chapter follows this template.)*
+The **world's #1 HDD and SSD controller vendor**. Entered SSD controllers in 2007; first SATA controller (Davinci) shipped 2008; full product line across low/mid/high end. Its differentiators:
 
----
+- **NANDEdge** — proprietary LDPC error correction (3rd generation), used across its SATA/SAS/NVMe lines, supporting 2D/3D and TLC/QLC flash.
+- **Artemis series (88NV1120/1160)** — the world's first PCIe NVMe controllers needing **no DRAM cache**, via **HMB (Host Memory Buffer)** ([Chapter 4](ch4-ftl.md) §4.2 explains the trade-off).
+- A rich **SDK**, letting partners spend their software teams on differentiation instead of plumbing.
+- Aggressive process migration: first to 28 nm, moving the line to 16 nm while competitors sat on 40/55 nm. Its 88SS1074 SATA controller shipped 50M+ units in 18 months.
 
-## 2.4 Case study: unifying enterprise & consumer controller design — pp. 23–26
+### 2.2.2 Samsung
 
-**The two markets differ (p. 23, Table 2-3):** enterprise SSDs prioritize random performance, latency, IO QoS, and stability; consumer SSDs prioritize sequential performance, power, and price. Designing separate controllers for each raises R&D cost and downstream complexity.
+Samsung's controllers go **only into Samsung's own SSDs** — vertical integration in silicon form. The lineage is worth recognizing on datasheets: MCX (830 series) → MDX (840/840 Pro) → MEX (850 Pro/840 EVO, which added TurboWrite) → MGX/MFX (lower-capacity EVOs). Each generation raised core counts, clocks, and cache sizes.
 
-**Can one unified controller serve both?** The book argues yes, going through six dimensions and finding they're converging:
+### 2.2.3 Taiwanese & mainland-Chinese controllers
 
-1. **Cost** — enterprise is cost-insensitive, so target the consumer budget with a common hardware architecture; differentiate via firmware.
-2. **Performance** — NVMe U.2 and M.2 have become mainstream with converging needs; 1U servers carry 8+ U.2 drives at 300–400K random IOPS each (enough for most uses), while high-end consumer M.2 already hits 3.5 GB/s (near enterprise sequential). Data centers often pre-optimize data into *sequential* writes, lowering the need for enterprise random performance.
-3. **Endurance** — differs by market, but the real driver is *flash* endurance; the controller just maximizes error correction. So the *controller* design goal is the same.
-4. **Capacity** — differs, so the controller must support large flash cheaply enough to cover both.
-5. **Reliability** — enterprise wants ECC + Die-RAID; as 3D flash spreads, fabs now recommend Die-RAID for consumer too → goals converge.
-6. **Power** — consumer (battery devices) is most sensitive, needing many power states and fast wake; enterprise is less sensitive, *but* power is ~20% of data-center operating cost, so low power is becoming an enterprise goal too.
+The common **Taiwanese** controllers come from **JMicron, Silicon Motion (SMI, 慧榮), and Phison (群聯)** — inexpensive and beloved by small and mid-size SSD makers. JMicron has faded; SMI and Phison matter:
 
-**The conclusion:** hardware unification is feasible; product differentiation lives in **firmware**. The book cites Starblaze's **STAR1000** *(p. 25, Fig 2-15)* as a successful attempt — SMP architecture for flexibility, error-checking on SRAM/DRAM/datapaths (enterprise-grade), cheap RAID5/6 with clever SRAM sharing (give the RAM back to firmware when RAID isn't needed), and an NVMe subsystem using two 32-bit CPUs + an NVMe hardware accelerator that hits consumer power targets while supporting enterprise features (queue scheduling, high-performance SGL, atomic ops, HMB/CMB, SR-IOV multi-VF).
+**Silicon Motion (SMI).** A flash-controller leader since 2000 (CF/SD/USB → eMMC/UFS → SSD): 5B+ flash controllers and 100M+ SSD controllers shipped. SMI works with every major flash fab, which gives it early sight of NAND roadmaps — and design wins even inside Intel consumer SSDs and Crucial's MX500 (SM2258H + Micron 64-layer TLC). Strengths: full **turnkey** solutions (controller → firmware → reference board → flash pairing), **NANDExtend** LDPC-based ECC (claimed up to 3× flash-life extension, 4th generation), and a **self-developed PHY** — moving to 28 nm for PCIe Gen3 and first to target 12 nm for Gen4.
 
----
+**Phison.** Founded November 2000 on the world's first single-chip USB-drive controller; now a leader across USB/SD/eMMC/UFS/SATA, a **co-founder of ONFI**, and an SD Association board member. Like SMI, it powers smaller makers and serves as the big brands' entry-level choice.
 
-## 2.5 Case study: DERA TAI NVMe controller — pp. 26–28
-
-NVMe is designed for modern multi-core systems, exploiting flash's high concurrency and low latency. A NVMe SSD internally juggles huge numbers of concurrent IO transactions, each needing hardware operations — some compute-heavy (ECC codec, encryption) — all under tight power budgets. Hence NVMe controllers are **highly customized ASICs** tightly co-designed with the NAND-management software.
-
-**DERA TAI (p. 26–27, Fig 2-16):** front end supports PCIe Gen3 ×8 or ×4, with multiple NAND channels and strong ECC; all data paths get ECC + CRC protection. Positioned for **enterprise**, so its core design points are **performance stability** and **data reliability** — enterprise apps need consistent high performance and low latency, which requires careful engineering to avoid performance jitter and latency spikes (achieved by finely scheduling front-end IO against background activity).
-
-**Reliability mechanisms (p. 27–28):**
-- **Per-channel ECC** at 100 bits/1KB — balancing complexity, area, power, and decode-latency determinism.
-- **Active fault management** — flash degrades *gradually* (rising bit-error rate before hard failure); DERA tracks per-page raw error rate in real time to proactively retire failing units, and dynamically adjusts **wear leveling** based on real cell tracking.
-- **Chip-to-chip redundancy** (RAID across dies) — if one chip's data block errors out, the algorithm rebuilds it from other chips.
-- **Power-loss protection** — hardware continuously monitors supply; on anomaly, switches to backup capacitors to preserve data integrity.
-- **Thermal/power self-monitoring** — dynamically throttles to avoid heat-induced failure in poorly-ventilated installs.
-
-*(Performance figures: p. 28, Table 2-4.)*
+**Mainland players**, in one breath each: **HiSilicon** (very strong, Huawei-internal only); **Unigroup/Ramaxel**; **Guoke Micro** (GK2101: 40 nm, SATA/NVMe, LDPC); **Hualan Micro** (a bridge-chip approach — SATA-to-eMMC — whose controller needs no FTL at all, trading performance and lifespan for much lower development difficulty); **DERA** (TAI controller — §2.5); **Starblaze** (spun out of Memblaze — its STAR1000 stars in §2.4); plus Shandong Huaxin, Greenliant (founded by SST's Bing Yeh), SiliconGo (硅格 — §2.3), and GigaDevice, which bought a Wuhan SSD fab and hired ex-SandForce engineers. The theme: a crowded field where survival takes patience and genuinely good products.
 
 ---
 
-## 2.6 All-Flash Arrays (AFA) — pp. 28–50 ⭐ *the chapter's second pillar*
+## 2.3 Case study: SiliconGo SG9081 — anatomy of a fast SATA controller
 
-**What is an all-flash array?** It's a big enterprise storage box built from many SSDs. The book teaches it through one example: **EMC XtremIO (XIO)**. (Sourced from Vijay Swami's XtremIO architecture write-up.)
+Three techniques carry this design, and the pattern generalizes:
 
-*(Mental model to carry through this whole section: an AFA is "an array of SSDs" the way an SSD is "an array of USB drives" — but each level up is a qualitative leap, needing a re-designed architecture. The book makes this analogy explicitly on p. 50.)*
+1. **HAM + GoCache accelerate random IOPS.** HAM (Hardware Acceleration Module) moves hot algorithm paths into hardware, freeing the MCU; GoCache manages the mapping table efficiently in hardware. Together they lift small-block random performance.
+2. **DMAC accelerates sequential throughput.** Large sequential transfers run through the DMA controller *without* occupying the MCU: the bus arbiter hands the bus to the DMAC, the transfer streams at full speed while the MCU does other work, then the bus comes back.
+3. **LDPC + internal RAID for reliability.** As flash went 2D → 3D, BCH stopped keeping up; LDPC corrects more errors per parity bit, and a RAID layer across flash provides parity to rebuild data when a whole region fails.
 
-### 2.6.1 The anatomy (p. 28–34)
+!!! tip "The template hiding in this case study"
+    Hardware-accelerate the small random stuff, DMA the big sequential stuff, and layer LDPC + RAID underneath. Nearly every controller in this chapter — and most on the market — follows exactly this template.
 
-**Structure (p. 29, Fig 2-17):** A standard XtremIO array = two or more **X-Bricks** linked by **InfiniBand**. The X-Brick is the core building block. One X-Brick contains:
+---
+
+## 2.4 Case study: one controller for enterprise *and* consumer?
+
+The two markets pull in different directions: enterprise SSDs prioritize random performance, latency, QoS, and stability; consumer SSDs prioritize sequential performance, power, and price. Separate controller designs for each double the R&D bill. Can one chip serve both? Walking the six dimensions, the differences turn out to be shrinking:
+
+1. **Cost** — enterprise tolerates higher cost, so target the consumer budget with shared hardware and differentiate in firmware.
+2. **Performance** — NVMe U.2/M.2 became mainstream in both markets; a 1U server carries 8+ U.2 drives at 300–400K random IOPS each (plenty for most workloads), while high-end consumer M.2 already streams ~3.5 GB/s, near enterprise sequential numbers. Data centers also increasingly reorganize writes into *sequential* patterns before they hit the drive, softening the enterprise random-write requirement.
+3. **Endurance** — differs by market, but endurance is mostly a *flash* property; the controller's job — maximize error correction — is identical in both.
+4. **Capacity** — differs, so the controller must simply support large flash configurations cheaply enough for both.
+5. **Reliability** — enterprise demands ECC + die-level RAID; with 3D flash, fabs now recommend die-RAID even for consumer drives. Converged.
+6. **Power** — consumer is most sensitive (batteries), needing many power states and fast wake. But power is ~20% of a data center's operating cost, so enterprise is converging here too.
+
+**Conclusion: hardware unification is feasible; differentiation lives in firmware.** Starblaze's **STAR1000** is the proof-of-concept: SMP architecture for flexibility; error-checking on SRAM, DRAM, and every datapath (an enterprise-grade requirement); RAID5/6 made cheap by clever SRAM sharing (the RAM returns to firmware when RAID isn't in use); and an NVMe subsystem built from two 32-bit CPUs plus an NVMe hardware accelerator — hitting consumer power targets while still offering queue scheduling, high-performance SGL, atomic operations, HMB/CMB, and SR-IOV with multiple virtual functions ([Chapter 6](ch6-nvme.md) explains those NVMe features).
+
+---
+
+## 2.5 Case study: DERA TAI — an enterprise NVMe ASIC
+
+NVMe was designed for modern multi-core hosts and for flash's native concurrency ([Chapter 6](ch6-nvme.md)). Inside an NVMe SSD, enormous numbers of IO transactions are in flight at once, each demanding hardware work — some of it compute-heavy (ECC codecs, encryption) — under a tight power budget. That's why serious NVMe controllers are **highly customized ASICs co-designed with their NAND-management firmware**, not general-purpose chips.
+
+**DERA TAI:** PCIe Gen3 ×8 (or ×4) front end, many NAND channels, strong ECC, and **ECC + CRC protection on every internal datapath**. It targets the enterprise, so the two design pillars are **performance stability** and **data reliability** — enterprise applications want consistently low latency, which means engineering away jitter by finely scheduling front-end IO against background work. (Rated at 500K random-write / 1,250K random-read IOPS.)
+
+Its reliability toolbox is a checklist of enterprise-grade mechanisms:
+
+- **Per-channel ECC at 100 bits / 1 KB** — balancing decoder complexity, silicon area, power, and *deterministic* decode latency.
+- **Active fault management** — flash degrades gradually (error rates climb before hard failure), so TAI tracks per-page raw error rates in real time, proactively retires failing regions, and feeds real wear data into **wear leveling** decisions.
+- **Chip-to-chip redundancy** — RAID across dies: if one chip's block goes bad, rebuild it from the others ([Chapter 4](ch4-ftl.md) §4.8 shows the mechanism).
+- **Power-loss protection** — hardware monitors the supply and fails over to backup capacitors to preserve in-flight data ([Supplement D](../supplements/d-power-management.md) covers the circuit design).
+- **Thermal/power self-monitoring** — dynamic throttling to survive poorly ventilated installations.
+
+---
+
+## 2.6 All-Flash Arrays (AFA) ⭐
+
+An all-flash array is a big enterprise storage box built from many SSDs. The instructive example — and this section's case study throughout — is **EMC XtremIO (XIO)**.
+
+*The mental model to carry through: an AFA is "an array of SSDs" the way an SSD is "an array of flash dies" — but each level up is a qualitative leap that demands a re-designed architecture, not just more of the same.*
+
+### 2.6.1 The anatomy
+
+A standard XtremIO array is two or more **X-Bricks** linked by **InfiniBand**. One X-Brick contains:
+
 - 1 high-end UPS
 - **2 storage controllers**
-- a **DAE** (Disk Array Enclosure) holding many SSDs, each SAS-connected to the controllers
-- (if multiple X-Bricks) 2 InfiniBand switches for high-speed controller interconnect
+- a **DAE** (Disk Array Enclosure) full of SSDs, each SAS-connected to both controllers
+- (in multi-brick arrays) 2 InfiniBand switches for the controller interconnect
 
-**Storage controller (p. 30–31, Figs 2-18/2-19):** it's just an Intel server — NUMA architecture, 2 CPUs (Intel E5), 256 GB RAM per CPU, 2 InfiniBand controllers, 2 SAS HBAs. Lots of cabling is redundant for clustering.
+**A storage controller is just an Intel server**: NUMA, two Xeon E5 CPUs, 256 GB RAM per CPU, two InfiniBand controllers, two SAS HBAs — with every cable duplicated for redundancy.
 
-**Configuration (p. 32, Table 2-5):** one X-Brick = 10 TB raw, 7.5 TB usable — but with ~5:1 dedup+compression, ~37.5 TB effective.
+**Capacity math:** one X-Brick = 10 TB raw, 7.5 TB usable — but with the typical ~5:1 dedup + compression ratio, ~37.5 TB *effective*. **Real deployment numbers:** a 2-X-Brick array ran 550 VMs serving 7,000 users, averaging 350–400 MB/s at 20K IOPS with peaks of 20 GB/s and 200K IOPS. The management console shows the live data-reduction ratio (e.g. 2.5:1 = dedup 1.5:1 × compression 1.7:1) alongside per-SSD and aggregate bandwidth/IOPS/latency.
 
-**Performance (p. 32–33):** a 2-X-Brick array ran 550 VMs serving 7000 users; daily average 350–400 MB/s at 20K IOPS, peaking at 20 GB/s and 200K IOPS.
+### 2.6.2 Hardware architecture
 
-**Software console (p. 33–34, Figs 2-21/2-22):** shows live data-reduction ratio (e.g., 2.5:1 = dedup 1.5:1 × compression 1.7:1) plus per-SSD and aggregate bandwidth/IOPS/latency.
+XtremIO was EMC's assault on the AFA market, designed **from the ground up around flash characteristics** rather than adapted from a disk array. Each X-Brick's DAE holds **25 × 400 GB eMLC SSDs** — enterprise MLC with roughly 10× the endurance of ordinary MLC — plus two **BBUs** (battery backup units; the second is for redundancy).
 
-### 2.6.2 Hardware architecture (p. 34–38)
+**Scale-out:** X-Bricks cascade to 4 (later 8), interconnected by **40 Gbps InfiniBand** on the back end; hosts connect over **8 Gbps FC or 10 Gbps iSCSI**; SSDs attach via **6 Gbps SAS**. Each controller also carries two local SSDs — for dumping in-memory metadata on power loss (dedup is memory-hungry: every stored block needs a hash entry) — and two SAS disks for the OS. The separation is deliberate: controllers own their system disks, the DAE holds only user data, so **controllers can be upgraded without touching stored data**.
 
-XtremIO was EMC's assault on the AFA market, designed **from the ground up around flash characteristics** *(p. 34–35, Fig 2-23)*. Each X-Brick: 2 controllers, a DAE of **25 × 400 GB SSDs** (10 TB raw, using high-end **eMLC** — ~10× the endurance of ordinary MLC), and 2 **BBUs** (Battery Backup Units; the second is for redundancy — extra X-Bricks need only one each).
+**The "real performance" lesson.** Many vendors quote peak numbers from an empty array — or worse, from DRAM cache hits. What matters is **steady state**: XtremIO's per-brick ratings — **100K IOPS** at 100% 4KB write, **150K** at 50/50, **250K** at 100% read — are measured **with the array over 80% full**, because only then is garbage collection running inside the SSDs and the numbers honest. This is the array-scale version of the FOB-vs-steady-state lesson from [Chapter 1](ch1-overview.md#152-performance), and adding bricks scales these numbers linearly.
 
-**Scale-out (p. 35–36, Figs 2-24/2-25):** X-Bricks cascade up to 4 (or 8), interconnected by **40 Gbps InfiniBand** for the back end. Host connectivity is **8 Gbps FC or 10 Gbps iSCSI**; SSDs connect via **6 Gbps SAS**. Each controller also has its own 2 SSDs (to save in-memory metadata on power loss — dedup is memory-hungry because every block needs a hash, sometimes double-hashed) plus 2 SAS disks for the OS. Clean separation: controllers have their own disks; the DAE flash holds only user data — so you can upgrade controllers without touching stored data.
+### 2.6.3 Software architecture — the real value
 
-**The "real performance" lecture (p. 36–38, Fig 2-26).** The book editorializes: many vendors brag about peak numbers from a fresh/empty drive (or even DRAM-cache reads) — "treating users like 3-year-olds." What matters, especially to enterprises, is **stable steady-state performance**. XtremIO's per-X-Brick IOPS (**100K** at 100% 4KB write, **150K** at 50/50, **250K** at 100% read) are measured **after the array is ≥80% full** — because only then does garbage collection kick in and reveal true performance. Scaling X-Bricks multiplies these linearly.
+Storage hardware is commoditized; **software is the product**. (If an iPhone ran Android, would anyone queue overnight for it?) XIO's software weapons:
 
-### 2.6.3 Software architecture (p. 38–41) — *the real value*
+- **Dedup** — saves capacity, and *because it eliminates duplicate writes*, it also reduces write amplification, extending flash life.
+- **Thin provisioning** — volumes take capacity only as data actually lands.
+- **Mirroring** without capacity/performance penalty.
+- **XDP** — RAID6-class data protection.
+- **VAAI integration** — the VMware offload interface (§2.6.4).
 
-Storage hardware is now commoditized, so **software** is where you differentiate (and software is non-standard, creating lock-in). The book's punchy line: *if an iPhone ran Android, would you queue up to pay $800 for it?* The AFA's soul is its software.
+**Six design principles**, each a direct answer to a flash property:
 
-**XIO's software weapons (p. 39):**
-- **Dedup** — boosts performance *and*, by reducing write amplification, extends flash life and reliability.
-- **Thin Provisioning** — volumes grow capacity on demand.
-- **Mirroring** — advanced, without capacity/performance penalty.
-- **XDP** — data protection via RAID6.
-- **VAAI integration** — (explained in 2.6.4).
+1. **Everything for random performance** — any block on any node costs the same to access, so performance scales linearly with nodes.
+2. **Minimize write amplification** — fewer background writes, longer flash life.
+3. **No global garbage collection** — the SSDs' own controllers already collect garbage well; duplicating it at array level would only add write amplification. Let each layer do its job.
+4. **Content-based placement** — a block's location derives from a *hash of its content*, not its logical address. Data spreads evenly and randomly by construction.
+5. **True Active/Active** — LUNs have no owning controller; any node serves any volume, so a node failure degrades capacity, not architecture.
+6. **Linear scalability** — capacity and performance grow together as bricks are added.
 
-**XIO's core design principles (p. 39):**
-1. **Everything for random performance** — accessing any block on any node costs the same (fair access to all resources), so performance scales linearly as nodes are added.
-2. **Minimize write amplification** — less background writing = longer life, better reliability.
-3. **No global garbage collection** — the SSDs' own strong controllers already do GC well, so XIO doesn't duplicate it (saving write amplification and freeing resources for data services).
-4. **Content-based data placement** — a block's address is derived from its *content* (hash), not its logical address, so data can live anywhere → great random performance and even distribution.
-5. **True Active/Active** — LUNs have no owner; any node serves any volume, so one node's failure doesn't cripple performance.
-6. **Linear scalability** — performance and capacity both scale linearly.
+**Why does XIO run in Linux *user space*?** Three reasons, one of them legal: (1) **speed** — no kernel-mode context switches on the IO path; (2) **simpler development** — no kernel interfaces, kernel memory management, or kernel crash semantics; (3) **the GPL** — kernel code must be open-sourced, and XIO's algorithms are the crown jewels. (Open-sourced, the array couldn't command premium prices — high tech sold at cabbage prices.) One process, **X-ENV**, runs per CPU and deliberately grabs *all* CPU and memory — to use 100% of the hardware, to prevent any other process from disturbing latency, and to stay portable. That portability was proven when EMC moved XIO onto its standard white-box servers after the acquisition: no FPGAs, no custom silicon anywhere, so the software rides each new Intel generation for free.
 
-**Why does XIO run in Linux user space? (p. 40–41, Fig 2-28)** Three reasons: (1) **speed** — avoids kernel-mode context switches; (2) **simpler development** — no kernel interfaces or complex kernel memory/exception handling; (3) **avoids the GPL** — code running in the kernel would have to be open-sourced under GPL, but their crown-jewel algorithms stay closed in user space. (The book underscores the business logic: open-sourced, the array couldn't command premium prices — "high-tech sold like cabbage.") A single program, **X-ENV**, runs per CPU and grabs *all* CPU/memory resources — to (a) let XIO use 100% of the hardware, (b) prevent other processes from disrupting performance stability, and (c) stay portable (user-space code moves easily to UNIX/Windows or ARM/PowerPC). Indeed, after EMC's acquisition XIO quickly moved to EMC's standard white-box hardware — proof the software is hardware-independent (no FPGAs, no custom chips/firmware — all standard parts, so it can always adopt the newest X86 and interconnects).
+### 2.6.4 Workflow — how IO actually flows
 
-### 2.6.4 Workflow (p. 41–49) — *how a read/write/copy actually flows*
+Six software modules. Three move data — **R, C, D** — and three control the system — **P** (Platform: hardware monitoring, one per node), **M** (Management: volumes, LUN masking via the XMS server; one active + one standby), **L** (Cluster: membership, one per node).
 
-**Six modules (p. 41–42):** three data modules **R, C, D** and three control modules **P, M, L**.
-- **P** (Platform) — monitors hardware; one per node.
-- **M** (Management) — system config via the XMS server (create volumes, LUN masking); one active + one standby.
-- **L** (Cluster) — manages cluster membership; one per node.
-- **R** (Routing) — the node's "gatekeeper": translates SCSI commands to XIO's internal commands, handles the FC/iSCSI ports, **splits all IO into 4KB blocks**, and **computes each block's hash (SHA-1)**; one per node.
-- **C** (Control) — holds the **A2H table** (block logical Address → Hash); provides mirroring, dedup, auto-expansion.
-- **D** (Data) — holds the **H2P table** (Hash → SSD Physical address — so placement depends only on content, not logical address); does the SSD reads/writes and the **XDP** RAID protection.
+The data path trio:
 
-**Read flow (p. 42):** host → R (splits to 4KB) → C (A2H lookup → hash) → D (H2P lookup → physical address → read).
+- **R (Routing)** — the gatekeeper: owns the FC/iSCSI ports, translates SCSI into XIO's internal commands, **splits all IO into 4 KB blocks**, and **computes each block's SHA-1 hash**.
+- **C (Control)** — owns the **A2H table** (logical Address → Hash); the home of mirroring, dedup accounting, and auto-expansion.
+- **D (Data)** — owns the **H2P table** (Hash → Physical SSD address) — *placement depends only on content* — and performs the actual SSD IO plus XDP protection.
 
-**Non-duplicate write (p. 42–43, Fig 2-29):** host → R (split, hash) → C (hash not found, insert) → D (allocate physical address, write).
+**Read:** host → R (split into 4 KB) → C (A2H: address → hash) → D (H2P: hash → physical → read).
 
-**Dedup write (p. 43–44, Fig 2-30):** host → R (split, hash) → C (hash *found* — duplicate!) → D (**don't write; just increment the block's reference count**). Auto-expansion and dedup happen naturally in the background without hurting normal IO.
+**Fresh write:** host → R (split, hash) → C (hash not found — new entry) → D (allocate physical address, write).
 
-**ESXi & VAAI (p. 45):** **ESXi** is VMware's bare-metal hypervisor (a VM platform running many VMs). **VAAI** (vStorage APIs for Array Integration) is the protocol ESXi uses to send commands to the array.
+**Duplicate write:** host → R (split, hash) → C (hash **found**) → D **writes nothing and increments the block's reference count**. Dedup isn't a background scrubber — it happens *inline, on the write path, for free*.
 
-**Copy flow (p. 45–47, Figs 2-31/2-32) — the payoff of content-addressing:** an ESXi host issues a VM-copy via VAAI → R receives it, picks a C → C copies the *metadata* address range (e.g., 0–6 → 7–D) → D finds the data is duplicate, so **writes nothing, just increments reference counts.** Copy done, with **zero actual SSD IO.** (Because of A2H + H2P, copying a file becomes "registering a couple of counters" — no data movement.) The catch: these metadata ops happen in memory, so power loss is dangerous — XIO uses a complex journaling scheme (RDMA the metadata changes to a remote controller, write metadata updates to SSD via XDP).
+**The payoff — copying with zero IO.** When an ESXi host clones a VM through **VAAI** (VMware's array-offload API), R routes the request to a C module, which copies a *metadata address range* in the A2H table; D sees every target block is a duplicate and just bumps reference counts. **An entire VM copy causes no SSD data IO at all.** The catch: those metadata updates live in RAM, so power loss is the dread scenario — hence a journaling scheme that RDMAs metadata changes to a remote controller and persists them via XDP.
 
-**Module placement & interconnect (p. 47–49, Fig 2-33):** With 2 CPUs per controller (one X-ENV each), **R+C run on one CPU, D on the other.** Why? Intel Sandy Bridge integrates the PCIe controller, so connecting devices directly to a CPU's PCIe lanes is fastest — the SAS HBA sits on CPU2's PCIe slot, so D runs on CPU2. This shows XIO's architectural strength: **software lays itself out to match standard hardware** for optimal performance, and re-adjusts if the hardware layout changes.
+**Module placement follows the silicon.** Each controller runs one X-ENV per CPU: **R+C on CPU1, D on CPU2** — because the SAS HBA hangs off CPU2's PCIe lanes (Sandy Bridge integrated the PCIe root complex into the CPU), and D is the module that talks to the SSDs. Software arranging itself around the hardware topology, and re-arranging when the topology changes, is XIO's quiet superpower.
 
-**Inter-module communication & scalability (p. 49):** Modules needn't share a CPU; **all inter-module comms go over InfiniBand** — data path via **RDMA**, control path via **RPC**. The cost breakdown: total IO latency is **600–700 μs, of which InfiniBand is only 7–16 μs.** The scalability payoff: adding X-Bricks doesn't raise latency (the communication path is unchanged) — a 4KB block hits some R, its hash lands randomly on *any* C (none special), so everything stays linear. Add/remove X-Bricks → performance changes linearly.
+**Inter-module communication** all rides InfiniBand — **RDMA** for data, **RPC** for control. Out of a total IO latency of 600–700 µs, InfiniBand contributes only 7–16 µs — which is why adding X-Bricks doesn't add latency: a 4 KB block enters at some R, its hash lands on a statistically random C, and no node is special. That's the mechanism behind "linear scalability."
 
-### 2.6.5 Use cases (p. 49–50)
+### 2.6.5 Use cases
 
-Flash (especially enterprise eMLC/SLC) is still expensive, so an AFA like XtremIO **doesn't replace big-capacity SAN arrays.** It fits apps that need **low capacity but low latency + high IOPS**: **VDI** (virtual desktops), **databases**, **SAP**. Databases benefit doubly — high performance *plus* near-free copies (easy, fast data replicas). Real deployments ran **2500–3500 VDI VMs on one X-Brick at <1ms latency** (VMs share lots of duplicate OS files, so dedup shines).
+Enterprise flash is expensive, so an AFA doesn't replace big-capacity SAN arrays. It wins where the working set is small but hot: **VDI** (virtual desktops), **databases**, **SAP**. Databases benefit twice — raw performance *plus* near-free copies for dev/test replicas. Real deployments ran **2,500–3,500 VDI VMs on a single X-Brick at sub-millisecond latency** — VDI is dedup heaven, since thousands of VMs share nearly identical OS images.
 
-**What makes an AFA distinctive (p. 50)?**
-- *Vs. an SSD:* it has **no** garbage collection / wear leveling / read-disturb handling — the SSDs' own controllers handle all that.
-- *Vs. a traditional array:* its specialties are **dedup** and **RAID6-with-always-write-to-new-address.**
+**What makes an AFA architecturally distinctive?** Versus an SSD: it does **no** garbage collection, wear leveling, or read-disturb handling — the member SSDs' controllers own all of that. Versus a traditional disk array: its defining features are **inline dedup** and **RAID6-style protection that always writes to new addresses**.
 
 ---
 
-## 2.7 Computational storage — SSDs with compute — pp. 50–52
+## 2.7 Computational storage — SSDs that compute
 
-**The problem:** we're in a data explosion (phones, sensors, cameras, self-driving cars — one autonomous car generates ~64 TB/day). IT infrastructure = network + compute + storage. Networks are now fast; **storage got fast too** (PCIe 3.0 ×8 SSDs exceed 4 GB/s) — but **CPUs stalled** (Moore's law slowing), so **compute became the bottleneck**, especially for image/video processing and deep learning. Data streams off the SSD faster than the CPU can process it.
+**The problem.** Data is exploding (one autonomous car generates ~64 TB/day) while the three legs of infrastructure grew unevenly: networks got fast, storage got fast (PCIe 3.0 ×8 SSDs exceed 4 GB/s) — but CPU scaling stalled as Moore's law slowed. **Compute became the bottleneck**: data now streams off the SSD faster than the CPU can process it, especially for image/video pipelines and deep learning.
 
-**The idea:** combine storage and compute. Shanghai's **Fangyi Technology** built **CFS (Computing Flash System)** — an **FPGA-equipped SSD** on PCIe 3.0 ×8 (~5 GB/s). The SSD stores data at high speed; the **FPGA computes on the data as it comes off the SSD**, offloading the CPU. Roles return to their natural places: **CPU controls, FPGA computes, SSD stores.**
+**The idea: move compute into the storage.** Fangyi Technology's **CFS (Computing Flash System)** is the pattern: an **FPGA riding a PCIe 3.0 ×8 SSD** (~5 GB/s). Data streams off the flash straight into the FPGA, which filters/transforms/analyzes it and sends only *results* to the host. Every part returns to its natural role: **CPU controls, FPGA computes, SSD stores.**
 
-**Why it matters (p. 51–52):** ideal for massive-data storage + AI. Example — self-driving cars generate ~1 GB/s from radar/lidar/cameras. Today many use CPU+GPU boxes drawing **5000 W** — a thermal and power hazard in a car. An **FPGA** approach cuts power dramatically while meeting compute needs (Audi's self-driving platform uses FPGAs). And only PCIe SSDs can hit the >1 GB/s writes needed to *save* this valuable driving data (currently discarded) for later analysis/backup. So an FPGA-SSD both stores driving data fast *and* analyzes it — a perfect fit. Likewise for AI: run FPGA hardware algorithms directly on the SSD's data, then send just the results to the host. (The book notes both FPGAs and flash increasingly have Chinese domestic suppliers — YMTC flash expected to mass-produce in 2018.)
+**Why it matters.** A self-driving car's sensors produce ~1 GB/s. CPU+GPU compute boxes for the job draw ~5,000 W — a thermal and electrical hazard in a vehicle — while FPGAs deliver the needed throughput at a fraction of the power (Audi's autonomous platform chose FPGAs). Only PCIe SSDs can even *record* that sensor stream (>1 GB/s sustained writes), data that today mostly gets discarded; an FPGA-SSD both stores it and analyzes it in place. The same logic drives AI storage: run the hardware algorithm where the data lives, ship back only the answers.
 
 ---
 
-## Key vocabulary — for decoding the original figures
+## Key takeaways
+
+1. **A controller is a small computer**: front end (host protocol + flow control), CPU cluster (SMP/AMP running the FTL), back end (ECC codec + flash controller).
+2. **Channel × die parallelism is the throughput lever.** Everything from datasheet IOPS to thermal throttling traces back to how many flash operations are in flight.
+3. **The controller-design template**: hardware-accelerate random IO, DMA the sequential IO, and lay LDPC + die-RAID underneath.
+4. **Hardware converges, firmware differentiates** — one silicon design can serve consumer and enterprise; the firmware decides which drive it becomes.
+5. **XtremIO's lesson in layering**: address data by content hash, dedup inline, copy by reference count, and *don't* redo the garbage collection your SSDs already do.
+6. **Computational storage inverts the data flow**: when the CPU is the bottleneck, ship compute to the data, not data to the compute.
+
+---
+
+## Key vocabulary
 
 | 中文 | English |
 |---|---|
@@ -304,4 +311,20 @@ Flash (especially enterprise eMLC/SLC) is still expensive, so an AFA like XtremI
 
 ---
 
-*Next up: Chapter 3 — SSD Storage Media: Flash (閃存) — the physics of how a flash cell actually holds a bit.*
+??? info "📖 Book page map — for readers of 《深入淺出SSD》"
+
+    This chapter follows the section numbering of Chapter 2 of《深入淺出SSD》
+    (SSDFans, 2018); the XtremIO material draws on Vijay Swami's XtremIO
+    architecture write-up. Original figures by section:
+
+    | Section | Book pages | Key figures/tables |
+    |---|---|---|
+    | 2.1 Architecture | pp. 1–11 | Fig 2-1 (SoC), Table 2-1 (speeds), Fig 2-6 (FPDMA), Fig 2-7 (back end), Fig 2-8 (die wiring) |
+    | 2.2 Vendors | pp. 11–22 | Figs 2-9…2-12, Table 2-2 |
+    | 2.3 SiliconGo | pp. 22–23 | Fig 2-14 |
+    | 2.4 Unified design | pp. 23–26 | Table 2-3, Fig 2-15 (STAR1000) |
+    | 2.5 DERA TAI | pp. 26–28 | Fig 2-16, Table 2-4 (performance) |
+    | 2.6 AFA / XtremIO | pp. 28–50 | Figs 2-17…2-33, Table 2-5 |
+    | 2.7 Computational storage | pp. 50–52 | — |
+
+*Next: [Chapter 3 — NAND Flash](ch3-nand-flash.md) — the unruly physics of how a cell actually holds a bit.*
