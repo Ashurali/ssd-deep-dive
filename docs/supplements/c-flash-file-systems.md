@@ -9,205 +9,187 @@ tags:
 source_anchor: "supplement (no book chapter)"
 ---
 
-# SSD Deep Dive — Supplement C: Flash File Systems (EXT4 & F2FS)
-## English Study Companion (2nd-edition topic, reconstructed from standard references)
+# Supplement C — Flash File Systems (EXT4 & F2FS)
 
-**Why this exists:** This is the **2nd edition's Chapter 12**, not in your PDFs. It's about the layer *above* the SSD — the **operating-system filesystem** that decides how files map onto the block device the SSD presents. I've reconstructed it from the Linux kernel documentation, the F2FS research literature, and current sources, in your usual format.
+This supplement climbs one layer *above* the drive: the **operating-system filesystem** that decides how files map onto the block device an SSD presents. (It reconstructs a 2nd-edition topic from the Linux kernel documentation and the F2FS research literature.)
 
-**Why it's worth your time — the payoff up front:** Everything you learned about the FTL in Chapter 4, **F2FS re-implements at the filesystem layer.** F2FS's "cleaning" *is* garbage collection. Its multi-head logging *is* hot/cold wear-leveling separation. Its Node Address Table *is* a mapping-table indirection. Its checkpoint *is* the power-loss snapshot. So this chapter is largely **Chapter 4 seen from the host's side of the interface** — which makes it both an easy read (you know the concepts) and a genuinely illuminating one (you'll see the *same* problem solved twice, at two layers, and why that double-solving is itself a problem that ZNS fixes). For a NAND-company internship, understanding how the host filesystem cooperates (or fights) with your FTL is directly useful.
+The payoff, stated up front: **everything [Chapter 4](../core/ch4-ftl.md) taught about the FTL, F2FS re-implements at the filesystem layer.** Its "cleaning" *is* garbage collection. Its multi-head logging *is* hot/cold separation. Its Node Address Table *is* a mapping-table indirection. Its checkpoint *is* the power-loss snapshot. So this chapter is largely *Chapter 4 seen from the host's side of the interface* — an easy read if you know the concepts, and an illuminating one: you'll watch the same problem get solved twice, at two layers, and see why that double-solving is itself a problem that ZNS finally fixes.
 
-**The framing question:** A filesystem organizes files on a storage device. But classic filesystems (EXT4 and its ancestors) were designed for **hard drives** — they assume in-place overwrite is cheap and optimize for *seek locality* (keeping related data physically close so the disk head travels less). On flash, both assumptions are wrong: there's no head to seek, and in-place overwrite is impossible (Ch3). This mismatch causes excess **write amplification** and makes the filesystem fight the FTL. Two responses emerged:
-- **(a) Retrofit an HDD filesystem** — take EXT4 and bolt on flash-awareness (Trim, alignment). Works, still dominant, but suboptimal.
-- **(b) Design a flash-native filesystem** — **F2FS**, built from scratch around flash's characteristics. This is the interesting one.
+**The framing question.** Classic filesystems (EXT4 and its ancestors) were designed for **hard drives**: they assume in-place overwrite is cheap and optimize for *seek locality*. On flash both assumptions are wrong — there is no head to park near the data, and in-place overwrite is physically impossible ([Ch 3](../core/ch3-nand-flash.md)). Two responses emerged: **(a)** retrofit the HDD filesystem with flash awareness (EXT4 + Trim + alignment — works, still dominant, suboptimal), or **(b)** design a flash-native filesystem from scratch — **F2FS**, the interesting one.
 
-**How to use this guide:** Follows the 2nd edition's structure (12.1 EXT4, 12.2 F2FS). No page refs (not from your PDF); instead I map each concept to its Chapter-4 analog. Glossary and self-quiz at the end. If short on time, **12.2 (F2FS) and the two-layer / log-on-log discussion** are the core.
-
-**A taxonomy to orient you first** — there are *three* kinds of flash-related filesystems, and it matters which layer they sit at:
+**A taxonomy to orient by** — three kinds of "flash-related" filesystems, at different layers:
 
 | Category | Examples | Manages raw NAND? | Assumes an FTL below? |
 |---|---|---|---|
-| HDD filesystem (retrofitted) | EXT4, XFS, NTFS | No | Yes — treats SSD as a black-box disk |
+| HDD filesystem (retrofitted) | EXT4, XFS, NTFS | No | Yes — treats the SSD as a black box |
 | Flash-native, FTL-based | **F2FS** | No | **Yes** — cooperates with the FTL |
-| Raw-flash filesystem | JFFS2, UBIFS, YAFFS | **Yes** — does its own WL/ECC | No — talks to bare NAND chips |
+| Raw-flash filesystem | JFFS2, UBIFS, YAFFS | **Yes** — own WL/ECC | No — talks to bare NAND |
 
-This chapter is about the first two (block-device filesystems, which sit on top of an SSD/UFS/eMMC that has its own controller). The third category — raw-flash filesystems that replace the FTL entirely — I cover briefly at the end, since it's relevant to deeply-embedded systems without a controller.
+This supplement covers the first two; the third gets a short coda (§C.3) for embedded context.
+
+!!! abstract "In this supplement"
+    - **EXT4** ⭐ — block groups, inodes, extents, journaling — and its five failures on flash (§C.1)
+    - **F2FS** ⭐⭐ — the log-structured design; SIT/NAT/SSA; multi-head logging; cleaning; checkpoints — each mapped to its Chapter-4 twin (§C.2)
+    - **The log-on-log problem and the ZNS fix** ⭐ — the deep cross-layer insight (§C.2.5)
+    - **Raw-flash filesystems** — when there is no FTL to cooperate with (§C.3)
 
 ---
 
-## 12.1 EXT4 — the HDD-era filesystem ⭐
+## C.1 EXT4: the HDD-era filesystem ⭐
 
-### 12.1.1 Development history (p. their 12.1.1)
+### C.1.1 Lineage
 
-The **ext** lineage is the historical default of Linux:
-- **ext2** (1993) — the classic Unix filesystem structure (inodes + block bitmaps). No journaling.
-- **ext3** (2001) — added **journaling** for crash consistency (below), otherwise similar to ext2.
-- **ext4** (2008) — the current version: added **extents**, larger volume/file limits (up to 1 EiB / 16 TiB), delayed allocation, and many performance features. It remains the default or fallback filesystem on most Linux systems and many Android devices' *boot/recovery* partitions.
+The **ext** family is Linux's historical default: **ext2** (1993 — classic inodes + bitmaps, no journaling) → **ext3** (2001 — added journaling) → **ext4** (2008 — extents, volumes to 1 EiB, delayed allocation). It remains the default or fallback on most Linux systems and many Android boot/recovery partitions. Hold one fact: EXT4 was engineered in and for the **rotational-disk era** — its goals were short seeks and cheap in-place updates, exactly the properties flash lacks.
 
-The key thing to hold: EXT4 was engineered in and for the **rotational-disk era.** Its design goals were minimizing seek distance and supporting cheap in-place updates — exactly the properties flash *doesn't* have.
+### C.1.2 On-disk structure
 
-### 12.1.2 On-disk (physical) structure (p. their 12.1.2)
+The volume divides into **block groups**:
 
-EXT4 divides the volume into **block groups** (fixed-size chunks of blocks). Each block group contains:
 ```
-┌──────────┬───────────┬────────┬────────┬────────────┬──────────────┐
-│ Super    │ Group     │ Block  │ Inode  │ Inode      │ Data         │
+┌──────────┬────────────┬────────┬────────┬────────────┬──────────────┐
+│ Super    │ Group      │ Block  │ Inode  │ Inode      │ Data         │
 │ block    │ Descriptors│ Bitmap │ Bitmap │ Table      │ Blocks       │
-│ (copy)   │           │        │        │            │              │
-└──────────┴───────────┴────────┴────────┴────────────┴──────────────┘
+│ (copy)   │            │        │        │            │              │
+└──────────┴────────────┴────────┴────────┴────────────┴──────────────┘
 ```
-- **Superblock** — filesystem-wide metadata (block size, total blocks/inodes, state). Replicated across groups for safety.
-- **Group descriptors** — locations of the bitmaps and inode table for each group.
-- **Block bitmap / Inode bitmap** — one bit per block/inode marking free vs used (this is how allocation is tracked).
-- **Inode table** — the array of **inodes.** An **inode** is the fixed-size (typically 256-byte) metadata record for one file: its permissions, owner, timestamps, size, and — crucially — **pointers to its data blocks.**
-- **Data blocks** — the actual file contents.
 
-*(Modern EXT4 uses "flex block groups" to cluster the bitmaps and inode tables of several groups together, improving locality — an HDD optimization.)*
+- **Superblock** — filesystem-wide metadata, replicated across groups.
+- **Group descriptors** — where each group's bitmaps and inode table live.
+- **Block / inode bitmaps** — one bit per block/inode: free or used.
+- **Inode table** — the array of **inodes**: fixed-size (typically 256 B) per-file records holding permissions, owner, timestamps, size, and — crucially — **pointers to the file's data blocks**.
+- **Data blocks** — the contents. (Modern EXT4's "flex block groups" cluster several groups' metadata together — a seek-locality optimization, i.e., an HDD instinct.)
 
-### 12.1.3 In-memory structure (p. their 12.1.3)
+### C.1.3 In-memory structure
 
-When mounted, EXT4 keeps active structures in RAM for speed: cached inodes, the **dentry cache** (directory-entry lookups: name → inode), buffered data pages (the page cache), and in-memory copies of the bitmaps and superblock. Writes are buffered and flushed later (which is why sudden power loss can lose recent writes — the same buffering hazard you saw for SSDs in Ch4 §4.6, now at the filesystem layer). The VFS (Virtual File System) layer sits above, giving applications a uniform API regardless of which filesystem is underneath.
+Mounted, EXT4 keeps hot structures in RAM: cached inodes, the **dentry cache** (name → inode), the page cache, in-memory bitmaps and superblock. Writes buffer in RAM and flush later — which is why sudden power loss can lose recent writes: the same buffering hazard as [Ch 4 §4.6](../core/ch4-ftl.md#46-power-loss-recovery), one layer up. The **VFS** sits above everything, giving applications one API whatever filesystem lies beneath.
 
-### 12.1.4 Extents — range mapping (p. their 12.1.4) ⭐ *a nice parallel to Chapter 4 mapping*
+### C.1.4 Extents ⭐
 
-Here's EXT4's most important improvement over ext2/3, and it echoes the mapping-granularity tradeoff from Chapter 4 §4.2.
+EXT4's headline improvement — and a perfect parallel to [Ch 4 §4.2.1](../core/ch4-ftl.md#421-mapping-granularity)'s mapping-granularity trade-off:
 
-**The old way (ext2/3): indirect block mapping.** An inode held a list of direct block pointers (one per data block) plus single/double/triple *indirect* pointers (pointers to blocks of pointers) for large files. This is **fine-grained** — one pointer per block — but for a large contiguous file it's wasteful: a 1 GB file needs ~256K pointers, and reading them means chasing indirect blocks. *(This is directly analogous to page mapping in the FTL: fine granularity, big tables.)*
+- **ext2/3: indirect block mapping** — one pointer per data block, with single/double/triple indirect pointer blocks for large files. Fine-grained and flexible, but a 1 GB file needs ~256K pointers chased through indirection. *The filesystem's version of page mapping: flexible, big tables.*
+- **ext4: extents** — one record `(logical start, physical start, length)` describes a contiguous run up to 128 MB, stored in a B-tree. A large contiguous file needs a handful of extents. *The filesystem's version of block/hybrid mapping: compact, wants contiguity.*
 
-**The new way (ext4): extents.** An **extent** describes a *contiguous range* of blocks with just three numbers: (logical start, physical start, length). One extent can cover up to 128 MB of contiguous file data. So a large contiguous file needs just a handful of extents instead of hundreds of thousands of pointers — stored in an **extent tree** (a B-tree). *(This is directly analogous to block/hybrid mapping: coarse granularity, tiny tables — efficient when data is contiguous.)*
+Both layers face the identical choice — fine granularity (big metadata, any layout) vs coarse contiguity (tiny metadata, needs order) — and both chose according to their workload.
 
-The parallel to Chapter 4 is exact: **both the filesystem and the FTL face the same choice** — map at fine granularity (flexible, big metadata) or coarse contiguous granularity (compact, needs contiguity). EXT4 chose extents for the same reason SSDs sometimes use hybrid mapping: most files are large and contiguous, so coarse mapping wins.
+### C.1.5 Allocation strategy
 
-### 12.1.5 Allocation strategy (p. their 12.1.5)
+EXT4 fights hard for contiguity (an HDD instinct — fewer seeks): **delayed allocation** (assign physical blocks at flush time, when the full size is known), **multiblock allocation** (grab runs, not single blocks), **persistent preallocation** (reserve ahead for known-size files). The irony on flash: all this *physical*-locality effort targets a device whose FTL **scatters the data anyway** ([Ch 4 §4.2](../core/ch4-ftl.md#42-mapping-management)). Contiguous *logical* layout still helps — fewer extents, cleaner Trim, bigger sequential transfers — but the seek-avoidance rationale evaporates.
 
-EXT4 works hard to keep files **contiguous** (an HDD instinct — contiguity means fewer seeks):
-- **Delayed allocation ("allocate-on-flush")** — don't assign physical blocks when the app writes; wait until the buffered data is flushed, by which point you know the full size and can allocate one contiguous run. Reduces fragmentation.
-- **Multiblock allocation** — allocate many blocks in a single request rather than one at a time.
-- **Persistent preallocation** — an app can reserve a contiguous region in advance (e.g., for a download of known size).
+### C.1.6 Journaling ⭐
 
-Note the irony for flash: all this contiguity effort is optimizing for *physical* locality, but the SSD's FTL **scatters the data across flash anyway** (Ch4) — the filesystem's "contiguous" logical blocks land wherever the FTL puts them. So the effort is partly wasted on flash, though contiguous *logical* layout still helps (fewer extents, better Trim, larger sequential transfers).
+EXT4's crash consistency = a **journal** (JBD2): write intentions durably first; replay on remount after a crash. Three modes — **journal** (data + metadata journaled; safest, everything written twice), **ordered** (default: metadata journaled, data forced down *first* so metadata never points at garbage), **writeback** (metadata only, no ordering; fastest, least safe) — plus metadata/journal checksums. Conceptually this *is* [Ch 4 §4.6](../core/ch4-ftl.md#46-power-loss-recovery)'s recovery machinery at the filesystem layer. But note the price: journaling writes some data **twice** — filesystem-level write amplification, stacked on top of the device's own.
 
-### 12.1.6 Reliability — journaling (p. their 12.1.6) ⭐
+### C.1.7 Why flash deserves better ⭐
 
-EXT4's crash-consistency mechanism is a **journal** (managed by JBD2). Before modifying the filesystem, it first writes the intended changes to a dedicated journal area; if power is lost mid-update, on remount it **replays** the journal to reach a consistent state. Three modes:
-- **journal** — both data and metadata go to the journal first (safest, slowest — everything written twice).
-- **ordered** (the default) — only *metadata* is journaled, but data blocks are forced to disk *before* the metadata commits (so metadata never points at garbage). Good balance.
-- **writeback** — only metadata journaled, no ordering guarantee on data (fastest, least safe).
+EXT4 *works* on SSDs — as a rotational design under protest:
 
-Plus **metadata and journal checksums** to detect corruption. *(Conceptually, journaling is the filesystem's version of the power-loss-recovery machinery from Ch4 §4.6 — write intentions durably first, replay after a crash. But note: journaling means some data is written **twice**, which is a source of filesystem-level write amplification — a problem F2FS avoids by design.)*
+1. **In-place update model** — every overwrite becomes an out-of-place write + garbage inside the FTL: WA and wear, manufactured at the source.
+2. **Journaling doubles writes** — compounding the FTL's own amplification.
+3. **Seek-locality optimizations are pointless** — effort spent on a problem flash doesn't have.
+4. **Zero FTL awareness** — EXT4 knows nothing of erase-block sizes, GC units, or hot/cold sensitivity; it can't cooperate.
+5. **Random-write-heavy metadata** — bitmaps, inodes, journal commits scatter small random writes, flash's worst diet ([Ch 4 §4.3.1](../core/ch4-ftl.md#431-the-gc-principle-via-a-toy-ssd)).
 
-### 12.1.7 Limitations on flash (p. their 12.1.7) ⭐ *why F2FS exists*
-
-EXT4 works on SSDs, but it's a rotational-disk design forced onto flash, with real downsides:
-1. **In-place overwrite model.** EXT4 updates files *in place* (rewrite the same logical block). But flash can't overwrite (Ch3), so every in-place update becomes an out-of-place write + garbage in the FTL — driving up **write amplification** and wear.
-2. **Journaling doubles writes.** The double-write of journaling compounds the FTL's own write amplification.
-3. **Seek-locality optimizations are pointless** on flash (no seek time) — effort spent for no benefit.
-4. **No FTL awareness.** EXT4 doesn't know the erase-block size, the FTL's GC unit, or flash's hot/cold sensitivity, so its allocation can't align with or help the device. It treats the SSD as an opaque disk.
-5. **Random-write heavy.** Metadata updates (bitmaps, inodes, journal) scatter small random writes across the volume — the worst pattern for flash (Ch4: random writes → scattered garbage → high WA).
-
-These five points are precisely what a flash-native filesystem sets out to fix.
+Five failures; one purpose-built answer.
 
 ---
 
-## 12.2 F2FS — the flash-native filesystem ⭐⭐ *Chapter 4, at the filesystem layer*
+## C.2 F2FS: the flash-native filesystem ⭐⭐
 
-**F2FS (Flash-Friendly File System)** was created by **Jaegeuk Kim at Samsung** — the initial patch hit the Linux kernel mailing list in October 2012 and merged into **Linux 3.8 in December 2012**. Kim has since moved through Huawei, Motorola, and Google, and **remains the primary maintainer** to this day. It's now the **default userdata-partition filesystem on billions of Android devices** (Google Pixel, most Samsung Galaxy since the Note 10, Xiaomi, OPPO, OnePlus, Huawei, Motorola, ZTE).
+**F2FS (Flash-Friendly File System)** was created by **Jaegeuk Kim at Samsung** — first patch October 2012, merged in **Linux 3.8** that December, and still maintained by Kim today. It is now the **default userdata filesystem on billions of Android devices** (Pixel, most Galaxy since the Note 10, Xiaomi, OPPO, OnePlus, Huawei…).
 
-**The one design decision that defines it — it's log-structured.** F2FS is a **log-structured file system (LFS)**: *all writes are sequential appends to the end of an active log. Data is never overwritten in place — it lands at a new address, and the old location is marked stale, awaiting garbage collection.*
+**The one defining decision: F2FS is log-structured.** All writes are **sequential appends** to an active log; nothing is overwritten in place; old locations go stale and await cleaning. Stop and notice — *that is exactly how flash itself behaves* ([Ch 3](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)) *and exactly how the FTL manages it* ([Ch 4](../core/ch4-ftl.md#43-garbage-collection)). F2FS makes the filesystem move the way the medium moves, converting EXT4's random in-place writes into the sequential appends flash loves — eliminating the problem *at the source*, before it ever crosses the interface.
 
-**Stop and notice:** that is *exactly* how flash itself works (Ch3: no overwrite, write to new location, old copy becomes garbage) and exactly how the FTL manages it (Ch4: out-of-place writes + mapping + GC). **F2FS makes the filesystem behave like the flash underneath it** — converting the random in-place writes that hurt EXT4 into the sequential appends flash loves. This single decision eliminates in-place random writes *at the source*, before they ever reach the device.
+Classic LFS (Sprite, 1992) had two notorious problems; F2FS's cleverness is fixing both, and both fixes are Chapter-4 ideas wearing filesystem clothes.
 
-But classic LFS (the 1992 Sprite LFS) had two notorious problems, and F2FS's cleverness is in fixing both — the same two problems you already understand from Chapter 4:
+### C.2.1 Disk layout ⭐
 
-### 12.2.1 Disk layout (p. their 12.2.1) ⭐
+F2FS divides the volume into **2 MB segments** (512 × 4 KB blocks), grouped into **sections**, grouped into **zones** — and here's the cooperation EXT4 never offered: **the section size is set to match the FTL's GC unit, and zones align to the device's internal parallel structure.** Filesystem and FTL pull in the same direction by construction.
 
-F2FS divides the volume into fixed **2 MB segments** (512 × 4 KB blocks). Segments group into **sections**, and sections into **zones**. Crucially — **F2FS sets the section size to match the FTL's garbage-collection unit, and aligns its zones with the FTL's mapping granularity.** This is the cooperation that EXT4 lacks: F2FS deliberately shapes its layout to fit the device's internal structure (Ch2's channels/dies, Ch4's GC unit), so the filesystem and FTL pull in the same direction.
+Six areas:
 
-The volume splits into **six areas**:
 ```
- |-> aligned to zone size          |-> aligned to segment size
  ┌────────────┬────────────┬─────────────┬─────────────┬────────────┬──────────┐
  │ Superblock │ Checkpoint │ Segment     │ Node Address│ Segment    │  Main    │
  │   (SB)     │   (CP)     │ Info Table  │ Table (NAT) │ Summary    │  Area    │
- │            │            │   (SIT)     │             │ Area (SSA) │          │
+ │ (2 copies) │ (2 copies) │   (SIT)     │             │ Area (SSA) │(nodes+data)
  └────────────┴────────────┴─────────────┴─────────────┴────────────┴──────────┘
-   (2 copies)  (2 copies)                                            (nodes+data)
 ```
-- **Superblock (SB)** — basic partition info; two copies for safety.
-- **Checkpoint (CP)** — a consistent snapshot of filesystem state (valid bitmaps, orphan lists, active-segment summaries). **This is F2FS's power-loss-recovery mechanism** — see §12.2.2.
-- **Segment Info Table (SIT)** — per-segment **valid-block count + validity bitmap.** *This is the exact analog of the SSD's VPC (Valid Page Count) and VPBM (Valid Page Bitmap) from Chapter 4 §4.3.3* — the structure GC uses to find the emptiest victims.
-- **Node Address Table (NAT)** — maps node IDs → physical addresses. *This is the mapping-table indirection, at the filesystem layer* (see the wandering-tree fix below).
-- **Segment Summary Area (SSA)** — records **which node owns each block** (block → parent node). *This is the exact analog of the SSD's P2L (Physical-to-Logical) table from Chapter 4 §4.3.3* — used during GC to find and update the owner of a block being moved.
-- **Main Area** — where nodes and data actually live, organized as the append-only logs.
 
-The metadata areas (SB, CP, SIT, NAT, SSA) need random-write access, which is why F2FS on a fully-sequential zoned device needs a conventional (randomly-writable) region for them — a detail that matters for ZNS (below).
+- **SB** — partition basics, duplicated.
+- **CP (Checkpoint)** — the consistent snapshot; F2FS's power-loss recovery (§C.2.2).
+- **SIT** — per-segment **valid-block count + bitmap**. *The exact twin of the FTL's VPC/VPBM from [Ch 4 §4.3.3](../core/ch4-ftl.md#433-gc-implementation-three-steps)* — how cleaning finds its victims.
+- **NAT** — node ID → physical address. *The mapping-table indirection, one layer up* (the wandering-tree fix, below).
+- **SSA** — which node owns each block. *The twin of the FTL's P2L table* — how cleaning finds a moved block's owner.
+- **Main area** — the append-only logs of nodes and data.
 
-### 12.2.2 The important algorithms (p. their 12.2.2) ⭐⭐
+(The metadata areas need random-write access — which is why F2FS on a purely sequential zoned device keeps them in a small conventional region. That detail returns in §C.2.5.)
 
-Four mechanisms, each with a direct Chapter-4 twin:
+### C.2.2 The four algorithms ⭐⭐
 
-**(1) Multi-head logging — hot/cold separation.** Rather than one append log, F2FS keeps **up to 6 active logs simultaneously**, separating data by *temperature* and *type*: hot/warm/cold × node/data. Frequently-updated data (hot) goes to one log; rarely-touched data (cold) to another. *This is exactly the hot/cold data separation from wear leveling (Ch4 §4.5) and the multi-stream/FDP idea from the Chapter-4 supplement* — segregating data by update frequency so that when you reclaim a segment, its contents tend to become invalid *together* (low cleaning cost), and cold data isn't repeatedly dragged along with hot data. Same principle, same payoff, filesystem layer.
+Each with its Chapter-4 twin:
 
-**(2) Cleaning — garbage collection.** Because it's log-structured, F2FS must reclaim stale space, and its "cleaning" is **literally garbage collection** with the same design choices you learned in Chapter 4 §4.3:
-- **Victim selection:** **Greedy** (pick the segment with the fewest valid blocks — least to move) for foreground/urgent cleaning, or **Cost-Benefit** (weigh valid-block count *against* the segment's age, favoring old cold segments) for background cleaning. *These are the same greedy and cost-benefit victim-selection policies as SSD GC.*
-- **Foreground vs background** cleaning — reactive (when free space is low, during writes) vs proactive (during idle). *Same as foreground/background GC in Ch4 §4.3.4.*
-- **The process:** consult the SIT to find a low-validity victim → use the SSA to identify each valid block's owning node → copy valid blocks to a free log → update the NAT → invalidate the victim segment → erase it after the next checkpoint. *This is step-for-step the SSD GC process from Ch4* (find victim via valid-count, relocate valid data, update mapping, free the block).
-- **Hybrid write scheme:** F2FS defaults to **copy-and-compaction** (classic LFS cleaning — great when free segments are plentiful) but switches to **threaded logging** (write into holes in existing dirty segments — no cleaning needed) when the disk gets full and cleaning overhead would spike. A pragmatic adaptation to the "LFS suffers under high utilization" problem.
+**(1) Multi-head logging = hot/cold separation.** Up to **six active logs** at once, split by temperature × type (hot/warm/cold × node/data). Hot data streams into one log, cold into another — so a reclaimed segment's contents tend to die *together* (cheap cleaning) and cold data stops being dragged around with hot neighbors. *This is [Ch 4 §4.5](../core/ch4-ftl.md#45-wear-leveling)'s cold/hot separation and the multi-stream/FDP idea of [§4.11](../core/ch4-ftl.md#411-modern-developments-from-sdf-to-zns-and-fdp), implemented in the filesystem.*
 
-**(3) The NAT — solving the "wandering tree" problem.** This is F2FS's cleverest fix, and it's the *same indirection idea as the FTL mapping table.* Here's the problem: in a naive LFS, when you write a data block it moves to a new address, so its inode pointer must update — but updating the inode moves *it* to a new address, so the directory pointing to the inode must update, which moves the directory... a "snowball" of updates cascading up to the filesystem root on *every single write*. This is the **wandering tree** problem, and it's crippling.
+**(2) Cleaning = garbage collection.** Literally, with the same design menu as [Ch 4 §4.3](../core/ch4-ftl.md#43-garbage-collection):
 
-F2FS's solution: the **Node Address Table (NAT)** — a persistent indirection layer mapping each **node ID** to its current **physical address**. Nodes (inodes, direct nodes, indirect nodes) reference each other by *node ID*, not by physical address. So when a data block moves, only its direct-node's block pointer changes, and when a *node* moves, **only its NAT entry updates** — the parent nodes still reference it by the same unchanged node ID. **The snowball stops at the NAT.** *This is precisely why the FTL's mapping table exists (Ch4 §4.2): an indirection layer so data can relocate freely without forcing everything that references it to update.* Same problem, same solution, one layer up.
+- **Victim selection:** **greedy** (fewest valid blocks) for foreground urgency; **cost-benefit** (valid count weighed against segment age, favoring old cold segments) for background work.
+- **Foreground vs background** cleaning — reactive under pressure, proactive when idle.
+- **The mechanics:** SIT finds the low-validity victim → SSA identifies each valid block's owner → copy valid blocks to a free log → update NAT → the victim frees after the next checkpoint. Step for step, SSD GC.
+- **The pragmatic hybrid:** default **copy-and-compaction** while free segments are plentiful; switch to **threaded logging** (write into holes of dirty segments — no cleaning required) when the volume fills and cleaning costs would spike. LFS's classic high-utilization weakness, patched with a mode switch.
 
-**(4) Checkpoint — power-loss recovery via shadow copies.** F2FS maintains consistency with **checkpoints** — periodic consistent snapshots of the filesystem state written to the CP area. On mount, F2FS finds the last valid checkpoint and recovers from it. It uses a **shadow-copy** scheme: **two copies** of the CP (and of NAT/SIT), one of which is always the last-known-good — so an interrupted checkpoint write can't corrupt the valid one. After a crash, F2FS rolls back to the last stable checkpoint, then **roll-forward recovers** recent writes logged since. *This is the direct analog of the SSD's snapshot/checkpoint mechanism from Chapter 4 §4.6* — periodically persist a consistent state, recover to it after power loss, replay the small tail. Same idea, filesystem layer.
+**(3) The NAT kills the wandering tree.** The naive-LFS disease: move a data block → its inode's pointer must change → the inode moves → the directory pointing at it must change → the directory moves → … a cascade to the root on every write. F2FS interposes the **Node Address Table**: nodes reference each other by **node ID**, and only the NAT maps IDs to physical addresses. A node moves? One NAT entry updates; every parent still holds the same ID. **The snowball stops at the NAT** — *precisely why the FTL's mapping table exists* ([Ch 4 §4.2](../core/ch4-ftl.md#42-mapping-management)): an indirection layer so data can relocate freely without dragging its referrers along. Same disease, same cure, one layer up.
 
-### 12.2.3 Feature summary (p. their 12.2.3)
+**(4) Checkpoints = power-loss snapshots.** Periodic consistent snapshots into the CP area, with a **shadow-copy** discipline: two copies of CP/NAT/SIT, one always last-known-good, so an interrupted checkpoint can't corrupt the survivor. After a crash: roll back to the stable checkpoint, then **roll forward** through recent logged writes. *[Ch 4 §4.6](../core/ch4-ftl.md#46-power-loss-recovery)'s snapshot + tail-replay, verbatim.*
 
-Why F2FS beats EXT4 on flash, in one list:
-- **Sequential-only writes** — converts random writes to appends (flash's best case), the opposite of EXT4's in-place model.
-- **FTL-aware layout** — sections align to the FTL's GC unit; logs align to zones — cooperation, not opacity.
-- **Hot/cold separation** — reduces cleaning cost and device-side WA.
-- **NAT indirection** — kills the wandering-tree write cascade.
-- **No double-write journaling** — checkpoints + roll-forward instead of a data journal, so less write amplification than EXT4's journal.
-- **Lower write amplification overall** — the whole design minimizes writes, extending flash life (the Chapter-4 goal, pursued from above).
+### C.2.3 The scorecard
 
-The measured payoff (FAST 2015 paper): F2FS **outperformed EXT4 by up to 3.1× on iozone and 2× on SQLite** on mobile, cut realistic-workload elapsed time by up to **40%**, and won by up to **2.5× on SATA SSDs** on servers.
+Why F2FS beats EXT4 on flash, in one list: sequential-only writes (random writes eliminated at the source) · FTL-aligned layout (cooperation, not opacity) · hot/cold separation (cheaper cleaning, lower device WA) · NAT indirection (no wandering tree) · **no double-write journal** (checkpoint + roll-forward instead) · lower total write amplification, hence longer flash life — Chapter 4's goal, pursued from above.
 
-### 12.2.4 Latest progress (p. their 12.2.4) — *see the expanded modern section below*
+Measured (the FAST 2015 paper): up to **3.1×** over EXT4 on iozone and **2×** on SQLite on mobile; up to **40%** faster realistic workloads; up to **2.5×** on SATA SSDs server-side.
 
-The book's "latest progress" (compression, zoned support) has advanced substantially — covered next.
+### C.2.4 Since then: compression and encryption
 
----
+- **Transparent compression** — per-file/directory **LZ4** (Linux 5.6), **zstd** (5.7), LZO. Android uses it aggressively: flash reads are fast enough that decompression is nearly free, so capacity is saved — and *writes shrink*, which is endurance (Chapter 4's goal yet again). Recent kernels keep refining it (on-demand compress/decompress ioctls).
+- **Inline encryption** (fscrypt) with hardware inline-crypto support — a reason Google adopted F2FS for the Pixel line — plus inline small files/directories stored directly in the inode.
 
-## 📌 Modern developments & the two-layer picture
+### C.2.5 The log-on-log problem — and the ZNS fix ⭐
 
-*F2FS is actively developed (Jaegeuk Kim still maintains it, with updates in current kernels), so here's the current state plus the crucial cross-layer insight. Grounded in current kernel docs and sources.*
+The deepest insight in this supplement. Run F2FS on a normal SSD and look at the layers:
 
-**Transparent compression.** F2FS gained per-file **compression** — **LZ4** (Linux 5.6), **zstd** (5.7), and LZO — applied at the file/directory level. Android uses it aggressively: sequential reads of compressed data on flash are fast enough that decompression overhead is usually negligible, so you get real capacity savings "for free." (Compression also *reduces writes*, helping endurance — the Chapter-4 goal again.) Recent kernels (6.9) continue fixing compression corner-cases and added on-demand compress/decompress ioctls.
-
-**Inline encryption** (fscrypt, since Linux 4.2) — directory-level encryption with hardware inline-crypto support (which is why Google adopted F2FS on the Pixel 3), plus inline data/directories (small files stored directly in the inode, avoiding a separate block).
-
-**The log-on-log problem — and why ZNS is the fix.** ⭐ This is the deep insight of the whole chapter, and it ties directly to your Chapter 4/6 supplements. Consider the layers when F2FS runs on a normal SSD:
 ```
-   F2FS  = log-structured   (writes appends, does its own cleaning/GC)
+   F2FS  = log-structured   (appends, own mapping, own cleaning/GC)
      │        ▼
-    FTL   = log-structured   (also writes out-of-place, also does GC)
+    FTL   = log-structured   (out-of-place writes, own mapping, own GC)
      │        ▼
    NAND
 ```
-**You have a log running on top of a log** — two independent layers *both* doing out-of-place writes, *both* maintaining mappings, *both* running garbage collection, neither aware of the other. F2FS cleans a segment (moving valid data to a new logical location); the FTL sees those as fresh writes and *also* relocates them internally and *also* garbage-collects. The two GCs interfere, and write amplification **compounds** (filesystem WA × device WA). This "log-on-log" inefficiency is a well-known problem in flash storage — doing the same work twice.
 
-**Zoned storage (ZUFS/ZNS) collapses the two logs into one.** F2FS added **zoned block device support** — for SMR HDDs (kernel 4.10) and **NVMe ZNS SSDs (kernel 5.16+)**. On a zoned device, the device exposes its physical zones directly (Ch4/Ch6 supplements: ZNS/ZUFS), the FTL's placement/GC is minimized or eliminated, and **F2FS's log segments map straight onto the device's zones.** Now there's *one* log — F2FS *is* the flash manager, writing sequentially into zones and cleaning them, with the device just obeying. The double-logging vanishes: filesystem WA and device WA merge, WAF approaches 1, DRAM shrinks (Ch4 supplement), and QLC becomes more viable. **F2FS is the reference flash-native filesystem for ZNS**, which is exactly why it's the natural host-side counterpart to the ZNS/FDP story you already traced — F2FS is *the* filesystem that knows how to drive a zoned device. (Recent kernels, e.g. 6.9, specifically improved ZNS support for large-section devices used in Android.) There's even a 2024 research direction on host/controller co-design to coordinate F2FS and the device for proactive defragmentation — reducing fragmentation up to ~70% — the same host↔device cooperation theme.
+**A log running on top of a log.** Two independent layers both writing out-of-place, both keeping maps, both garbage-collecting — neither aware of the other. F2FS cleans a segment (rewriting valid data to new logical addresses); the FTL sees fresh writes, relocates them again internally, and schedules its own GC. The two collectors interfere, and write amplification **multiplies**: filesystem WA × device WA. Solving the same problem twice, and paying twice.
 
-**Android adoption, precisely stated.** F2FS is the dominant choice for the **userdata partition** on modern Android flagships (Pixel, most Galaxy, Xiaomi, OPPO, OnePlus, etc.). EXT4 still persists for **boot/recovery partitions**, budget devices, and some OEM configs — so the accurate statement is "F2FS dominates userdata on modern Android," not "F2FS replaced EXT4 everywhere."
+**Zoned storage collapses the two logs into one.** F2FS supports zoned block devices — SMR HDDs (kernel 4.10) and **NVMe ZNS SSDs (5.16+)**. On a zoned device ([Ch 4 §4.11](../core/ch4-ftl.md#411-modern-developments-from-sdf-to-zns-and-fdp), [Ch 6 §6.10.1](../core/ch6-nvme.md#6101-zns-mechanics-zones-states-and-zone-append)), the drive exposes its zones directly and abandons internal placement/GC; **F2FS's log segments map straight onto the zones.** One log. F2FS *is* the flash manager; the device just obeys. Filesystem WA and device WA merge, WAF approaches 1, the mapping DRAM shrinks, QLC gets easier — and **F2FS is the reference filesystem for driving ZNS**, the natural host-side ending of the SDF → ZNS story. Recent kernels keep investing (large-section ZNS support for Android in 6.9; research on host/device co-designed defragmentation reporting up to ~70% fragmentation reduction).
 
-**Caveats worth knowing (for balance).** F2FS's **fsck and power-loss recovery are weaker** than EXT4's mature journaling — under frequent sudden power loss, F2FS can recover more slowly or (rarely) lose data if fsck fails. It also caps at **16 TiB** and lacks native RAID5/6. So F2FS wins decisively on flash-optimized *performance and endurance*, while EXT4 retains an edge in *maturity and robustness* — which is why the ecosystem uses both, each where it fits.
+**Android adoption, precisely stated:** F2FS dominates the **userdata** partition on modern flagships; EXT4 persists on boot/recovery partitions and budget devices. "F2FS won userdata," not "F2FS replaced EXT4 everywhere."
+
+**Caveats, for balance:** F2FS's fsck and power-loss recovery are less battle-hardened than EXT4's journaling — under frequent brutal power cycling it can recover slowly or, rarely, lose data where EXT4 wouldn't; it caps at 16 TiB; no native RAID5/6. Flash-optimized performance and endurance vs decades of maturity: the ecosystem sensibly uses both.
 
 ---
 
-## The third category — raw-flash filesystems (brief, for embedded context)
+## C.3 The third category: raw-flash filesystems
 
-Worth knowing since it's relevant to deeply-embedded systems (and to a NAND company): **JFFS2, UBIFS, and YAFFS** are filesystems that run on **bare NAND with no controller/FTL** — they manage the raw flash *themselves*, doing their own wear leveling, bad-block management, and ECC directly. They're used in small embedded devices (routers, IoT, microcontrollers) where the flash is soldered raw to the board with no controller chip.
+For completeness and embedded context: **JFFS2, UBIFS, YAFFS** run on **bare NAND with no controller at all** — doing their own wear leveling, bad-block management, and ECC against raw chips. Their home is deeply embedded systems (routers, IoT, microcontrollers) where flash is soldered raw to the board.
 
-The contrast is the key point: **F2FS and JFFS2 both "know about flash," but at different layers.** JFFS2 *replaces* the FTL (talks to raw NAND); F2FS *cooperates with* the FTL (talks to a managed device — SSD/UFS/eMMC — that has its own controller). This is why F2FS explicitly assumes an FTL underneath and is *not* meant for raw NAND. For most modern storage (anything with a SCSI/SATA/NVMe/UFS interface), there's a controller, so F2FS (or EXT4) is the right layer; raw-flash filesystems only appear where there's no controller at all.
+The contrast is the point: F2FS and JFFS2 both "understand flash," **at different layers**. JFFS2 *replaces* the FTL; F2FS *cooperates with* one. Anything with a SATA/NVMe/UFS/eMMC interface has a controller, so F2FS (or EXT4) is the right layer there; raw-flash filesystems appear only where no controller exists.
+
+---
+
+## Key takeaways
+
+1. **EXT4 is a rotational design on parole**: in-place updates, double-write journaling, seek optimizations, and FTL-blindness — five ways it manufactures write amplification on flash.
+2. **F2FS's whole design is one decision** — log-structured, like the medium — plus the machinery to make LFS livable: NAT (kills the wandering tree), multi-head logs (hot/cold), greedy/cost-benefit cleaning, shadow-copied checkpoints.
+3. **Every F2FS structure has a Chapter-4 twin**: SIT ≈ VPC/VPBM, SSA ≈ P2L, NAT ≈ the mapping table, checkpoint ≈ the power-loss snapshot, cleaning ≈ GC. Same problems, one layer up.
+4. **Log-on-log is the hidden tax** of a flash-native filesystem on a conventional SSD — two mappers, two collectors, multiplied WA. **ZNS collapses the logs into one**, and F2FS is the filesystem built to hold the pen.
+5. **Layer determines tool**: raw NAND → JFFS2/UBIFS; managed device → F2FS or EXT4; zoned device → F2FS as the single log.
 
 ---
 
@@ -262,4 +244,11 @@ The contrast is the key point: **F2FS and JFFS2 both "know about flash," but at 
 
 ---
 
-*Next up (your list of 5): **SSD power management** — ASPM (PCIe's link power states), NVMe dynamic power management, and the DevSleep/HIBERN8 states — the topic your Chapter guides kept deferring to "the book's power chapter." Then aerospace storage to finish the set.*
+??? info "📖 Provenance"
+
+    Flash file systems are a 2nd-edition topic (their Chapter 12), not in the
+    1st edition of《深入淺出SSD》. This supplement reconstructs the material
+    from the Linux kernel documentation, the F2FS FAST 2015 paper, and
+    current kernel sources, organized around the Chapter-4 concept mapping.
+
+*Next: [Supplement D — SSD Power Management](d-power-management.md): ASPM, NVMe power states, DevSleep and friends — the machinery the core chapters kept deferring to "the power chapter."*
