@@ -65,19 +65,19 @@ $$ UCL(\text{data errors}) \le \min(TBW, TBR) \times 8{\times}10^{12} \times UBE
 
 **Code rate** — the fraction of transmitted bits that are actual data
 (\( k \) data bits in an \( n \)-bit codeword).
-*Defined in [Supp A §7.3](../supplements/a-ecc-coding-theory.md#73-the-basic-idea-of-error-correcting-codes-the-foundation).*
+*Defined in [Supp A §7.3](../supplements/a-ecc-coding-theory.md#a3-the-foundations).*
 
 $$ R = \frac{k}{n} $$
 
 **Minimum distance ↔ correction capability** — a code with minimum Hamming
 distance \( d_{min} \) detects \( d_{min}-1 \) errors and corrects
 \( t \) of them.
-*Derived in [Supp A §7.3.1](../supplements/a-ecc-coding-theory.md#731-coding-distance-hamming-distance-the-concept-everything-rests-on).*
+*Derived in [Supp A §7.3.1](../supplements/a-ecc-coding-theory.md#a31-hamming-distance-the-concept-everything-rests-on).*
 
 $$ t = \left\lfloor \frac{d_{min}-1}{2} \right\rfloor $$
 
 **Syndrome** — depends only on the error pattern, not the data; zero means
 "no detectable error".
-*Machinery in [Supp A §7.3.3](../supplements/a-ecc-coding-theory.md#733-the-generator-matrix-g-and-parity-check-matrix-h-the-core-machinery-learn-this-cold).*
+*Machinery in [Supp A §7.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h).*
 
 $$ s = H \cdot r^{T} $$
