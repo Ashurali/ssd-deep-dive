@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 483 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 482 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -16,7 +16,7 @@ Every term from the Key-vocabulary tables of all 12 chapters and supplements, pl
 
 ### 3D flash { #term-3d-flash .sdd-term }
 
-**三維閃存**  
+**三維閃存（台：3D 快閃記憶體）** — NAND built as vertical strings through a stack of wordline layers instead of on a flat surface. → [§3.1.5](../core/ch3-nand-flash.md#315-3d-flash)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ## A { #letter-a }
@@ -43,7 +43,7 @@ Active Power (avg over 10-second window)
 
 ### addressing { #term-addressing .sdd-term }
 
-**尋址**  
+**尋址（台：定址）** — Naming a location on the chip: LUN, block and page in the row address, byte offset in the column address. → [§3.2.4](../core/ch3-nand-flash.md#324-addressing)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### Admin command { #term-admin-command .sdd-term }
@@ -54,11 +54,6 @@ Active Power (avg over 10-second window)
 ### AHCI { #term-ahci .sdd-term }
 
 Advanced Host Controller Interface (the SATA-era host interface)  
-<small>From: the site-wide acronym list</small>
-
-### AIPR { #term-aipr .sdd-term }
-
-asynchronous independent plane read  
 <small>From: the site-wide acronym list</small>
 
 ### ALE { #term-ale .sdd-term }
@@ -78,7 +73,7 @@ Aggressive Link Power Management (SATA)
 
 ### amorphous / crystalline state { #term-amorphous-crystalline-state .sdd-term }
 
-**無定形態 / 晶體態**  
+**無定形態 / 晶體態（台：非晶態 / 結晶態）** — PCM's high-resistance (disordered) and low-resistance (ordered) states. → [§3.1.7](../core/ch3-nand-flash.md#317-3d-xpoint-and-the-emerging-memory-zoo)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### APB { #term-apb .sdd-term }
@@ -125,7 +120,7 @@ Advanced eXtensible Interface (Arm on-chip high-speed bus)
 
 ### bad block { #term-bad-block .sdd-term }
 
-**壞塊**  
+**壞塊（台：壞區塊）；壞塊** — A block that can no longer hold data reliably, from the factory or from wear, and is retired. → [§3.3.1](../core/ch3-nand-flash.md#331-the-five-problems-a-catalog-to-know-cold)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### bad block management { #term-bad-block-management .sdd-term }
@@ -195,7 +190,7 @@ free/used tracking in EXT4
 
 ### block / page { #term-block-page .sdd-term }
 
-**塊 (Block) / 頁 (Page)**  
+**塊 / 頁（台：區塊 / 頁）** — The erase unit (all wordlines sharing one substrate) and the read/program unit (the cells along one wordline). → [§3.1.3](../core/ch3-nand-flash.md#313-the-hierarchy-cell-page-block-plane-die)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### block / page / hybrid mapping { #term-block-page-hybrid-mapping .sdd-term }
@@ -237,7 +232,7 @@ baseboard management controller (a server's management chip)
 
 ### cache register / page register { #term-cache-register-page-register .sdd-term }
 
-**緩存/頁寄存器**  
+**緩存寄存器 / 頁寄存器（台：快取暫存器 / 頁暫存器）** — A plane's two page-sized buffers, which let a bus transfer overlap an array access. → [§3.1.3](../core/ch3-nand-flash.md#313-the-hierarchy-cell-page-block-plane-die)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### capacity { #term-capacity .sdd-term }
@@ -277,17 +272,22 @@ Configuration Write request (PCIe TLP)
 
 ### channel { #term-channel .sdd-term }
 
-**通道；溝道** — One shared bus from the flash controller to a group of dies; separate channels work in parallel. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
-<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
+**通道** — One shared bus from the flash controller to a group of dies; separate channels work in parallel. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
+### channel (transistor) { #term-channel-transistor .sdd-term }
+
+**溝道（台：通道）** — The strip of silicon under the gate that conducts when the cell is switched on. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
+<small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### charge leakage { #term-charge-leakage .sdd-term }
 
-**電荷泄漏**  
+**電荷泄漏（台：電荷洩漏）** — Stored electrons slowly escaping through the oxide, the cause of retention errors. → [§3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### charge trap (CT) { #term-charge-trap-ct .sdd-term }
 
-**電阱 / 電荷捕捉** — CT = charge trap (a flash cell type)  
+**電阱 / 電荷捕捉** — A cell design that stores electrons in traps in an insulating nitride layer instead of a conducting floating gate. → [§3.1.6](../core/ch3-nand-flash.md#316-charge-trap-flash-the-other-way-to-hold-an-electron)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### check node (CN) { #term-check-node-cn .sdd-term }
@@ -382,7 +382,7 @@ data bits ÷ total bits
 
 ### control gate / substrate { #term-control-gate-substrate .sdd-term }
 
-**控制極 / 襯底**  
+**控制極 / 襯底（台：控制閘極 / 基板）** — The gate a read or program voltage is applied to, and the silicon body beneath the cells, which erase acts through. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### copy-and-compaction / threaded logging { #term-copy-and-compaction-threaded-logging .sdd-term }
@@ -402,7 +402,7 @@ Commercial Off-The-Shelf parts
 
 ### coupling capacitance { #term-coupling-capacitance .sdd-term }
 
-**耦合電容**  
+**耦合電容** — The capacitance between neighbouring cells that lets one cell's charge shift another's threshold. → [§3.3.1](../core/ch3-nand-flash.md#331-the-five-problems-a-catalog-to-know-cold)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### CplD { #term-cpld .sdd-term }
@@ -444,12 +444,12 @@ PCIe **device** power states (software-controlled)
 
 ### data randomization / scrambling { #term-data-randomization-scrambling .sdd-term }
 
-**數據隨機化 / 擾碼**  
+**數據隨機化 / 擾碼（台：資料隨機化 / 擾碼）** — Scrambling data before it is written, so the stored bits stay near half ones and half zeros. → [§3.4.5](../core/ch3-nand-flash.md#345-data-randomization)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### data retention { #term-data-retention .sdd-term }
 
-**數據保存期；數據保持**  
+**數據保存期（台：資料保存期）；數據保持** — How long written data stays readable before leakage creates more errors than ECC can fix. → [§3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### data verification { #term-data-verification .sdd-term }
@@ -651,13 +651,18 @@ endpoint (a PCIe device at a leaf of the tree)
 
 ### error-correcting code (ECC) { #term-error-correcting-code-ecc .sdd-term }
 
-**糾錯碼（台：錯誤更正碼）；糾錯碼** — Redundant bits stored with the data that let the controller detect and correct bit errors; SSDs use the BCH and LDPC families. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
+**糾錯碼（台：錯誤更正碼）** — Redundant bits stored with the data that let the controller detect and correct bit errors; SSDs use the BCH and LDPC families. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end); Redundant bits stored with the data that let the controller detect and correct bit errors; SSDs use the BCH and LDPC families. → [§3.4.3](../core/ch3-nand-flash.md#343-ecc-error-correcting-codes)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### error-locator polynomial { #term-error-locator-polynomial .sdd-term }
 
 BCH: its roots locate the errors  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
+
+### exclusive OR (XOR) { #term-exclusive-or-xor .sdd-term }
+
+**異或（台：互斥或）** — The bitwise operation RAID parity uses: XOR-ing the survivors of a stripe rebuilds the missing member. → [§3.4.4](../core/ch3-nand-flash.md#344-raid-inside-the-ssd)  
+<small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### EXT4 { #term-ext4 .sdd-term }
 
@@ -738,7 +743,7 @@ Flexible I/O tester (Linux benchmark tool)
 
 ### flash memory (NAND) { #term-flash-memory-nand .sdd-term }
 
-**閃存（台：快閃記憶體）；閃存** — Non-volatile semiconductor memory that stores bits as trapped charge and must be erased before it is rewritten. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
+**閃存（台：快閃記憶體）** — Non-volatile semiconductor memory that stores bits as trapped charge and must be erased before it is rewritten. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is); Non-volatile memory whose cells sit in series strings; it is erased a block at a time and programmed a page at a time. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### Flash Translation Layer (FTL) { #term-flash-translation-layer-ftl .sdd-term }
@@ -753,7 +758,7 @@ flow control unit (PCIe 6.0's fixed-size transfer unit)
 
 ### floating gate { #term-floating-gate .sdd-term }
 
-**浮柵 (浮柵極)**  
+**浮柵（台：浮動閘極）** — A conducting layer, isolated by oxides, whose trapped electrons set the cell's threshold voltage. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### flow control { #term-flow-control .sdd-term }
@@ -942,6 +947,11 @@ Institute of Electrical and Electronics Engineers
 **帶內**  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
+### independent plane read (IPR / AIPR) { #term-independent-plane-read-ipr-aipr .sdd-term }
+
+**獨立平面讀取** — Each plane running its own read at its own address and time, which makes the plane the unit of read parallelism. → [§3.5.1](../core/ch3-nand-flash.md#351-independent-plane-operations-ipr-aipr)  
+<small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
+
 ### indirect blocks { #term-indirect-blocks .sdd-term }
 
 ext2/3 per-block pointer scheme (fine-grained mapping)  
@@ -980,11 +990,6 @@ input/output
 ### IOPS { #term-iops .sdd-term }
 
 input/output operations per second  
-<small>From: the site-wide acronym list</small>
-
-### IPR { #term-ipr .sdd-term }
-
-independent plane read  
 <small>From: the site-wide acronym list</small>
 
 ### iSCSI { #term-iscsi .sdd-term }
@@ -1324,7 +1329,7 @@ F2FS metadata unit: inode / direct node / indirect node
 
 ### non-volatile { #term-non-volatile .sdd-term }
 
-**非易失性**  
+**非易失性（台：非揮發性）** — Keeping data with the power off. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### normal / abnormal power loss { #term-normal-abnormal-power-loss .sdd-term }
@@ -1511,9 +1516,9 @@ PCIe wake signal (PEWAKE#)
 **相位標籤**  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
-### phase-change memory (PCM/PRAM) { #term-phase-change-memory-pcmpram .sdd-term }
+### phase-change memory (PCM) { #term-phase-change-memory-pcm .sdd-term }
 
-**相變存儲器** — PCM = phase-change memory  
+**相變存儲器（台：相變化記憶體）** — Memory that stores a bit as the amorphous or crystalline state of a chalcogenide; 3D XPoint belonged to this family. → [§3.1.7](../core/ch3-nand-flash.md#317-3d-xpoint-and-the-emerging-memory-zoo)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### PHY / physical layer { #term-phy-physical-layer .sdd-term }
@@ -1533,7 +1538,7 @@ PCIe wake signal (PEWAKE#)
 
 ### plane { #term-plane .sdd-term }
 
-**平面 (Plane)**  
+**平面** — A slice of a die with its own registers; planes can work in parallel within one die. → [§3.1.3](../core/ch3-nand-flash.md#313-the-hierarchy-cell-page-block-plane-die)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### PLC { #term-plc .sdd-term }
@@ -1598,7 +1603,7 @@ deeper state = less power but slower wake (the core principle)
 
 ### program disturb { #term-program-disturb .sdd-term }
 
-**寫干擾 / 編程干擾**  
+**寫干擾 / 編程干擾（台：寫入干擾）** — Unwanted charge added to cells near the ones being programmed. → [§3.3.1](../core/ch3-nand-flash.md#331-the-five-problems-a-catalog-to-know-cold)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### Protection Information { #term-protection-information .sdd-term }
@@ -1640,7 +1645,7 @@ quality of service (how consistent latency is)
 
 ### quantum tunneling { #term-quantum-tunneling .sdd-term }
 
-**量子隧道效應**  
+**量子隧道效應（台：量子穿隧效應）** — Electrons crossing an insulator under a strong field, the effect that programs and erases a cell. → [§3.1.4](../core/ch3-nand-flash.md#314-read-write-erase-the-actual-voltages)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### queue depth { #term-queue-depth .sdd-term }
@@ -1707,17 +1712,17 @@ read disturb
 
 ### read disturb { #term-read-disturb .sdd-term }
 
-**讀干擾**  
+**讀干擾（台：讀取干擾）** — Bit errors that build up in a block's other pages because every read stresses them with pass voltage. → [§3.3.5](../core/ch3-nand-flash.md#335-read-disturb-in-the-field)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### read retry { #term-read-retry .sdd-term }
 
-**重讀** — Ch3 mechanism; the basis of soft reads  
+**重讀（台：重新讀取）** — Re-reading a page with shifted reference voltages when decoding fails. → [§3.4.2](../core/ch3-nand-flash.md#342-read-retry); Ch3 mechanism; the basis of soft reads  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### read scrub { #term-read-scrub .sdd-term }
 
-**掃描重寫 / 數據巡檢**  
+**掃描重寫 / 數據巡檢（台：資料巡檢）** — Scanning data in idle time and rewriting pages whose error counts are climbing. → [§3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### redundancy / fault tolerance { #term-redundancy-fault-tolerance .sdd-term }
@@ -1817,7 +1822,7 @@ Rad-Hardening By Design / By Process
 
 ### row address / column address { #term-row-address-column-address .sdd-term }
 
-**行地址 / 列地址**  
+**行地址 / 列地址（台：列位址 / 行位址）** — The address of a page (LUN, block, page) and the byte offset within it. Note the swap: the mainland calls a row 行, Taiwan calls it 列. → [§3.2.4](../core/ch3-nand-flash.md#324-addressing)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### RPC { #term-rpc .sdd-term }
@@ -2069,7 +2074,7 @@ Solid State Recorder / Mass Memory Unit (spacecraft storage)
 
 ### stacked gate layers { #term-stacked-gate-layers .sdd-term }
 
-**堆疊柵極層**  
+**堆疊柵極層（台：堆疊閘極層）** — The wordline layers of 3D flash; each one forms a cell where it meets a channel hole. → [§3.1.5](../core/ch3-nand-flash.md#315-3d-flash)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### static power management { #term-static-power-management .sdd-term }
@@ -2094,7 +2099,7 @@ host pins the drive to a power budget
 
 ### (storage) cell { #term-storage-cell .sdd-term }
 
-**存儲單元**  
+**存儲單元（台：儲存單元）** — One transistor that holds one or more bits as trapped charge. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### Submission Queue { #term-submission-queue .sdd-term }
@@ -2114,7 +2119,7 @@ filesystem-wide metadata
 
 ### synchronous / asynchronous { #term-synchronous-asynchronous .sdd-term }
 
-**同步 / 異步**  
+**同步 / 異步（台：同步 / 非同步）；同步 / 異步** — Interface timing with a clock and strobe versus pulse-driven timing without a clock. → [§3.2.2](../core/ch3-nand-flash.md#322-synchronous-timing)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### syndrome s = H·rᵀ { #term-syndrome-s-hrt .sdd-term }
@@ -2171,7 +2176,7 @@ Transmission Control Protocol
 
 ### threshold voltage { #term-threshold-voltage .sdd-term }
 
-**閾值電壓**  
+**閾值電壓（台：臨界電壓）** — The gate voltage at which a cell starts to conduct; the stored charge sets it, so it encodes the data. → [§3.1.2](../core/ch3-nand-flash.md#312-slc-mlc-tlc-the-threshold-voltage-picture)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### throughput / bandwidth { #term-throughput-bandwidth .sdd-term }
@@ -2226,7 +2231,7 @@ Triple Modular Redundancy (triplicate + vote)
 
 ### tunnel oxide { #term-tunnel-oxide .sdd-term }
 
-**隧道氧化層**  
+**隧道氧化層（台：穿隧氧化層）** — The thin insulator electrons tunnel through to enter or leave the storage layer; it wears with every cycle. → [§3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### turnkey solution { #term-turnkey-solution .sdd-term }
@@ -2392,7 +2397,7 @@ workload-dependent preconditioning (SNIA)
 
 ### wear leveling { #term-wear-leveling .sdd-term }
 
-**磨損平衡（台：平均抹寫）；磨損平衡** — Spreading erases evenly over all blocks so that none wears out early. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
+**磨損平衡（台：平均抹寫）；磨損平衡** — Spreading erases evenly over all blocks so that none wears out early. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works); Spreading erases evenly over all blocks so that none wears out early. → [§3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### Well-Known LU { #term-well-known-lu .sdd-term }
@@ -2412,18 +2417,13 @@ wear leveling
 
 ### wordline / bitline { #term-wordline-bitline .sdd-term }
 
-**字線 / 位線**  
-<small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
-
-### write amplification { #term-write-amplification .sdd-term }
-
-**寫放大**  
+**字線 / 位線（台：字元線 / 位元線）** — The rows that select a page of cells and the columns along which each cell is sensed. → [§3.1.3](../core/ch3-nand-flash.md#313-the-hierarchy-cell-page-block-plane-die)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### write amplification (WA) { #term-write-amplification-wa .sdd-term }
 
-**寫放大（台：寫入放大）；寫放大** — Bytes the drive writes to flash divided by bytes the host asked it to write; garbage collection pushes it above 1. → [§1.5.3](../core/ch1-overview.md#153-endurance)  
-<small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+**寫放大（台：寫入放大）；寫放大** — Bytes the drive writes to flash divided by bytes the host asked it to write; garbage collection pushes it above 1. → [§1.5.3](../core/ch1-overview.md#153-endurance); Bytes written to flash divided by bytes the host wrote; lowering it slows wear. → [§3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out)  
+<small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### write buffer / buffer { #term-write-buffer-buffer .sdd-term }
 
@@ -2446,11 +2446,6 @@ UFS pseudo-SLC turbo write buffer (≈ SLC Cache, Ch4)
 
 XtremIO Data Protection (its flash-optimized RAID)  
 <small>From: the site-wide acronym list</small>
-
-### XOR { #term-xor .sdd-term }
-
-**異或** — exclusive OR  
-<small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ## Y { #letter-y }
 

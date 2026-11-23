@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 356" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Where the CMOS periphery sits: beside, under, or bonded</title>
+<desc>Three generations of NAND die layout. Beside: the CMOS periphery sits next to the cell array on the same die, so the array gets only about 70 percent of the area. Under: the CMOS is built first and the array is stacked on top of it (CMOS under array), which saves area, but the array's hot process steps heat the finished CMOS. Bonded: the array wafer and the CMOS wafer are built separately, each on its own process, then bonded face to face through copper contacts.</desc>
+<defs><marker id="arrow-red" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-red-t" d="M0,0 L8,4 L0,8 z" fill="#ff7b72"/></marker></defs>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">Beside · 2D and early 3D</text>
+<text class="f-mute" x="384" y="20" text-anchor="end" fill="#a3abc4">array ≈ 70% of the die</text>
+<rect class="f-cyan" x="40" y="34" width="96" height="62" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="88" y="61" text-anchor="middle" fill="#e8eeff">CMOS</text>
+<text class="f-ink" x="88" y="78" text-anchor="middle" fill="#e8eeff">periphery</text>
+<rect class="f-violet" x="136" y="34" width="224" height="62" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="248" y="70" text-anchor="middle" fill="#e8eeff">cell array</text>
+<line class="f-faint" x1="16" y1="112" x2="384" y2="112" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="136" font-weight="700" fill="#e8eeff">Under · CMOS under array</text>
+<text class="f-red-t" x="384" y="136" text-anchor="end" fill="#ff7b72">array steps heat the CMOS</text>
+<rect class="f-violet" x="40" y="150" width="320" height="38" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="174" text-anchor="middle" fill="#e8eeff">cell array</text>
+<rect class="f-cyan" x="40" y="188" width="320" height="30" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="208" text-anchor="middle" fill="#e8eeff">CMOS periphery</text>
+<path class="f-red-l" d="M96,172 V196 M304,172 V196" fill="none" stroke="#ff7b72" stroke-width="2" marker-end="url(#arrow-red)"/>
+<line class="f-faint" x1="16" y1="234" x2="384" y2="234" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="258" font-weight="700" fill="#e8eeff">Bonded · CBA, Xtacking</text>
+<text class="f-mute" x="384" y="258" text-anchor="end" fill="#a3abc4">built apart, then joined</text>
+<rect class="f-violet" x="40" y="270" width="320" height="32" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="291" text-anchor="middle" fill="#e8eeff">array wafer, flipped</text>
+<g class="f-amber-t" fill="#f2b13c"><rect x="52" y="304" width="10" height="8"/><rect x="84" y="304" width="10" height="8"/><rect x="116" y="304" width="10" height="8"/><rect x="148" y="304" width="10" height="8"/><rect x="180" y="304" width="10" height="8"/><rect x="212" y="304" width="10" height="8"/><rect x="244" y="304" width="10" height="8"/><rect x="276" y="304" width="10" height="8"/><rect x="308" y="304" width="10" height="8"/><rect x="340" y="304" width="10" height="8"/></g>
+<text class="f-amber-t" x="366" y="313" fill="#f2b13c">Cu</text>
+<rect class="f-cyan" x="40" y="314" width="320" height="32" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="335" text-anchor="middle" fill="#e8eeff">CMOS wafer</text>
+</svg>

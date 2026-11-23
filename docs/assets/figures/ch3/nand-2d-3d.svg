@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 410" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>A 2D NAND string and a 3D NAND string</title>
+<desc>Top: a planar NAND string. Eight cells sit side by side on the wafer surface, joined in series along one channel between the bitline at one end and the source line at the other. Shrinking the cells brings neighbours close enough to disturb each other. Bottom: a 3D NAND string. The same series string stands upright: a vertical channel hole pierces a stack of wordline layers, with the bitline on top and the source line underneath, and each layer forms one cell around the hole. The etched hole narrows toward the bottom, so cells in different layers behave differently.</desc>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">2D: the string lies flat</text>
+<rect class="f-line f-panel" x="16" y="96" width="368" height="34" fill="#111832" stroke="#7d86a3"/>
+<text class="f-mute" x="200" y="118" text-anchor="middle" fill="#a3abc4">wafer surface</text>
+<line class="f-cyan-l" x1="40" y1="92" x2="360" y2="92" stroke="#4dd0c4" stroke-width="3"/>
+<g class="f-amber" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"><rect x="66" y="56" width="26" height="32"/><rect x="100" y="56" width="26" height="32"/><rect x="134" y="56" width="26" height="32"/><rect x="168" y="56" width="26" height="32"/><rect x="202" y="56" width="26" height="32"/><rect x="236" y="56" width="26" height="32"/><rect x="270" y="56" width="26" height="32"/><rect x="304" y="56" width="26" height="32"/></g>
+<text class="f-mute" x="198" y="46" text-anchor="middle" fill="#a3abc4">8 cells (wordlines) in series</text>
+<text class="f-ink" x="40" y="86" text-anchor="middle" fill="#e8eeff">BL</text>
+<text class="f-ink" x="360" y="86" text-anchor="middle" fill="#e8eeff">SL</text>
+<text class="f-red-t" x="200" y="150" text-anchor="middle" fill="#ff7b72">smaller cells → neighbours interfere</text>
+<line class="f-faint" x1="16" y1="164" x2="384" y2="164" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="186" font-weight="700" fill="#e8eeff">3D: the string stands up</text>
+<line class="f-line" x1="120" y1="202" x2="232" y2="202" stroke="#7d86a3" stroke-width="3"/>
+<text class="f-ink" x="240" y="207" fill="#e8eeff">bitline</text>
+<g class="f-amber" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"><rect x="60" y="214" width="220" height="12"/><rect x="60" y="234" width="220" height="12"/><rect x="60" y="254" width="220" height="12"/><rect x="60" y="274" width="220" height="12"/><rect x="60" y="294" width="220" height="12"/><rect x="60" y="314" width="220" height="12"/><rect x="60" y="334" width="220" height="12"/><rect x="60" y="354" width="220" height="12"/></g>
+<polygon class="f-cyan" points="156,206 196,206 186,372 166,372" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<line class="f-line" x1="100" y1="378" x2="260" y2="378" stroke="#7d86a3" stroke-width="3"/>
+<text class="f-ink" x="268" y="383" fill="#e8eeff">source line</text>
+<text class="f-amber-t" x="290" y="262" fill="#f2b13c">wordline</text>
+<text class="f-amber-t" x="290" y="280" fill="#f2b13c">layers</text>
+<text class="f-cyan-t" x="16" y="290" fill="#4dd0c4">channel</text>
+<text class="f-cyan-t" x="16" y="308" fill="#4dd0c4">hole</text>
+<line class="f-cyan-l" x1="72" y1="290" x2="164" y2="290" stroke="#4dd0c4" stroke-width="1.2" stroke-dasharray="3 3"/>
+<text class="f-mute" x="200" y="400" text-anchor="middle" fill="#a3abc4">one cell per layer · the hole narrows toward the bottom</text>
+</svg>

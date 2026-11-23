@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 344" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The data-integrity ladder</title>
+<desc>Four defences stacked from cheapest and most frequent at the top to costliest and rarest at the bottom. Randomize: on every write, scramble the data so the bits are near half ones and half zeros. ECC decode: on every read, fix the usual few bit errors. Read Retry: if decoding fails, read again at shifted reference voltages. RAID rebuild: if the page is still uncorrectable, rebuild it by XOR from the other dies in its stripe. Beside the ladder, Read Scrub works in the background during idle time, refreshing pages before they reach the lower rungs.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-mute" x="16" y="43" fill="#a3abc4">always,</text>
+<text class="f-mute" x="16" y="61" fill="#a3abc4">cheap</text>
+<line class="f-line" x1="40" y1="72" x2="40" y2="212" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="16" y="233" fill="#a3abc4">rare,</text>
+<text class="f-mute" x="16" y="251" fill="#a3abc4">costly</text>
+<rect class="f-green" x="88" y="30" width="296" height="48" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="50" font-weight="700" fill="#e8eeff">1 · Randomize</text>
+<text class="f-ink" x="100" y="69" fill="#e8eeff">every write: bits stay near 50/50</text>
+<rect class="f-cyan" x="88" y="88" width="296" height="48" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="108" font-weight="700" fill="#e8eeff">2 · ECC decode</text>
+<text class="f-ink" x="100" y="127" fill="#e8eeff">every read: fixes the usual errors</text>
+<rect class="f-amber" x="88" y="146" width="296" height="48" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="166" font-weight="700" fill="#e8eeff">3 · Read Retry</text>
+<text class="f-ink" x="100" y="185" fill="#e8eeff">decode fails: re-read at new levels</text>
+<rect class="f-red" x="88" y="204" width="296" height="48" rx="8" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="224" font-weight="700" fill="#e8eeff">4 · RAID rebuild</text>
+<text class="f-ink" x="100" y="243" fill="#e8eeff">ECC gave up: XOR the other dies</text>
+<rect class="f-violet f-dash" x="88" y="272" width="296" height="64" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text class="f-ink" x="100" y="292" font-weight="700" fill="#e8eeff">In the background · Read Scrub</text>
+<text class="f-ink" x="100" y="311" fill="#e8eeff">idle time: refresh pages while</text>
+<text class="f-ink" x="100" y="328" fill="#e8eeff">their errors are still correctable</text>
+</svg>
