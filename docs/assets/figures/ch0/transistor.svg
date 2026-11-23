@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 168" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The transistor as a switch</title>
+<desc>Two cross-sections of the same transistor. Each has a source and a drain set into the substrate, and a gate above the gap between them, separated from it by a thin oxide. Left, with the gate at 0 volts, no channel forms and no current flows: the switch is off. Right, with the gate above the threshold voltage, a thin conducting channel forms under the oxide and current flows from source to drain: the switch is on.</desc>
+<g font-weight="700" class="f-ink" fill="#e8eeff">
+<text x="16" y="18">Gate at 0 V: off</text>
+<text x="208" y="18">Gate above Vt: on</text>
+</g>
+<g class="f-line" fill="none" stroke="#7d86a3" stroke-width="1.2">
+<rect x="20" y="62" width="168" height="70"/>
+<rect x="212" y="62" width="168" height="70"/>
+</g>
+<g class="f-violet" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5">
+<rect x="78" y="34" width="52" height="22"/>
+<rect x="270" y="34" width="52" height="22"/>
+</g>
+<g class="f-amber" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5">
+<rect x="78" y="56" width="52" height="6"/>
+<rect x="270" y="56" width="52" height="6"/>
+</g>
+<g class="f-cyan" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5">
+<rect x="24" y="62" width="54" height="30"/>
+<rect x="130" y="62" width="54" height="30"/>
+<rect x="216" y="62" width="54" height="30"/>
+<rect x="322" y="62" width="54" height="30"/>
+</g>
+<rect class="f-green-t" x="270" y="62" width="52" height="8" fill="#7ee2a8"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle">
+<text x="104" y="50">gate</text>
+<text x="296" y="50">gate</text>
+<text x="51" y="82">source</text>
+<text x="157" y="82">drain</text>
+<text x="243" y="82">source</text>
+<text x="349" y="82">drain</text>
+</g>
+<g class="f-mute" fill="#a3abc4" text-anchor="middle">
+<text x="104" y="124">substrate</text>
+<text x="296" y="124">substrate</text>
+</g>
+<text class="f-mute" x="16" y="156" fill="#a3abc4">no channel: no current</text>
+<text class="f-green-t" x="208" y="156" fill="#7ee2a8">channel: current flows</text>
+</svg>

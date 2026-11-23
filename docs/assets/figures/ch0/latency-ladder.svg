@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 274" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The latency ladder</title>
+<desc>Typical latencies on a logarithmic scale, where each step of the axis is ten times the last: a CPU cache hit takes about 1 nanosecond; a DRAM read about 100 nanoseconds; a NAND flash page read about 50 microseconds; a 4 KiB random read from an SSD about 100 microseconds; a NAND page program about 1 millisecond; a NAND block erase about 4 milliseconds; and a hard-disk random read about 8 milliseconds. An SSD read is about a thousand times slower than DRAM and about a hundred times faster than a hard disk.</desc>
+<text class="f-ink" x="16" y="22" fill="#e8eeff">CPU cache hit · ~1 ns</text>
+<rect class="f-violet" x="16" y="27" width="38.0" height="9" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="54" fill="#e8eeff">DRAM read · ~100 ns</text>
+<rect class="f-violet" x="16" y="59" width="114.0" height="9" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="86" fill="#e8eeff">NAND page read · ~50 µs</text>
+<rect class="f-cyan" x="16" y="91" width="216.6" height="9" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="118" fill="#e8eeff">SSD 4 KiB random read · ~100 µs</text>
+<rect class="f-cyan" x="16" y="123" width="228.0" height="9" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="150" fill="#e8eeff">NAND page program · ~1 ms</text>
+<rect class="f-amber" x="16" y="155" width="266.0" height="9" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="182" fill="#e8eeff">NAND block erase · ~4 ms</text>
+<rect class="f-amber" x="16" y="187" width="288.9" height="9" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="214" fill="#e8eeff">hard-disk random read · ~8 ms</text>
+<rect class="f-red" x="16" y="219" width="300.3" height="9" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<line class="f-line" x1="16" y1="240" x2="384" y2="240" stroke="#7d86a3" stroke-width="1.2"/>
+<line class="f-line" x1="54.0" y1="240" x2="54.0" y2="245" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-mute" x="54.0" y="260" text-anchor="middle" fill="#a3abc4">1 ns</text>
+<line class="f-line" x1="168.0" y1="240" x2="168.0" y2="245" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-mute" x="168.0" y="260" text-anchor="middle" fill="#a3abc4">1 µs</text>
+<line class="f-line" x1="282.0" y1="240" x2="282.0" y2="245" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-mute" x="282.0" y="260" text-anchor="middle" fill="#a3abc4">1 ms</text>
+<line class="f-line" x1="358.0" y1="240" x2="358.0" y2="245" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-mute" x="358.0" y="260" text-anchor="middle" fill="#a3abc4">100 ms</text>
+</svg>

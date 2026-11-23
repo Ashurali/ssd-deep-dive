@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 296" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The path of one read, from an application to the flash</title>
+<desc>Five steps from top to bottom. The application asks for 4 KiB of a file. The operating system turns the file offset into a logical block address, and its driver queues the command. The command crosses the PCIe link. The SSD controller's firmware maps the logical block address to a flash page. The NAND flash reads the page out. The first two steps run on the host, its CPU and DRAM; the last two run inside the drive. The data returns the same way, by DMA.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-cyan" x="16" y="8" width="240" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="27" font-weight="700" fill="#e8eeff">Application</text>
+<text class="f-ink" x="28" y="45" fill="#e8eeff">asks for 4 KiB of a file</text>
+<rect class="f-cyan" x="16" y="62" width="240" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="81" font-weight="700" fill="#e8eeff">Operating system</text>
+<text class="f-ink" x="28" y="99" fill="#e8eeff">file → LBA; the driver queues it</text>
+<line class="f-line" x1="120" y1="110" x2="120" y2="154" stroke="#7d86a3" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<text class="f-mute" x="132" y="137" fill="#a3abc4">PCIe link</text>
+<rect class="f-amber" x="16" y="158" width="240" height="44" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="177" font-weight="700" fill="#e8eeff">SSD controller</text>
+<text class="f-ink" x="28" y="195" fill="#e8eeff">firmware maps LBA → flash page</text>
+<rect class="f-amber" x="16" y="212" width="240" height="44" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="231" font-weight="700" fill="#e8eeff">NAND flash</text>
+<text class="f-ink" x="28" y="249" fill="#e8eeff">the page is read out</text>
+<path class="f-line" d="M264,8 H270 V106 H264 M264,158 H270 V256 H264" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-ink" x="278" y="52" font-weight="700" fill="#e8eeff">the host</text>
+<text class="f-mute" x="278" y="70" fill="#a3abc4">CPU + DRAM</text>
+<text class="f-ink" x="278" y="202" font-weight="700" fill="#e8eeff">the drive</text>
+<text class="f-mute" x="278" y="220" fill="#a3abc4">an SSD</text>
+<text class="f-mute" x="16" y="284" fill="#a3abc4">the data returns the same way, by DMA</text>
+</svg>

@@ -1,6 +1,6 @@
 # Textbook v2 — the big fix (plan)
 
-> Status: **Phases 0–1 done; Phase 2 done: all seven chapters and Supplements A–E (24 Nov 2026); Phase 3 next.** Work is
+> Status: **Phases 0–1 done; Phase 2 done: all seven chapters and Supplements A–E; Phase 3 under way: Ch 0 done (24 Nov 2026).** Work is
 > committed and pushed on the `textbook-v2` branch; fast-forwarding `main` to it publishes the live
 > site (last published after the Ch 1 pilot). Next: the rest of Phase 2, then Phases 3 and 4.
 
@@ -214,6 +214,8 @@ Cross-links into the new pages are added in Phase 5, because links to pages that
 fail the strict build. Examples: Ch 7's Sanitize → Supp F; Ch 7 §7.11 tools → Supp H.
 
 ## Phase 3 — New pages (one commit each)
+
+Work is sequential, so each new page goes into `nav:` in its own commit; the home page, learning path and tile counts still wait for Phase 5. Done: Ch 0.
 
 Every new page uses the existing skeleton:
 

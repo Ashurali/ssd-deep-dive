@@ -117,6 +117,7 @@ extra_javascript:
 nav:
   - Home: index.md
   - Core Chapters:
+      - core/ch0-foundations.md
       - core/ch1-overview.md
       - core/ch2-controllers-afa.md
       - core/ch3-nand-flash.md

@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 489 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 13 chapters and supplements, plus every acronym the site uses: 505 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -70,6 +70,11 @@ Advanced Host Controller Interface (the SATA-era host interface)
 
 Address Latch Enable (NAND pin)  
 <small>From: the site-wide acronym list</small>
+
+### alignment { #term-alignment .sdd-term }
+
+**對齊** — Starting an access at a multiple of the unit size, so it does not straddle two units. → [§0.2](../core/ch0-foundations.md#02-binary-and-hexadecimal)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### all-flash array (AFA) { #term-all-flash-array-afa .sdd-term }
 
@@ -168,6 +173,11 @@ BiCS generation 8 (218-layer 3D NAND)
 Basic Input/Output System (PC boot firmware)  
 <small>From: the site-wide acronym list</small>
 
+### bit / byte { #term-bit-byte .sdd-term }
+
+**位 / 字節（台：位元 / 位元組）** — One binary digit, and a group of 8 bits. → [§0.1](../core/ch0-foundations.md#01-units-bits-bytes-and-the-two-kinds-of-kilo)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### bit bucket { #term-bit-bucket .sdd-term }
 
 **位桶（台：位元桶）** — An SGL descriptor that tells the SSD to discard that much of the read data instead of sending it. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
@@ -192,6 +202,11 @@ Basic Input/Output System (PC boot firmware)
 
 **塊映射 / 頁映射 / 混合映射（台：區塊映射 / 頁映射 / 混合映射）** — Mapping granularities: whole blocks (small table, slow small writes), single pages (big table, fast), or a mix. → [§4.2.1](../core/ch4-ftl.md#421-mapping-granularity)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### block device { #term-block-device .sdd-term }
+
+**塊設備（台：區塊裝置）** — A device seen as a numbered array of fixed-size blocks. → [§0.4](../core/ch0-foundations.md#04-storage-as-a-block-device)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### block group { #term-block-group .sdd-term }
 
@@ -224,6 +239,11 @@ baseboard management controller (a server's management chip)
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ## C { #letter-c }
+
+### cache { #term-cache .sdd-term }
+
+**緩存（台：快取）** — A small, fast memory that keeps recently used data close to the processor. → [§0.3](../core/ch0-foundations.md#03-how-a-computer-is-wired)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### cache / buffer { #term-cache-buffer .sdd-term }
 
@@ -264,6 +284,11 @@ Critical Composite Temperature Threshold (NVMe)
 
 Chip Enable (NAND pin that selects one die on a shared channel)  
 <small>From: the site-wide acronym list</small>
+
+### central processing unit (CPU) { #term-central-processing-unit-cpu .sdd-term }
+
+**中央處理器** — The host's processor: cores, registers and caches. → [§0.3](../core/ch0-foundations.md#03-how-a-computer-is-wired)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### certification { #term-certification .sdd-term }
 
@@ -420,11 +445,6 @@ complementary metal–oxide–semiconductor (standard logic process)
 Completion with Data (PCIe TLP)  
 <small>From: the site-wide acronym list</small>
 
-### CPU { #term-cpu .sdd-term }
-
-central processing unit  
-<small>From: the site-wide acronym list</small>
-
 ### cyclic redundancy check (CRC) { #term-cyclic-redundancy-check-crc .sdd-term }
 
 **循環冗餘校驗（台：循環冗餘檢查）** — A checksum that detects corrupted data; PI's guard field is a 16-bit CRC. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
@@ -467,6 +487,11 @@ central processing unit
 **數據校驗（台：資料驗證）** — Writing known data, reading it back and comparing (R/W/C) to catch corruption. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
+### decimal vs binary prefix (GB / GiB) { #term-decimal-vs-binary-prefix-gb-gib .sdd-term }
+
+**十進制 / 二進制前綴（台：十進位 / 二進位字首）** — Powers of 1,000 versus powers of 1,024; drives are sold in the first, flash is built in the second. → [§0.1](../core/ch0-foundations.md#01-units-bits-bytes-and-the-two-kinds-of-kilo)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### deduplication { #term-deduplication .sdd-term }
 
 **去重（台：重複資料刪除）** — Storing identical blocks once and pointing every copy at the single stored block. → [§2.6.3](../core/ch2-controllers-afa.md#263-software-architecture-the-real-value)  
@@ -504,8 +529,8 @@ DevSleep Exit Timeout (SATA)
 
 ### direct memory access (DMA) { #term-direct-memory-access-dma .sdd-term }
 
-**直接內存訪問（台：直接記憶體存取）** — Hardware that copies data between memory and a device without a processor moving each byte. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
-<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+**直接存儲器訪問（台：直接記憶體存取）；直接內存訪問（台：直接記憶體存取）** — A device reading or writing host memory itself, without the CPU copying. → [§0.9](../core/ch0-foundations.md#09-interrupts-polling-and-dma); Hardware that copies data between memory and a device without a processor moving each byte. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary) · [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### discovery service { #term-discovery-service .sdd-term }
 
@@ -516,6 +541,11 @@ DevSleep Exit Timeout (SATA)
 
 DMA controller  
 <small>From: the site-wide acronym list</small>
+
+### doorbell { #term-doorbell .sdd-term }
+
+**門鈴寄存器（台：門鈴暫存器）** — A device register the host writes to announce a new tail. → [§0.10](../core/ch0-foundations.md#010-queues-and-ring-buffers)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### doorbell register (DB) { #term-doorbell-register-db .sdd-term }
 
@@ -532,10 +562,10 @@ data strobe (NAND / DRAM timing signal)
 data retention  
 <small>From: the site-wide acronym list</small>
 
-### DRAM { #term-dram .sdd-term }
+### driver { #term-driver .sdd-term }
 
-dynamic random-access memory  
-<small>From: the site-wide acronym list</small>
+**驅動程序（台：驅動程式）** — Operating-system software that speaks one device's protocol. → [§0.3](../core/ch0-foundations.md#03-how-a-computer-is-wired)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### dual port { #term-dual-port .sdd-term }
 
@@ -666,8 +696,8 @@ endpoint (a PCIe device at a leaf of the tree)
 
 ### exclusive OR (XOR) { #term-exclusive-or-xor .sdd-term }
 
-**異或（台：互斥或）** — The bitwise operation RAID parity uses: XOR-ing the survivors of a stripe rebuilds the missing member. → [§3.4.4](../core/ch3-nand-flash.md#344-raid-inside-the-ssd)  
-<small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
+**異或（台：互斥或）** — The bitwise operation that gives 1 where inputs differ; applying it twice cancels. → [§0.2](../core/ch0-foundations.md#02-binary-and-hexadecimal); The bitwise operation RAID parity uses: XOR-ing the survivors of a stripe rebuilds the missing member. → [§3.4.4](../core/ch3-nand-flash.md#344-raid-inside-the-ssd)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### EXT4 { #term-ext4 .sdd-term }
 
@@ -718,8 +748,8 @@ Flexible I/O tester (Linux benchmark tool)
 
 ### firmware { #term-firmware .sdd-term }
 
-**固件（台：韌體）** — The code running on the controller: command handling, the FTL and error recovery. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
-<small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
+**固件（台：韌體）** — The program that runs inside a device on its own processors. → [§0.8](../core/ch0-foundations.md#08-firmware-and-software); The code running on the controller: command handling, the FTL and error recovery. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary) · [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### FIS (Frame Information Structure) { #term-fis-frame-information-structure .sdd-term }
 
@@ -900,6 +930,11 @@ Host Controlled Thermal Management (NVMe)
 **頭部 / 尾部** — The slot the consumer reads next, and the slot the producer writes next. → [§6.3](../core/ch6-nvme.md#63-the-three-treasures-in-detail)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
+### hexadecimal { #term-hexadecimal .sdd-term }
+
+**十六進制（台：十六進位）** — Base-16 notation, one digit per 4 bits, written with a 0x prefix or h suffix. → [§0.2](../core/ch0-foundations.md#02-binary-and-hexadecimal)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### HIBERN8 { #term-hibern8 .sdd-term }
 
 **休眠狀態** — M-PHY's deep low-power link state, UFS's counterpart of DevSleep. → [§B.6](../supplements/b-ufs.md#b6-ufs-low-power)  
@@ -997,6 +1032,11 @@ Institute of Electrical and Electronics Engineers
 **中斷** — The SSD's signal that completions are waiting; in NVMe it is an MSI-X message, itself a memory write. → [§6.5](../core/ch6-nvme.md#65-trace-analysis-a-real-read-as-pcie-packets)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
+### interrupt / polling { #term-interrupt-polling .sdd-term }
+
+**中斷 / 輪詢** — The device signalling the CPU, versus the CPU checking repeatedly. → [§0.9](../core/ch0-foundations.md#09-interrupts-polling-and-dma)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### IO { #term-io .sdd-term }
 
 input/output  
@@ -1004,8 +1044,8 @@ input/output
 
 ### IOPS { #term-iops .sdd-term }
 
-input/output operations per second  
-<small>From: the site-wide acronym list</small>
+**每秒讀寫次數** — Input/output operations completed per second. → [§0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### iSCSI { #term-iscsi .sdd-term }
 
@@ -1057,6 +1097,11 @@ key-value
 
 **通道 (Lane)** — One transmit pair plus one receive pair; links bundle lanes (×1, ×4, ×16) to add bandwidth. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### latency { #term-latency .sdd-term }
+
+**延遲** — How long one operation takes, from request to completion. → [§0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### latency / response time { #term-latency-response-time .sdd-term }
 
@@ -1120,8 +1165,8 @@ low-dropout regulator (a small linear voltage regulator)
 
 ### logical block address (LBA) { #term-logical-block-address-lba .sdd-term }
 
-**邏輯塊地址（台：邏輯區塊位址）** — The address of one logical block within a namespace. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
-<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
+**邏輯塊地址（台：邏輯區塊位址）** — The number of a block, as the host names it. → [§0.4](../core/ch0-foundations.md#04-storage-as-a-block-device); The address of one logical block within a namespace. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary) · [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### logical page / physical page { #term-logical-page-physical-page .sdd-term }
 
@@ -1250,11 +1295,6 @@ multi-level cell (2 bits per cell)
 **新式待機（台：新式待命）** — Windows' instant-on, always-connected standby, which relies on RTD3. → [§D.6](../supplements/d-power-management.md#d6-practical-realities)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
-### MOSFET { #term-mosfet .sdd-term }
-
-metal–oxide–semiconductor field-effect transistor  
-<small>From: the site-wide acronym list</small>
-
 ### MP / ENLAT / EXLAT { #term-mp-enlat-exlat .sdd-term }
 
 **最大功耗 / 進入延遲 / 退出延遲（台：最大功率 / 進入延遲 / 離開延遲）** — A power-state descriptor's maximum power, entry latency and exit latency. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
@@ -1357,6 +1397,11 @@ network interface card
 **非易失性（台：非揮發性）** — Keeping data with the power off. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
+### NOR / NAND flash { #term-nor-nand-flash .sdd-term }
+
+**NOR / NAND閃存（台：NOR / NAND快閃記憶體）** — Flash with cells in parallel, read quickly at any address, versus flash with cells in dense series strings. → [§0.7](../core/ch0-foundations.md#07-volatile-and-non-volatile-memory)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### normal / abnormal power loss { #term-normal-abnormal-power-loss .sdd-term }
 
 **正常/異常掉電（台：正常/異常斷電）** — Power-off after the host warns the drive and it flushes everything, versus power vanishing without warning. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
@@ -1439,6 +1484,11 @@ out-of-band (SATA link signaling)
 **可操作 / 不可操作狀態（台：運作 / 非運作狀態）** — NVMe states that can process I/O, versus pure sleep states that can't. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
+### order of magnitude { #term-order-of-magnitude .sdd-term }
+
+**數量級** — A factor of ten; the natural scale for latencies and error rates. → [§0.11](../core/ch0-foundations.md#011-error-rates-and-big-exponents)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### ordered / writeback / journal mode { #term-ordered-writeback-journal-mode .sdd-term }
 
 **有序 / 回寫 / 日誌模式** — EXT4's journaling modes, from metadata-only with data first, to metadata-only, to everything journaled. → [§C.1.6](../supplements/c-flash-file-systems.md#c16-journaling)  
@@ -1461,8 +1511,8 @@ operating system
 
 ### over-provisioning (OP) { #term-over-provisioning-op .sdd-term }
 
-**預留空間** — Flash kept beyond the user capacity, as a fraction of user space; more OP makes GC cheaper and WA lower. → [§4.3.2](../core/ch4-ftl.md#432-write-amplification)  
-<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+**預留空間** — Flash kept back from the user for the firmware's own use. → [§0.1](../core/ch0-foundations.md#01-units-bits-bytes-and-the-two-kinds-of-kilo); Flash kept beyond the user capacity, as a fraction of user space; more OP makes GC cheaper and WA lower. → [§4.3.2](../core/ch4-ftl.md#432-write-amplification)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### overwrite-in-place { #term-overwrite-in-place .sdd-term }
 
@@ -1675,8 +1725,8 @@ quality of service (how consistent latency is)
 
 ### queue depth { #term-queue-depth .sdd-term }
 
-**隊列深度（台：佇列深度）** — How many commands a queue can hold in flight; NVMe allows up to 64K per queue. → [§6.1](../core/ch6-nvme.md#61-from-ahci-to-nvme); How many commands a test keeps outstanding at once. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
-<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
+**隊列深度（台：佇列深度）** — How many operations are in flight at once; by Little's law, IOPS × latency. → [§0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops); How many commands a queue can hold in flight; NVMe allows up to 64K per queue. → [§6.1](../core/ch6-nvme.md#61-from-ahci-to-nvme); How many commands a test keeps outstanding at once. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary) · [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ## R { #letter-r }
 
@@ -1830,6 +1880,11 @@ read disturb
 **環形隊列（台：環狀佇列）** — A fixed array whose end wraps to its start, filled at the tail and emptied at the head. → [§6.3](../core/ch6-nvme.md#63-the-three-treasures-in-detail)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
+### ring buffer { #term-ring-buffer .sdd-term }
+
+**環形緩衝區（台：環狀緩衝區）** — A fixed array used as a circle, with a head where entries are taken and a tail where they are added. → [§0.10](../core/ch0-foundations.md#010-queues-and-ring-buffers)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### robustness { #term-robustness .sdd-term }
 
 **健壯性（台：強健性）** — Continuing to work correctly when the host or link misbehaves. → [§7.3.3](../core/ch7-testing.md#733-jammer)  
@@ -1926,6 +1981,11 @@ Small Computer System Interface
 
 software development kit  
 <small>From: the site-wide acronym list</small>
+
+### sector { #term-sector .sdd-term }
+
+**扇區（台：磁區）** — One block of a block device, usually 512 or 4,096 bytes. → [§0.4](../core/ch0-foundations.md#04-storage-as-a-block-device)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### segment { #term-segment .sdd-term }
 
@@ -2092,10 +2152,10 @@ Serial Peripheral Interface
 single-root I/O virtualization (one PCIe device appears as many)  
 <small>From: the site-wide acronym list</small>
 
-### SRAM { #term-sram .sdd-term }
+### SRAM / DRAM { #term-sram-dram .sdd-term }
 
-static random-access memory  
-<small>From: the site-wide acronym list</small>
+**靜態 / 動態隨機存取存儲器（台：靜態 / 動態隨機存取記憶體）** — Fast six-transistor memory, and dense capacitor-based memory that must be refreshed. → [§0.7](../core/ch0-foundations.md#07-volatile-and-non-volatile-memory)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### stacked gate layers { #term-stacked-gate-layers .sdd-term }
 
@@ -2169,6 +2229,11 @@ static random-access memory
 
 ## T { #letter-t }
 
+### tail latency (percentile) { #term-tail-latency-percentile .sdd-term }
+
+**尾延遲（百分位）** — The latency that 99% or 99.99% of requests beat, which describes the slow ones. → [§0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### Tanner graph { #term-tanner-graph .sdd-term }
 
 **Tanner圖** — The bipartite graph of a code: variable nodes for bits, check nodes for parity equations, an edge for every 1 in H. → [§A.4.2](../supplements/a-ecc-coding-theory.md#a42-the-tanner-graph)  
@@ -2204,10 +2269,15 @@ Transmission Control Protocol
 **閾值電壓（台：臨界電壓）** — The gate voltage at which a cell starts to conduct; the stored charge sets it, so it encodes the data. → [§3.1.2](../core/ch3-nand-flash.md#312-slc-mlc-tlc-the-threshold-voltage-picture)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
+### threshold voltage (Vt) { #term-threshold-voltage-vt .sdd-term }
+
+**閾值電壓（台：臨界電壓）** — The gate voltage at which a transistor starts to conduct. → [§0.6](../core/ch0-foundations.md#06-the-transistor-as-a-switch)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
 ### throughput / bandwidth { #term-throughput-bandwidth .sdd-term }
 
-**吞吐量 / 帶寬（台：吞吐量 / 頻寬）** — Data moved per second (MB/s), the measure of sequential transfers. → [§1.5.2](../core/ch1-overview.md#152-performance)  
-<small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
+**吞吐量 / 帶寬（台：傳輸量 / 頻寬）；吞吐量 / 帶寬（台：吞吐量 / 頻寬）** — How much data moves per second. → [§0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops); Data moved per second (MB/s), the measure of sequential transfers. → [§1.5.2](../core/ch1-overview.md#152-performance)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary) · [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### timestamp { #term-timestamp .sdd-term }
 
@@ -2238,6 +2308,11 @@ triple-level cell (3 bits per cell)
 
 **事務層數據包（台：交易層封包）** — The packet that carries requests, completions and data end to end. → [§5.4](../core/ch5-pcie.md#54-tlp-types)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### transistor (MOSFET) { #term-transistor-mosfet .sdd-term }
+
+**晶體管（台：電晶體）** — A voltage-controlled switch: above the threshold voltage, a channel joins source and drain. → [§0.6](../core/ch0-foundations.md#06-the-transistor-as-a-switch)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ### tree structure { #term-tree-structure .sdd-term }
 
@@ -2402,6 +2477,11 @@ virtual desktop infrastructure
 
 virtual machine  
 <small>From: the site-wide acronym list</small>
+
+### volatile / non-volatile { #term-volatile-non-volatile .sdd-term }
+
+**易失性 / 非易失性（台：揮發性 / 非揮發性）** — Losing data without power, versus keeping it. → [§0.7](../core/ch0-foundations.md#07-volatile-and-non-volatile-memory)  
+<small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
 ## W { #letter-w }
 

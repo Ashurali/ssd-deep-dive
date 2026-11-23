@@ -97,11 +97,12 @@ For each `.md` dropped in `incoming/`:
 
 ### 6.2 Tag taxonomy *(decided — apply exactly; you may ADD tags, not remove)*
 
-Controlled vocabulary (kebab-case): `ssd-basics`, `controllers`, `all-flash-array`, `flash-physics`, `3d-nand`, `charge-trap`, `threshold-voltage`, `reliability`, `read-disturb`, `data-retention`, `endurance`, `ftl`, `mapping`, `garbage-collection`, `write-amplification`, `over-provisioning`, `trim`, `wear-leveling`, `power-loss-recovery`, `bad-blocks`, `slc-cache`, `pcie`, `tlp`, `link-layer`, `nvme`, `queues`, `prp-sgl`, `namespaces`, `nvme-of`, `zns`, `fdp`, `testing`, `fio`, `jedec`, `snia`, `ecc`, `bch`, `ldpc`, `soft-decision`, `ufs`, `writebooster`, `hpb`, `filesystems`, `f2fs`, `ext4`, `power-management`, `aspm`, `apst`, `aerospace`, `radiation`, `patents`, `bics8`, `animations`.
+Controlled vocabulary (kebab-case): `ssd-basics`, `controllers`, `all-flash-array`, `flash-physics`, `3d-nand`, `charge-trap`, `threshold-voltage`, `reliability`, `read-disturb`, `data-retention`, `endurance`, `ftl`, `mapping`, `garbage-collection`, `write-amplification`, `over-provisioning`, `trim`, `wear-leveling`, `power-loss-recovery`, `bad-blocks`, `slc-cache`, `pcie`, `tlp`, `link-layer`, `nvme`, `queues`, `prp-sgl`, `namespaces`, `nvme-of`, `zns`, `fdp`, `testing`, `fio`, `jedec`, `snia`, `ecc`, `bch`, `ldpc`, `soft-decision`, `ufs`, `writebooster`, `hpb`, `filesystems`, `f2fs`, `ext4`, `power-management`, `aspm`, `apst`, `aerospace`, `radiation`, `patents`, `bics8`, `animations`, `foundations`.
 
 Assignments:
 | Page | Tags |
 |---|---|
+| ch0 | foundations, ssd-basics |
 | ch1 | ssd-basics, endurance, reliability, ssd form-factor topics as you see fit |
 | ch2 | controllers, all-flash-array, queues, ecc, pcie, power-management, power-loss-recovery |
 | ch3 | flash-physics, 3d-nand, charge-trap, threshold-voltage, reliability, read-disturb, data-retention, endurance, ecc, bics8 |
