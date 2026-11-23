@@ -332,7 +332,7 @@ The capacitors are electrolytic or tantalum-polymer parts, and their capacitance
 
 ### 2.8.4 Boot: ROM first, then flash
 
-A controller starts in stages. Its first instructions sit in a **boot ROM**, fixed in the silicon when the chip was made. That code can never change, so it is kept small: set up the clocks, find the next stage, check it, and jump to it. Many boards keep that next stage, the **bootloader**, in a small serial **NOR flash** chip on a Serial Peripheral Interface (SPI) bus. NOR reads reliably without the machinery NAND needs (error correction, read retry), so the ROM can fetch from it with simple code. Other designs skip the NOR chip and store the bootloader in a reserved area of the NAND itself, written in robust SLC mode with several copies.
+A controller starts in stages. Its first instructions sit in a **boot ROM (read-only memory)**, fixed in the silicon when the chip was made. That code can never change, so it is kept small: set up the clocks, find the next stage, check it, and jump to it. Many boards keep that next stage, the **bootloader**, in a small serial **NOR flash** chip on a Serial Peripheral Interface (SPI) bus. NOR reads reliably without the machinery NAND needs (error correction, read retry), so the ROM can fetch from it with simple code. Other designs skip the NOR chip and store the bootloader in a reserved area of the NAND itself, written in robust SLC mode with several copies.
 
 The main firmware image is far larger and always lives in flash. Firmware updates write a new image while keeping a known-good copy to fall back on, so a power failure in the middle of an update can't leave the drive unable to boot. On secure-boot designs, each stage checks the next stage's cryptographic signature before running it.
 
