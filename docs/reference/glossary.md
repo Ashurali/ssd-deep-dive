@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 14 chapters and supplements, plus every acronym the site uses: 547 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 15 chapters and supplements, plus every acronym the site uses: 567 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -35,6 +35,11 @@ acknowledgment
 
 Advanced Configuration and Power Interface (OS power-management standard)  
 <small>From: the site-wide acronym list</small>
+
+### activation without reset { #term-activation-without-reset .sdd-term }
+
+**免重置激活（台：免重置啟用）** — Switching to new firmware while the drive stays online, within an advertised time. → [§G.3](../supplements/g-firmware.md#g3-updating-firmware-in-the-field)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### Active Power (ACTP) { #term-active-power-actp .sdd-term }
 
@@ -115,6 +120,11 @@ application programming interface
 
 application-specific integrated circuit  
 <small>From: the site-wide acronym list</small>
+
+### assert { #term-assert .sdd-term }
+
+**斷言** — A check on something that must always be true; failing it means a bug or corrupted state. → [§G.5](../supplements/g-firmware.md#g5-debugging-from-serial-console-to-crash-dump)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### ATA { #term-ata .sdd-term }
 
@@ -238,15 +248,30 @@ Basic Input/Output System (PC boot firmware)
 baseboard management controller (a server's management chip)  
 <small>From: the site-wide acronym list</small>
 
+### boot ROM { #term-boot-rom .sdd-term }
+
+**啟動ROM（台：開機ROM）** — Fixed code in the controller's silicon, the first to run at power-on. → [§G.2](../supplements/g-firmware.md#g2-boot-from-power-on-to-ready)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
 ### boot ROM / bootloader { #term-boot-rom-bootloader .sdd-term }
 
 **啟動ROM / 引導程序（台：開機ROM / 開機載入程式）** — The fixed first code in the controller's silicon, and the next stage it loads from flash. → [§2.8.4](../core/ch2-controllers-afa.md#284-boot-rom-first-then-flash)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
+### bootloader { #term-bootloader .sdd-term }
+
+**引導加載程序（台：開機載入程式）** — A small program that loads and checks the main firmware image. → [§G.2](../supplements/g-firmware.md#g2-boot-from-power-on-to-ready)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
 ### boundary-value test { #term-boundary-value-test .sdd-term }
 
 **邊界值測試** — Testing at the edges of allowed inputs, where bugs cluster. → [§7.4](../core/ch7-testing.md#74-regression-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
+
+### burn-in { #term-burn-in .sdd-term }
+
+**老化測試（台：預燒測試）** — Running new drives hard, often hot, so weak parts fail before shipping. → [§G.6](../supplements/g-firmware.md#g6-from-the-factory-to-the-field)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### burst performance { #term-burst-performance .sdd-term }
 
@@ -485,6 +510,11 @@ Cryptographic Module Validation Program (NIST)
 Completion with Data (PCIe TLP)  
 <small>From: the site-wide acronym list</small>
 
+### crash dump { #term-crash-dump .sdd-term }
+
+**崩潰轉儲（台：當機傾印）** — Registers, stacks and traces saved to flash at a fatal error, for later analysis. → [§G.5](../supplements/g-firmware.md#g5-debugging-from-serial-console-to-crash-dump)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
 ### crypto erase { #term-crypto-erase .sdd-term }
 
 **加密擦除（台：密碼抹除）** — Erasing by destroying the media key, which makes all ciphertext unreadable at once. → [§F.2](../supplements/f-security.md#f2-self-encrypting-drives)  
@@ -606,6 +636,11 @@ Distributed Management Task Force (management standards body)
 
 **門鈴寄存器（台：門鈴暫存器）** — A register on the SSD that the host writes to announce new commands or consumed completions. → [§6.2](../core/ch6-nvme.md#62-nvme-overview-the-command-model)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
+
+### download mode { #term-download-mode .sdd-term }
+
+**下載模式** — The boot ROM's fallback that accepts firmware over a test interface, used in factories and labs. → [§G.2](../supplements/g-firmware.md#g2-boot-from-power-on-to-ready)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### DQS { #term-dqs .sdd-term }
 
@@ -744,6 +779,11 @@ endpoint (a PCIe device at a leaf of the tree)
 **錯誤處理** — The firmware and hardware paths that detect errors and recover from them. → [§7.3.3](../core/ch7-testing.md#733-jammer)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
+### Error Information log { #term-error-information-log .sdd-term }
+
+**錯誤信息日誌（台：錯誤資訊日誌）** — Details of recent failed commands: status, command, LBA and namespace. → [§G.4](../supplements/g-firmware.md#g4-what-the-drive-tells-you-health-and-logs)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
 ### error-correcting code (ECC) { #term-error-correcting-code-ecc .sdd-term }
 
 **糾錯碼（台：錯誤更正碼）** — Redundant bits stored with the data that let the controller detect and correct bit errors; SSDs use the BCH and LDPC families. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end); Redundant bits stored with the data that let the controller detect and correct bit errors; SSDs use the BCH and LDPC families. → [§3.4.3](../core/ch3-nand-flash.md#343-ecc-error-correcting-codes)  
@@ -776,6 +816,11 @@ fourth extended filesystem (Linux)
 **出廠/增長壞塊（台：出廠/增長壞區塊）** — Bad from manufacture and marked by the vendor, versus failing in service through an erase, program or uncorrectable read failure. → [§4.7](../core/ch4-ftl.md#47-bad-block-management)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
+### fallback image { #term-fallback-image .sdd-term }
+
+**回退鏡像（台：備援映像）** — The previous or factory image the bootloader starts if a new one fails. → [§G.3](../supplements/g-firmware.md#g3-updating-firmware-in-the-field)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
 ### FC { #term-fc .sdd-term }
 
 Fibre Channel  
@@ -795,6 +840,11 @@ forward error correction
 
 functional failure requirement (JEDEC endurance metric)  
 <small>From: the site-wide acronym list</small>
+
+### field-return (RMA) analysis { #term-field-return-rma-analysis .sdd-term }
+
+**返修分析（台：退貨分析）** — Investigating a failed drive from the field, through to a fix for the whole population. → [§G.6](../supplements/g-firmware.md#g6-from-the-factory-to-the-field)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### filesystem { #term-filesystem .sdd-term }
 
@@ -820,6 +870,26 @@ Federal Information Processing Standard (US)
 
 **固件（台：韌體）** — The program that runs inside a device on its own processors. → [§0.8](../core/ch0-foundations.md#08-firmware-and-software); The code running on the controller: command handling, the FTL and error recovery. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
 <small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary) · [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
+
+### Firmware Commit { #term-firmware-commit .sdd-term }
+
+**固件提交（台：韌體提交）** — The NVMe command that verifies an image, writes it to a slot and activates it. → [§G.3](../supplements/g-firmware.md#g3-updating-firmware-in-the-field)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
+### Firmware Image Download { #term-firmware-image-download .sdd-term }
+
+**固件鏡像下載（台：韌體映像下載）** — The NVMe command that carries a new firmware image to the drive in pieces. → [§G.3](../supplements/g-firmware.md#g3-updating-firmware-in-the-field)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
+### firmware slot { #term-firmware-slot .sdd-term }
+
+**固件槽（台：韌體槽位）** — One of up to seven stored firmware images; slot 1 may be read-only. → [§G.3](../supplements/g-firmware.md#g3-updating-firmware-in-the-field)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
+### firmware task { #term-firmware-task .sdd-term }
+
+**固件任務（台：韌體任務）** — One of the firmware's concurrent jobs, such as command handling, the FTL or flash channel control. → [§G.1](../supplements/g-firmware.md#g1-what-the-firmware-is)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### FIS (Frame Information Structure) { #term-fis-frame-information-structure .sdd-term }
 
@@ -1139,10 +1209,10 @@ JEDEC Solid State Technology Association (memory standards body)
 **日誌** — Writing an intended change durably before applying it, so a crash can be replayed. → [§C.1.6](../supplements/c-flash-file-systems.md#c16-journaling)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
-### JTAG { #term-jtag .sdd-term }
+### JTAG / SWD { #term-jtag-swd .sdd-term }
 
-Joint Test Action Group (the standard chip debug and test port)  
-<small>From: the site-wide acronym list</small>
+**JTAG / SWD調試接口（台：JTAG / SWD除錯介面）** — Hardware debug ports that let a debugger halt cores and read memory. → [§G.5](../supplements/g-firmware.md#g5-debugging-from-serial-console-to-crash-dump)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ## K { #letter-k }
 
@@ -1227,6 +1297,11 @@ low-dropout regulator (a small linear voltage regulator)
 
 **鎖定範圍** — An LBA range with its own key and its own read and write locks. → [§F.3](../supplements/f-security.md#f3-the-tcg-storage-specifications-opal-pyrite-and-ruby)  
 <small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
+### log page { #term-log-page .sdd-term }
+
+**日誌頁** — A block of status data the host reads with Get Log Page. → [§G.4](../supplements/g-firmware.md#g4-what-the-drive-tells-you-health-and-logs)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### log-likelihood ratio (LLR) { #term-log-likelihood-ratio-llr .sdd-term }
 
@@ -1691,6 +1766,11 @@ Peripheral Component Interconnect
 PCI Express (Peripheral Component Interconnect Express)  
 <small>From: the site-wide acronym list</small>
 
+### percentage used { #term-percentage-used .sdd-term }
+
+**已用壽命百分比** — The vendor's estimate of how much of the drive's endurance has been consumed. → [§G.4](../supplements/g-firmware.md#g4-what-the-drive-tells-you-health-and-logs)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
 ### performance loss { #term-performance-loss .sdd-term }
 
 **性能損耗（台：效能損耗）** — The gap between line rate and real throughput, from encoding, packet overhead and the link protocol. → [§5.13](../core/ch5-pcie.md#513-pcie-link-performance-loss-analysis)  
@@ -1700,6 +1780,11 @@ PCI Express (Peripheral Component Interconnect Express)
 
 **性能測試（台：效能測試）** — Measuring throughput, IOPS and latency under defined workloads and drive states. → [§7.10](../core/ch7-testing.md#710-performance-testing-the-snia-methodology)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
+
+### Persistent Event Log { #term-persistent-event-log .sdd-term }
+
+**持久事件日誌** — A timestamped history of the drive's events that survives power cycles. → [§G.4](../supplements/g-firmware.md#g4-what-the-drive-tells-you-health-and-logs)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### PERST { #term-perst .sdd-term }
 
@@ -1935,6 +2020,11 @@ read disturb
 **掃描重寫 / 數據巡檢（台：資料巡檢）** — Scanning data in idle time and rewriting pages whose error counts are climbing. → [§3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
+### ready (CSTS.RDY) { #term-ready-cstsrdy .sdd-term }
+
+**就緒（台：就緒狀態）** — The NVMe status bit by which the drive tells the host it can take commands. → [§G.2](../supplements/g-firmware.md#g2-boot-from-power-on-to-ready)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
+
 ### redundancy / fault tolerance { #term-redundancy-fault-tolerance .sdd-term }
 
 **冗餘容錯** — Spare paths or copies that keep a system working when one part fails. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
@@ -1967,8 +2057,8 @@ read disturb
 
 ### regression test { #term-regression-test .sdd-term }
 
-**回歸測試** — Re-running existing tests on each new build to catch anything it broke. → [§7.4](../core/ch7-testing.md#74-regression-testing)  
-<small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
+**回歸測試** — Re-running existing tests on each new build to catch anything it broke. → [§7.4](../core/ch7-testing.md#74-regression-testing); A test added to catch a fixed bug if it ever returns. → [§G.6](../supplements/g-firmware.md#g6-from-the-factory-to-the-field)  
+<small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary) · [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### regular / irregular LDPC { #term-regular-irregular-ldpc .sdd-term }
 
@@ -2019,11 +2109,6 @@ read disturb
 
 **環形緩衝區（台：環狀緩衝區）** — A fixed array used as a circle, with a head where entries are taken and a tail where they are added. → [§0.10](../core/ch0-foundations.md#010-queues-and-ring-buffers)  
 <small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
-
-### RMA { #term-rma .sdd-term }
-
-return merchandise authorization (a drive sent back to its vendor)  
-<small>From: the site-wide acronym list</small>
 
 ### robustness { #term-robustness .sdd-term }
 
@@ -2272,10 +2357,10 @@ Secure Hash Algorithm
 **SLC 緩存（台：SLC 快取）** — TLC or QLC blocks run in fast, robust one-bit-per-cell mode to absorb bursts of writes. → [§4.8](../core/ch4-ftl.md#48-slc-cache)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
-### SMART { #term-smart .sdd-term }
+### SMART / Health Information { #term-smart-health-information .sdd-term }
 
-Self-Monitoring, Analysis and Reporting Technology (drive health data)  
-<small>From: the site-wide acronym list</small>
+**SMART健康信息（台：SMART健康資訊）** — The summary log: warnings, temperature, spare, endurance used, data written, errors. → [§G.4](../supplements/g-firmware.md#g4-what-the-drive-tells-you-health-and-logs)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### SMP / AMP { #term-smp-amp .sdd-term }
 
@@ -2331,6 +2416,11 @@ Storage Performance Development Kit (user-space NVMe driver)
 
 Serial Peripheral Interface  
 <small>From: the site-wide acronym list</small>
+
+### SPI NOR flash { #term-spi-nor-flash .sdd-term }
+
+**SPI NOR閃存（台：SPI NOR快閃記憶體）** — A small flash chip read over the Serial Peripheral Interface, often holding the bootloader. → [§G.1](../supplements/g-firmware.md#g1-what-the-firmware-is)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### SR-IOV { #term-sr-iov .sdd-term }
 
@@ -2443,6 +2533,11 @@ Terabit Cell Array Transistor (Samsung 3D NAND structure)
 
 Transmission Control Protocol  
 <small>From: the site-wide acronym list</small>
+
+### telemetry { #term-telemetry .sdd-term }
+
+**遙測（台：遙測資料）** — Vendor-format internal state, captured on the host's request or by the drive itself. → [§G.4](../supplements/g-firmware.md#g4-what-the-drive-tells-you-health-and-logs)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### temperature acceleration { #term-temperature-acceleration .sdd-term }
 
@@ -2561,10 +2656,10 @@ triple-level cell (3 bits per cell)
 UFS Application Layer  
 <small>From: the site-wide acronym list</small>
 
-### UART { #term-uart .sdd-term }
+### UART console { #term-uart-console .sdd-term }
 
-universal asynchronous receiver-transmitter (serial port)  
-<small>From: the site-wide acronym list</small>
+**串口控制台（台：序列埠主控台）** — A serial port that prints the firmware's text log during development. → [§G.5](../supplements/g-firmware.md#g5-debugging-from-serial-console-to-crash-dump)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### UCL { #term-ucl .sdd-term }
 
@@ -2699,6 +2794,11 @@ write amplification factor
 
 **漫遊樹（雪球效應）** — In a naive LFS, the cascade of pointer rewrites up to the root after every move; the NAT stops it. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### watchdog timer { #term-watchdog-timer .sdd-term }
+
+**看門狗定時器（台：看門狗計時器）** — A timer that resets the controller if the firmware stops making progress. → [§G.1](../supplements/g-firmware.md#g1-what-the-firmware-is)  
+<small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
 ### WCTEMP { #term-wctemp .sdd-term }
 

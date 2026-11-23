@@ -305,4 +305,4 @@ A certificate covers a specific hardware and firmware version, which is one more
     - Caliptra 2.0's ML-DSA through Adams Bridge, and the release history — [CHIPS Alliance](https://chipsalliance.github.io/caliptra-web/versioning)
     - Sanitize options (No-Deallocate, media verification) as exposed by nvme-cli — [nvme-sanitize manual](https://man.archlinux.org/man/nvme-sanitize.1)
 
-*Next: Supplement G — Firmware: how the drive boots, updates itself and gets debugged — the life of the code that §F.5 protects.*
+*Next: [Supplement G — Firmware](g-firmware.md): how the drive boots, updates itself and gets debugged — the life of the code that §F.5 protects.*

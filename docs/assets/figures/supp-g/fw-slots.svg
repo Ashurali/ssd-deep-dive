@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>A firmware update through slots</title>
+<desc>From top to bottom. The host sends the new image in pieces with Firmware Image Download. The pieces collect in a staging buffer, where the drive checks the image's signature. Firmware Commit writes it into a slot: slot 1 holds the read-only factory image, slot 2 receives the new image, and slot 3 keeps the previous one. The new slot is then activated, at the next reset, or at once if the drive supports activation without a reset.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-cyan" x="16" y="8" width="368" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="27" font-weight="700" fill="#e8eeff">Firmware Image Download</text>
+<text class="f-ink" x="28" y="45" fill="#e8eeff">the host sends the image in pieces</text>
+<line class="f-line" x1="200" y1="54" x2="200" y2="70" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-amber" x="16" y="72" width="368" height="44" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="91" font-weight="700" fill="#e8eeff">Staging buffer</text>
+<text class="f-ink" x="28" y="109" fill="#e8eeff">the drive checks the image's signature</text>
+<line class="f-line" x1="200" y1="118" x2="200" y2="144" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="208" y="136" fill="#a3abc4">Firmware Commit</text>
+<rect class="f-line" x="16" y="146" width="112" height="48" rx="8" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-ink" x="28" y="166" font-weight="700" fill="#e8eeff">slot 1</text>
+<text class="f-mute" x="28" y="185" fill="#a3abc4">read-only</text>
+<rect class="f-green" x="144" y="146" width="112" height="48" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="156" y="166" font-weight="700" fill="#e8eeff">slot 2</text>
+<text class="f-ink" x="156" y="185" fill="#e8eeff">new image</text>
+<rect class="f-line" x="272" y="146" width="112" height="48" rx="8" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-ink" x="284" y="166" font-weight="700" fill="#e8eeff">slot 3</text>
+<text class="f-mute" x="284" y="185" fill="#a3abc4">previous</text>
+<line class="f-line" x1="200" y1="196" x2="200" y2="222" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-violet" x="16" y="224" width="368" height="48" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="244" font-weight="700" fill="#e8eeff">Activate</text>
+<text class="f-ink" x="28" y="263" fill="#e8eeff">at next reset, or at once if supported</text>
+</svg>

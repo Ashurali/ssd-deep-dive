@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 192" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The field-return loop</title>
+<desc>Six steps in a clockwise loop. 1, field failure: a drive misbehaves at a customer. 2, evidence: its logs, telemetry and crash dump are collected. 3, reproduce: the failure is recreated in the lab. 4, root cause: the cause is found and confirmed. 5, fix and test: the firmware is fixed and the regression suite is run. 6, release: the fix ships as a firmware update, which returns the loop to the field.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-red" x="16" y="8" width="172" height="44" rx="8" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="27" font-weight="700" fill="#e8eeff">1 · Field failure</text>
+<text class="f-ink" x="28" y="45" fill="#e8eeff">a drive misbehaves</text>
+<rect class="f-amber" x="212" y="8" width="172" height="44" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="224" y="27" font-weight="700" fill="#e8eeff">2 · Evidence</text>
+<text class="f-ink" x="224" y="45" fill="#e8eeff">logs, telemetry, dump</text>
+<rect class="f-amber" x="212" y="74" width="172" height="44" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="224" y="93" font-weight="700" fill="#e8eeff">3 · Reproduce</text>
+<text class="f-ink" x="224" y="111" fill="#e8eeff">in the lab</text>
+<rect class="f-violet" x="212" y="140" width="172" height="44" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="224" y="159" font-weight="700" fill="#e8eeff">4 · Root cause</text>
+<text class="f-ink" x="224" y="177" fill="#e8eeff">found and confirmed</text>
+<rect class="f-cyan" x="16" y="140" width="172" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="159" font-weight="700" fill="#e8eeff">5 · Fix and test</text>
+<text class="f-ink" x="28" y="177" fill="#e8eeff">regression suite</text>
+<rect class="f-green" x="16" y="74" width="172" height="44" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="93" font-weight="700" fill="#e8eeff">6 · Release</text>
+<text class="f-ink" x="28" y="111" fill="#e8eeff">a firmware update</text>
+<g class="f-line" stroke="#7d86a3" stroke-width="1.5">
+<line x1="188" y1="30" x2="210" y2="30" marker-end="url(#arrow)"/>
+<line x1="298" y1="52" x2="298" y2="72" marker-end="url(#arrow)"/>
+<line x1="298" y1="118" x2="298" y2="138" marker-end="url(#arrow)"/>
+<line x1="212" y1="162" x2="190" y2="162" marker-end="url(#arrow)"/>
+<line x1="102" y1="140" x2="102" y2="120" marker-end="url(#arrow)"/>
+<line x1="102" y1="74" x2="102" y2="54" marker-end="url(#arrow)"/>
+</g>
+</svg>

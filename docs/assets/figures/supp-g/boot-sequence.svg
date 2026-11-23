@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 290" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>An SSD's boot, from power-on to ready</title>
+<desc>Five stages from top to bottom. Power on: the reset is released once clocks and power rails are stable. Boot ROM, in the chip's silicon: it copies the bootloader in and checks it. Bootloader, kept in SPI NOR flash: it loads the main firmware image and falls back to a second copy if the first is bad. Main firmware, kept in NAND in two copies: it starts the flash channels and restores the mapping table. Ready: the drive reports ready and the host's commands begin.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-line" x="16" y="8" width="368" height="44" rx="8" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-ink" x="28" y="27" font-weight="700" fill="#e8eeff">Power on</text>
+<text class="f-ink" x="28" y="45" fill="#e8eeff">reset released once clocks and rails are stable</text>
+<line class="f-line" x1="40" y1="54" x2="40" y2="64" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-violet" x="16" y="66" width="368" height="44" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="85" font-weight="700" fill="#e8eeff">Boot ROM</text>
+<text class="f-mute" x="372" y="85" text-anchor="end" fill="#a3abc4">in the chip's silicon</text>
+<text class="f-ink" x="28" y="103" fill="#e8eeff">copies the bootloader in and checks it</text>
+<line class="f-line" x1="40" y1="112" x2="40" y2="122" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="16" y="124" width="368" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="143" font-weight="700" fill="#e8eeff">Bootloader</text>
+<text class="f-mute" x="372" y="143" text-anchor="end" fill="#a3abc4">in SPI NOR flash</text>
+<text class="f-ink" x="28" y="161" fill="#e8eeff">loads the main image, falls back to a copy</text>
+<line class="f-line" x1="40" y1="170" x2="40" y2="180" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-green" x="16" y="182" width="368" height="44" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="201" font-weight="700" fill="#e8eeff">Main firmware</text>
+<text class="f-mute" x="372" y="201" text-anchor="end" fill="#a3abc4">in NAND, two copies</text>
+<text class="f-ink" x="28" y="219" fill="#e8eeff">starts the flash channels, restores the map</text>
+<line class="f-line" x1="40" y1="228" x2="40" y2="238" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-amber" x="16" y="240" width="368" height="44" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="259" font-weight="700" fill="#e8eeff">Ready</text>
+<text class="f-ink" x="28" y="277" fill="#e8eeff">reports ready; the host's commands begin</text>
+</svg>
