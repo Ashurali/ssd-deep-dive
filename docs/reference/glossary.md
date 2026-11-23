@@ -130,23 +130,18 @@ Advanced eXtensible Interface (Arm on-chip high-speed bus)
 
 ### bandwidth { #term-bandwidth .sdd-term }
 
-**帶寬**  
+**帶寬（台：頻寬）** — Data moved per second; for PCIe, quoted per direction or for both directions combined. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
-### Base Address Register { #term-base-address-register .sdd-term }
+### Base Address Register (BAR) { #term-base-address-register-bar .sdd-term }
 
-**基地址寄存器 (BAR)** — BAR = Base Address Register (PCIe)  
+**基地址寄存器（台：基底位址暫存器）** — A config register that holds where one of a device's memory regions appears in the host's address space. → [§5.6](../core/ch5-pcie.md#56-config-space-and-bars)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### BCH code { #term-bch-code .sdd-term }
 
 algebraic multi-error-correcting cyclic code (hard-decision)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
-
-### BDF { #term-bdf .sdd-term }
-
-Bus/Device/Function number (a PCIe function's address)  
-<small>From: the site-wide acronym list</small>
 
 ### belief propagation / sum-product { #term-belief-propagation-sum-product .sdd-term }
 
@@ -222,6 +217,11 @@ baseboard management controller (a server's management chip)
 
 **突發性能（台：突發效能）** — Write speed while the SLC cache lasts, as opposed to the sustained speed once it is full. → [§4.8](../core/ch4-ftl.md#48-slc-cache)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### Bus/Device/Function (BDF) { #term-busdevicefunction-bdf .sdd-term }
+
+**總線/設備/功能號（台：匯流排/裝置/功能編號）** — The address of one PCIe Function: up to 256 buses × 32 devices × 8 functions. → [§5.6](../core/ch5-pcie.md#56-config-space-and-bars)  
+<small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ## C { #letter-c }
 
@@ -367,7 +367,7 @@ data bits ÷ total bits
 
 ### configuration space { #term-configuration-space .sdd-term }
 
-**配置空間**  
+**配置空間（台：組態空間）** — The standard register file of every Function, 4 KB in PCIe, holding IDs, capabilities and BARs. → [§5.6](../core/ch5-pcie.md#56-config-space-and-bars)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### conformance/compliance test { #term-conformancecompliance-test .sdd-term }
@@ -439,7 +439,12 @@ PCIe **device** power states (software-controlled)
 
 ### Data Link Layer { #term-data-link-layer .sdd-term }
 
-**數據鏈路層**  
+**數據鏈路層（台：資料連結層）** — The middle layer: sequence numbers, LCRC, ACK/NAK retry and credits, hop by hop. → [§5.8](../core/ch5-pcie.md#58-data-link-layer)  
+<small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### Data Link Layer Packet (DLLP) { #term-data-link-layer-packet-dllp .sdd-term }
+
+**數據鏈路層數據包（台：資料連結層封包）** — A small one-hop packet for acknowledgments, flow-control credits and power management. → [§5.8](../core/ch5-pcie.md#58-data-link-layer)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### data randomization / scrambling { #term-data-randomization-scrambling .sdd-term }
@@ -489,7 +494,7 @@ SATA deep-sleep pin (Ch1/Ch7)
 
 ### differential signaling { #term-differential-signaling .sdd-term }
 
-**差分信號**  
+**差分信號（台：差動訊號）** — Sending each bit as the difference between two wires, so noise that hits both cancels out. → [§5.9](../core/ch5-pcie.md#59-physical-layer)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### direct memory access (DMA) { #term-direct-memory-access-dma .sdd-term }
@@ -501,11 +506,6 @@ SATA deep-sleep pin (Ch1/Ch7)
 
 **發現服務**  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
-
-### DLLP { #term-dllp .sdd-term }
-
-Data Link Layer Packet (PCIe)  
-<small>From: the site-wide acronym list</small>
 
 ### DMAC { #term-dmac .sdd-term }
 
@@ -539,7 +539,7 @@ dynamic random-access memory
 
 ### dual-simplex / full-duplex / half-duplex { #term-dual-simplex-full-duplex-half-duplex .sdd-term }
 
-**雙單工 / 全雙工 / 半雙工**  
+**雙單工 / 全雙工 / 半雙工** — Both directions at once on separate wires (PCIe), both at once in general, or one direction at a time (SATA). → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### DW { #term-dw .sdd-term }
@@ -601,7 +601,7 @@ predecessor; parallel, half-duplex, no queuing
 
 ### encode / decode { #term-encode-decode .sdd-term }
 
-**編碼 / 解碼** — Adding ECC parity to data on its way into flash, and using it to find and fix errors on the way out. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
+**編碼 / 解碼** — Adding ECC parity to data on its way into flash, and using it to find and fix errors on the way out. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end); Turning data into line codes such as 8b/10b or 128b/130b, which embed the clock, and back again. → [§5.9](../core/ch5-pcie.md#59-physical-layer)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### end-to-end data protection { #term-end-to-end-data-protection .sdd-term }
@@ -611,7 +611,7 @@ predecessor; parallel, half-duplex, no queuing
 
 ### endpoint { #term-endpoint .sdd-term }
 
-**端點 (Endpoint)**  
+**端點 (Endpoint)** — A leaf device, such as an SSD or network card, that implements one or more Functions. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### endurance / lifespan { #term-endurance-lifespan .sdd-term }
@@ -626,7 +626,7 @@ predecessor; parallel, half-duplex, no queuing
 
 ### enumeration { #term-enumeration .sdd-term }
 
-**枚舉**  
+**枚舉（台：列舉）** — The boot-time walk of the tree that finds every Function, sizes its BARs and assigns addresses. → [§5.6](../core/ch5-pcie.md#56-config-space-and-bars)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### EP { #term-ep .sdd-term }
@@ -763,7 +763,7 @@ flow control unit (PCIe 6.0's fixed-size transfer unit)
 
 ### flow control { #term-flow-control .sdd-term }
 
-**流控（台：流量控制）；流量控制 / 流控** — A receiver holding off a sender until it has room, as an SSD does by withholding SATA's DMA Setup FIS. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
+**流控（台：流量控制）；流量控制 / 流控** — A receiver holding off a sender until it has room, as an SSD does by withholding SATA's DMA Setup FIS. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end); A receiver advertising credits for its free buffer space, so the sender never overruns it. → [§5.8](../core/ch5-pcie.md#58-data-link-layer)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### FLR { #term-flr .sdd-term }
@@ -917,7 +917,7 @@ deep low-power M-PHY link state (≈ DevSleep)
 
 ### hot-plug { #term-hot-plug .sdd-term }
 
-**熱插拔**  
+**熱插拔** — Inserting or removing a drive while the system runs, as U.2 and EDSFF bays allow. → [§5.12](../core/ch5-pcie.md#512-pcie-ssd-hot-plug)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### HPB { #term-hpb .sdd-term }
@@ -939,12 +939,12 @@ Institute of Electrical and Electronics Engineers
 
 ### implicit routing { #term-implicit-routing .sdd-term }
 
-**隱式路由**  
+**隱式路由（台：隱含路由）** — Routing used by messages that just mean "to the Root Complex" or "to everyone". → [§5.7](../core/ch5-pcie.md#57-tlp-routing)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### in-band { #term-in-band .sdd-term }
 
-**帶內**  
+**帶內（台：頻內）** — Carried as packets over the data link itself rather than on separate wires. → [§5.4](../core/ch5-pcie.md#54-tlp-types)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### independent plane read (IPR / AIPR) { #term-independent-plane-read-ipr-aipr .sdd-term }
@@ -1040,7 +1040,7 @@ logical-to-physical mapping table (Ch4)
 
 ### lane { #term-lane .sdd-term }
 
-**通道 (Lane)**  
+**通道 (Lane)** — One transmit pair plus one receive pair; links bundle lanes (×1, ×4, ×16) to add bandwidth. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### latency / response time { #term-latency-response-time .sdd-term }
@@ -1050,7 +1050,7 @@ logical-to-physical mapping table (Ch4)
 
 ### layered structure { #term-layered-structure .sdd-term }
 
-**分層結構**  
+**分層結構** — Splitting the protocol into layers that each wrap the one above: transaction, data link, physical. → [§5.3](../core/ch5-pcie.md#53-the-three-layer-stack)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### LCRC { #term-lcrc .sdd-term }
@@ -1085,7 +1085,7 @@ log-structured file system (append-only writes)
 
 ### link { #term-link .sdd-term }
 
-**鏈路 (Link)**  
+**鏈路 (Link)（台：連結）** — The connection between two PCIe ports, made of one or more lanes. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### LLR { #term-llr .sdd-term }
@@ -1165,6 +1165,11 @@ controller + flash + firmware in one package
 **映射表** — The FTL's table from each logical block address to the flash location holding its current data. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
+### Max Payload Size (MPS) { #term-max-payload-size-mps .sdd-term }
+
+**最大有效載荷（台：最大酬載大小）** — The largest payload one TLP may carry, set to the smallest capability on the path. → [§5.11](../core/ch5-pcie.md#511-max-payload-size-max-read-request-size)  
+<small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
 ### MBR { #term-mbr .sdd-term }
 
 Master Boot Record (legacy partition table)  
@@ -1192,7 +1197,7 @@ Minimum DEVSLP Assertion Time (SATA)
 
 ### memory mapping { #term-memory-mapping .sdd-term }
 
-**內存映射**  
+**內存映射（台：記憶體映射）** — Making a device's registers appear as host memory addresses, so the CPU reaches them with ordinary reads and writes. → [§5.6](../core/ch5-pcie.md#56-config-space-and-bars)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### metadata { #term-metadata .sdd-term }
@@ -1239,11 +1244,6 @@ metal–oxide–semiconductor field-effect transistor
 
 Max Power / entry latency / exit latency (state descriptor)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
-
-### MPS { #term-mps .sdd-term }
-
-Max Payload Size (PCIe)  
-<small>From: the site-wide acronym list</small>
 
 ### MRAM { #term-mram .sdd-term }
 
@@ -1453,7 +1453,7 @@ physical-to-logical (reverse map)
 
 ### packet { #term-packet .sdd-term }
 
-**數據包**  
+**數據包（台：封包）** — A unit of data with its own header and checks, as sent across a link. → [§5.3](../core/ch5-pcie.md#53-the-three-layer-stack)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### PAM4 { #term-pam4 .sdd-term }
@@ -1473,7 +1473,7 @@ SATA link low-power states (≈ L0s / L1 / L1.2+RTD3)
 
 ### payload { #term-payload .sdd-term }
 
-**有效載荷**  
+**有效載荷（台：酬載）** — The data a TLP carries, as opposed to its header and checks. → [§5.5](../core/ch5-pcie.md#55-tlp-structure)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### PCB { #term-pcb .sdd-term }
@@ -1493,7 +1493,7 @@ PCI Express (Peripheral Component Interconnect Express)
 
 ### performance loss { #term-performance-loss .sdd-term }
 
-**性能損耗**  
+**性能損耗（台：效能損耗）** — The gap between line rate and real throughput, from encoding, packet overhead and the link protocol. → [§5.13](../core/ch5-pcie.md#513-pcie-link-performance-loss-analysis)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### performance testing { #term-performance-testing .sdd-term }
@@ -1528,7 +1528,7 @@ PCIe wake signal (PEWAKE#)
 
 ### Physical Layer { #term-physical-layer .sdd-term }
 
-**物理層**  
+**物理層（台：實體層）** — The bottom layer: framing, striping, scrambling, encoding and differential signaling. → [§5.9](../core/ch5-pcie.md#59-physical-layer)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### Physical Region Page { #term-physical-region-page .sdd-term }
@@ -1558,7 +1558,7 @@ Power Management Event (device-initiated wake signal)
 
 ### point-to-point { #term-point-to-point .sdd-term }
 
-**點到點**  
+**點到點（台：點對點）** — Each link connects exactly two devices and its bandwidth is theirs alone. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### power consumption { #term-power-consumption .sdd-term }
@@ -1782,7 +1782,7 @@ re-sending a recorded message to undo a security state
 
 ### retransmission (retry) { #term-retransmission-retry .sdd-term }
 
-**重傳**  
+**重傳** — Resending TLPs from the replay buffer after a NAK or timeout. → [§5.8](../core/ch5-pcie.md#58-data-link-layer)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### RHA { #term-rha .sdd-term }
@@ -1805,14 +1805,14 @@ Rad-Hardening By Design / By Process
 **健壯性**  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
-### Root Complex { #term-root-complex .sdd-term }
+### Root Complex (RC) { #term-root-complex-rc .sdd-term }
 
-**根複合體 (RC)** — RC = Root Complex (the PCIe root, on the CPU side)  
+**根複合體** — The root of the PCIe tree, which connects the CPU and memory to PCIe and alone may start configuration. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### routing { #term-routing .sdd-term }
 
-**路由**  
+**路由** — How a TLP finds its destination: by address, by ID (BDF), or implicitly. → [§5.7](../core/ch5-pcie.md#57-tlp-routing)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### routing module { #term-routing-module .sdd-term }
@@ -1889,7 +1889,7 @@ Serial ATA
 
 ### scramble / de-scramble { #term-scramble-de-scramble .sdd-term }
 
-**加擾 / 去擾**  
+**加擾 / 去擾（台：擾碼 / 解擾）** — Mixing the bit stream with a pseudo-random pattern (and undoing it) to avoid long runs that cause EMI. → [§5.9](../core/ch5-pcie.md#59-physical-layer)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### SCSI { #term-scsi .sdd-term }
@@ -1934,7 +1934,7 @@ Single Event Latchup — destructive high-current short
 
 ### sequence number { #term-sequence-number .sdd-term }
 
-**序列號**  
+**序列號（台：序號）** — A number the Data Link Layer stamps on each TLP so the receiver can detect gaps and duplicates. → [§5.8](../core/ch5-pcie.md#58-data-link-layer)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### sequential / random read-write { #term-sequential-random-read-write .sdd-term }
@@ -1944,7 +1944,7 @@ Single Event Latchup — destructive high-current short
 
 ### serial / parallel bus { #term-serial-parallel-bus .sdd-term }
 
-**串行 / 並行總線**  
+**串行 / 並行總線（台：序列 / 平行匯流排）** — Sending bits one after another on few wires, versus many bits at once on many wires sharing a clock. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### SET { #term-set .sdd-term }
@@ -1969,7 +1969,7 @@ two-copy scheme; one always valid
 
 ### sideband signal { #term-sideband-signal .sdd-term }
 
-**邊帶信號（台：邊帶訊號）；邊帶信號** — A slow single-purpose wire beside the data lanes, such as PERST# (reset) or CLKREQ# (clock request). → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management)  
+**邊帶信號（台：邊帶訊號）** — A slow single-purpose wire beside the data lanes, such as PERST# (reset) or CLKREQ# (clock request). → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management); A dedicated wire beside the data path; PCIe moved most of PCI's onto in-band messages. → [§5.4](../core/ch5-pcie.md#54-tlp-types)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### simulation / emulation { #term-simulation-emulation .sdd-term }
@@ -2114,7 +2114,7 @@ filesystem-wide metadata
 
 ### switch { #term-switch .sdd-term }
 
-**交換機 (Switch)**  
+**交換機 (Switch)（台：交換器）** — A branch of the tree that fans one upstream port out into several downstream ports and routes TLPs between them. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### synchronous / asynchronous { #term-synchronous-asynchronous .sdd-term }
@@ -2199,11 +2199,6 @@ Total Ionizing Dose — cumulative radiation damage (≈ radiation-driven wear, 
 triple-level cell (3 bits per cell)  
 <small>From: the site-wide acronym list</small>
 
-### TLP { #term-tlp .sdd-term }
-
-Transaction Layer Packet (PCIe)  
-<small>From: the site-wide acronym list</small>
-
 ### TMR { #term-tmr .sdd-term }
 
 Triple Modular Redundancy (triplicate + vote)  
@@ -2211,17 +2206,22 @@ Triple Modular Redundancy (triplicate + vote)
 
 ### topology { #term-topology .sdd-term }
 
-**拓撲結構**  
+**拓撲結構（台：拓樸結構）** — How the devices of a system are connected; PCIe's is a tree. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### Transaction Layer { #term-transaction-layer .sdd-term }
 
-**事務層**  
+**事務層（台：交易層）** — The top layer: builds and parses TLPs, and handles ordering and flow control. → [§5.3](../core/ch5-pcie.md#53-the-three-layer-stack)  
+<small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### Transaction Layer Packet (TLP) { #term-transaction-layer-packet-tlp .sdd-term }
+
+**事務層數據包（台：交易層封包）** — The packet that carries requests, completions and data end to end. → [§5.4](../core/ch5-pcie.md#54-tlp-types)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### tree structure { #term-tree-structure .sdd-term }
 
-**樹形結構**  
+**樹形結構（台：樹狀結構）** — A hierarchy with one root, branches (switches) and leaves (endpoints). → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### trigger { #term-trigger .sdd-term }
@@ -2313,7 +2313,7 @@ testing/qualifying commercial parts for space use
 
 ### upstream / downstream port { #term-upstream-downstream-port .sdd-term }
 
-**上游 / 下游端口**  
+**上游 / 下游端口（台：上游 / 下游埠）** — A port facing toward the Root Complex, versus one facing away from it. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### USB { #term-usb .sdd-term }

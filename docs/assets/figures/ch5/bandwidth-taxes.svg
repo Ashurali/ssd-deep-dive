@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 224" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Where a PCIe link's time goes, at two payload sizes</title>
+<desc>Two bars show how a PCIe Gen1 x8 link (about 2,000 MB/s per direction) spends its time moving 200 memory-write TLPs' worth of data, from section 5.13's worked example. With a 128-byte maximum payload: 84 percent payload (1,689 MB/s), 13 percent TLP overhead (headers, CRCs, sequence numbers, framing) and 2 percent DLLPs (acknowledgments and flow-control updates). With a 512-byte maximum payload: 96 percent payload (1,912 MB/s), 4 percent TLP overhead and 1 percent DLLPs.</desc>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">Max payload 128 B</text>
+<rect class="f-cyan" x="16" y="30" width="311" height="32" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="327" y="30" width="48" height="32" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-violet" x="375" y="30" width="9" height="32" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="171" y="51" text-anchor="middle" fill="#e8eeff">payload 84% · 1,689 MB/s</text>
+<text class="f-amber-t" x="351" y="80" text-anchor="middle" fill="#f2b13c">13%</text>
+<text class="f-ink" x="16" y="110" font-weight="700" fill="#e8eeff">Max payload 512 B</text>
+<rect class="f-cyan" x="16" y="120" width="352" height="32" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="368" y="120" width="13" height="32" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-violet" x="381" y="120" width="3" height="32" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="192" y="141" text-anchor="middle" fill="#e8eeff">payload 96% · 1,912 MB/s</text>
+<rect class="f-cyan" x="16" y="178" width="14" height="12" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-mute" x="36" y="189" fill="#a3abc4">payload</text>
+<rect class="f-amber" x="110" y="178" width="14" height="12" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-mute" x="130" y="189" fill="#a3abc4">TLP overhead</text>
+<rect class="f-violet" x="240" y="178" width="14" height="12" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-mute" x="260" y="189" fill="#a3abc4">DLLPs</text>
+<text class="f-mute" x="16" y="214" fill="#a3abc4">Gen1 ×8 link: about 2,000 MB/s per direction</text>
+</svg>

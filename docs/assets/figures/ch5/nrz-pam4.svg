@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 350" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>NRZ and PAM4 signaling</title>
+<desc>Two waveforms over eight symbol times in the same voltage swing. NRZ uses two levels, so each symbol carries one bit: 1 0 1 1 0 0 1 0. PAM4 uses four levels, so each symbol carries two bits: 11 00 10 01 11 10 00 01, twice the data at the same symbol rate. The four PAM4 levels sit a third as far apart as the two NRZ levels, so noise flips symbols more easily, which is why PCIe 6.0 adds forward error correction and FLIT framing.</desc>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">NRZ · 2 levels, 1 bit per symbol</text>
+<line class="f-faint" x1="60" y1="44" x2="380" y2="44" stroke="#2a3150"/>
+<line class="f-faint" x1="60" y1="114" x2="380" y2="114" stroke="#2a3150"/>
+<text class="f-mute" x="48" y="48" text-anchor="end" fill="#a3abc4">1</text>
+<text class="f-mute" x="48" y="118" text-anchor="end" fill="#a3abc4">0</text>
+<path class="f-cyan-l" d="M60,44 H100 V114 H140 V44 H220 V114 H300 V44 H340 V114 H380" fill="none" stroke="#4dd0c4" stroke-width="2.5"/>
+<g class="f-mute" fill="#a3abc4" text-anchor="middle"><text x="80" y="140">1</text><text x="120" y="140">0</text><text x="160" y="140">1</text><text x="200" y="140">1</text><text x="240" y="140">0</text><text x="280" y="140">0</text><text x="320" y="140">1</text><text x="360" y="140">0</text></g>
+<line class="f-faint" x1="16" y1="158" x2="384" y2="158" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="182" font-weight="700" fill="#e8eeff">PAM4 · 4 levels, 2 bits per symbol</text>
+<line class="f-faint" x1="60" y1="204" x2="380" y2="204" stroke="#2a3150"/>
+<line class="f-faint" x1="60" y1="227" x2="380" y2="227" stroke="#2a3150"/>
+<line class="f-faint" x1="60" y1="251" x2="380" y2="251" stroke="#2a3150"/>
+<line class="f-faint" x1="60" y1="274" x2="380" y2="274" stroke="#2a3150"/>
+<text class="f-mute" x="48" y="208" text-anchor="end" fill="#a3abc4">11</text>
+<text class="f-mute" x="48" y="231" text-anchor="end" fill="#a3abc4">10</text>
+<text class="f-mute" x="48" y="255" text-anchor="end" fill="#a3abc4">01</text>
+<text class="f-mute" x="48" y="278" text-anchor="end" fill="#a3abc4">00</text>
+<path class="f-amber-l" d="M60,204 H100 V274 H140 V227 H180 V251 H220 V204 H260 V227 H300 V274 H340 V251 H380" fill="none" stroke="#f2b13c" stroke-width="2.5"/>
+<g class="f-mute" fill="#a3abc4" text-anchor="middle"><text x="80" y="300">11</text><text x="120" y="300">00</text><text x="160" y="300">10</text><text x="200" y="300">01</text><text x="240" y="300">11</text><text x="280" y="300">10</text><text x="320" y="300">00</text><text x="360" y="300">01</text></g>
+<text class="f-red-t" x="16" y="324" fill="#ff7b72">same swing, levels a third as far apart:</text>
+<text class="f-red-t" x="16" y="341" fill="#ff7b72">more errors, so PCIe 6.0 adds FEC</text>
+</svg>

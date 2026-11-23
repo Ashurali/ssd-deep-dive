@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The PCIe tree: Root Complex, switch and endpoints</title>
+<desc>A tree. At the top the CPU and memory connect to the Root Complex, which speaks for them. Three point-to-point links run down from the Root Complex: one to a GPU endpoint, one to an SSD endpoint, and one to a switch. The switch has one upstream port toward the Root Complex and three downstream ports, each linked to an endpoint: two SSDs and a network card. Every link belongs to the two devices at its ends.</desc>
+<rect class="f-line f-panel" x="110" y="8" width="180" height="34" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="200" y="30" text-anchor="middle" fill="#e8eeff">CPU + memory</text>
+<line class="f-line" x1="200" y1="42" x2="200" y2="66" stroke="#7d86a3" stroke-width="3"/>
+<rect class="f-cyan" x="110" y="66" width="180" height="40" rx="6" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="91" text-anchor="middle" font-weight="700" fill="#e8eeff">Root Complex (RC)</text>
+<path class="f-line" d="M140,106 L56,160 M260,106 L344,160 M200,106 V160" fill="none" stroke="#7d86a3" stroke-width="2"/>
+<rect class="f-violet" x="16" y="160" width="80" height="34" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="56" y="182" text-anchor="middle" fill="#e8eeff">GPU</text>
+<rect class="f-violet" x="304" y="160" width="80" height="34" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="344" y="182" text-anchor="middle" fill="#e8eeff">SSD</text>
+<rect class="f-amber" x="140" y="160" width="120" height="40" rx="6" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="185" text-anchor="middle" font-weight="700" fill="#e8eeff">Switch</text>
+<text class="f-mute" x="208" y="152" fill="#a3abc4">upstream port</text>
+<path class="f-line" d="M160,200 L100,256 M200,200 V256 M240,200 L300,256" fill="none" stroke="#7d86a3" stroke-width="2"/>
+<text class="f-mute" x="276" y="228" fill="#a3abc4">downstream ports</text>
+<rect class="f-violet" x="60" y="256" width="80" height="34" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="278" text-anchor="middle" fill="#e8eeff">SSD</text>
+<rect class="f-violet" x="160" y="256" width="80" height="34" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="278" text-anchor="middle" fill="#e8eeff">SSD</text>
+<rect class="f-violet" x="260" y="256" width="80" height="34" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="300" y="278" text-anchor="middle" fill="#e8eeff">NIC</text>
+<rect class="f-violet" x="16" y="302" width="14" height="12" rx="2" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-mute" x="36" y="313" fill="#a3abc4">endpoints (EP): the leaves</text>
+</svg>

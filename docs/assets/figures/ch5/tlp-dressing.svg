@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 286" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>A TLP getting dressed, layer by layer</title>
+<desc>Four rows show the same data as it goes down the PCIe stack. From the layer above (NVMe) comes the data alone. The Transaction Layer adds a header in front and an end-to-end CRC (ECRC) behind, making a TLP. The Data Link Layer adds a sequence number in front and a link CRC (LCRC) behind. The Physical Layer adds Start and End framing, then stripes, scrambles and encodes the bytes onto the lanes. The receiver strips the layers in reverse order.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-mute" x="16" y="20" fill="#a3abc4">from the layer above (NVMe)</text>
+<rect class="f-line f-panel" x="159" y="28" width="96" height="28" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="207" y="47" text-anchor="middle" fill="#e8eeff">Data</text>
+<text class="f-cyan-t" x="16" y="84" font-weight="700" fill="#4dd0c4">Transaction Layer → TLP</text>
+<rect class="f-cyan" x="95" y="92" width="64" height="28" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-line f-panel" x="159" y="92" width="96" height="28" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-cyan" x="255" y="92" width="44" height="28" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="127" y="111" text-anchor="middle" fill="#e8eeff">Header</text>
+<text class="f-ink" x="207" y="111" text-anchor="middle" fill="#e8eeff">Data</text>
+<text class="f-ink" x="277" y="111" text-anchor="middle" fill="#e8eeff">ECRC</text>
+<text class="f-amber-t" x="16" y="148" font-weight="700" fill="#f2b13c">Data Link Layer</text>
+<rect class="f-amber" x="57" y="156" width="38" height="28" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="95" y="156" width="64" height="28" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-line f-panel" x="159" y="156" width="96" height="28" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-cyan" x="255" y="156" width="44" height="28" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="299" y="156" width="44" height="28" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="76" y="175" text-anchor="middle" fill="#e8eeff">Seq</text>
+<text class="f-ink" x="127" y="175" text-anchor="middle" fill="#e8eeff">Header</text>
+<text class="f-ink" x="207" y="175" text-anchor="middle" fill="#e8eeff">Data</text>
+<text class="f-ink" x="277" y="175" text-anchor="middle" fill="#e8eeff">ECRC</text>
+<text class="f-ink" x="321" y="175" text-anchor="middle" fill="#e8eeff">LCRC</text>
+<text class="f-violet-t" x="16" y="212" font-weight="700" fill="#a78bfa">Physical Layer</text>
+<rect class="f-violet" x="19" y="220" width="38" height="28" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-amber" x="57" y="220" width="38" height="28" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="95" y="220" width="64" height="28" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-line f-panel" x="159" y="220" width="96" height="28" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-cyan" x="255" y="220" width="44" height="28" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="299" y="220" width="44" height="28" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-violet" x="343" y="220" width="38" height="28" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="38" y="239" text-anchor="middle" fill="#e8eeff">Start</text>
+<text class="f-ink" x="76" y="239" text-anchor="middle" fill="#e8eeff">Seq</text>
+<text class="f-ink" x="127" y="239" text-anchor="middle" fill="#e8eeff">Header</text>
+<text class="f-ink" x="207" y="239" text-anchor="middle" fill="#e8eeff">Data</text>
+<text class="f-ink" x="277" y="239" text-anchor="middle" fill="#e8eeff">ECRC</text>
+<text class="f-ink" x="321" y="239" text-anchor="middle" fill="#e8eeff">LCRC</text>
+<text class="f-ink" x="362" y="239" text-anchor="middle" fill="#e8eeff">End</text>
+<text class="f-mute" x="16" y="276" fill="#a3abc4">then striped, scrambled and encoded onto the lanes</text>
+</svg>
