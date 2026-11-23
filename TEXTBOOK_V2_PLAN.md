@@ -1,6 +1,6 @@
 # Textbook v2 — the big fix (plan)
 
-> Status: **Phases 0–1 done; Phase 2 under way: all seven chapters and Supplements A–D done, E next (24 Nov 2026).** Work is
+> Status: **Phases 0–1 done; Phase 2 done: all seven chapters and Supplements A–E (24 Nov 2026); Phase 3 next.** Work is
 > committed and pushed on the `textbook-v2` branch; fast-forwarding `main` to it publishes the live
 > site (last published after the Ch 1 pilot). Next: the rest of Phase 2, then Phases 3 and 4.
 
@@ -165,7 +165,7 @@ What was planned:
 
 Each page pass touches only that page and its figures folder, plus the page's new acronyms in
 `includes/abbreviations.md`. The passes run one at a time, so the shared-file rule in "Order of
-work" matters only for parallel sessions. Done: Ch 1–7, Supps A–D. For every page:
+work" matters only for parallel sessions. Done: Ch 1–7, Supps A–E. For every page:
 
 1. Add figures from the table below, replacing every ASCII diagram.
 2. Expand acronyms at first use, and fix forward references (DMA in Ch 2, "interrupt", SMART and
@@ -208,7 +208,7 @@ work" matters only for parallel sessions. Done: Ch 1–7, Supps A–D. For every
 | Supp B | UFS stack (replaces ASCII) · HPB |
 | Supp C | EXT4 layout · F2FS layout (both replace ASCII) · log-on-log vs ZNS |
 | Supp D | power-state layers (replaces ASCII) · link-state exit-latency ladder · APST timeline |
-| Supp E | radiation effects map · mitigation stack |
+| Supp E | radiation effects map · where a NAND die is tough and soft (in place of a mitigation stack, which would repeat §E.2.5's table) |
 
 Cross-links into the new pages are added in Phase 5, because links to pages that don't exist yet
 fail the strict build. Examples: Ch 7's Sanitize → Supp F; Ch 7 §7.11 tools → Supp H.

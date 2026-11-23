@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 234" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The two kinds of radiation damage</title>
+<desc>Two columns. Total ionizing dose, TID, is slow and cumulative: the raw bit error rate climbs, the threshold-voltage bells shift, leakage rises, program and erase slow down, and retention fades; it is Chapter 3's wear on fast-forward. Single event effects, SEE, come from one particle at once, in three tiers of severity: soft effects (SEU, MBU, SET) flip bits that ECC fixes; functional interrupts (SEFI) hang the logic until a reset; destructive effects (SEL, SEGR, SEB) can destroy the chip.</desc>
+<rect class="f-violet" x="16" y="8" width="132" height="48" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="28" font-weight="700" fill="#e8eeff">TID</text>
+<text class="f-ink" x="28" y="47" fill="#e8eeff">slow, cumulative</text>
+<rect class="f-cyan" x="164" y="8" width="220" height="48" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="176" y="28" font-weight="700" fill="#e8eeff">SEE</text>
+<text class="f-ink" x="176" y="47" fill="#e8eeff">one particle, at once</text>
+<g class="f-ink" fill="#e8eeff">
+<text x="16" y="84">RBER climbs</text>
+<text x="16" y="102">Vt bells shift</text>
+<text x="16" y="120">leakage rises</text>
+<text x="16" y="138">program/erase slows</text>
+<text x="16" y="156">retention fades</text>
+</g>
+<text class="f-green-t" x="16" y="190" fill="#7ee2a8">≈ Chapter 3 wear,</text>
+<text class="f-green-t" x="16" y="208" fill="#7ee2a8">on fast-forward</text>
+<rect class="f-green" x="164" y="66" width="220" height="48" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="176" y="86" font-weight="700" fill="#e8eeff">Soft</text>
+<text class="f-mute" x="372" y="86" text-anchor="end" fill="#a3abc4">SEU · MBU · SET</text>
+<text class="f-ink" x="176" y="105" fill="#e8eeff">flipped bits: ECC fixes them</text>
+<rect class="f-amber" x="164" y="122" width="220" height="48" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="176" y="142" font-weight="700" fill="#e8eeff">Functional</text>
+<text class="f-mute" x="372" y="142" text-anchor="end" fill="#a3abc4">SEFI</text>
+<text class="f-ink" x="176" y="161" fill="#e8eeff">logic hangs: needs a reset</text>
+<rect class="f-red" x="164" y="178" width="220" height="48" rx="8" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-ink" x="176" y="198" font-weight="700" fill="#e8eeff">Destructive</text>
+<text class="f-mute" x="372" y="198" text-anchor="end" fill="#a3abc4">SEL · SEGR · SEB</text>
+<text class="f-ink" x="176" y="217" fill="#e8eeff">can destroy the chip</text>
+</svg>

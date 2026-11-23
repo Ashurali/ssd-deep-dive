@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 222" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Where a NAND die is tough and where it is soft</title>
+<desc>A NAND die drawn as blocks. The cell array, the largest block, is tough: each bit holds far more charge than one particle deposits. The periphery is where strikes do damage: the page buffers and the registers suffer bit upsets, the control logic can hang in a functional interrupt, and the roughly 20-volt charge pumps can suffer gate rupture or burnout, which is destructive.</desc>
+<text class="f-mute" x="16" y="16" fill="#a3abc4">inside a NAND die</text>
+<rect class="f-line" x="16" y="26" width="368" height="164" rx="6" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<rect class="f-green" x="28" y="38" width="208" height="104" rx="4" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="40" y="62" font-weight="700" fill="#e8eeff">cell array</text>
+<text class="f-ink" x="40" y="82" fill="#e8eeff">tough: each bit holds far</text>
+<text class="f-ink" x="40" y="100" fill="#e8eeff">more charge than one</text>
+<text class="f-ink" x="40" y="118" fill="#e8eeff">particle deposits</text>
+<rect class="f-amber" x="28" y="150" width="208" height="28" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="40" y="169" fill="#e8eeff">page buffers · SEU</text>
+<rect class="f-red" x="248" y="38" width="124" height="48" rx="4" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-ink" x="260" y="58" font-weight="700" fill="#e8eeff">charge pumps</text>
+<text class="f-ink" x="260" y="77" fill="#e8eeff">~20 V: SEGR, SEB</text>
+<rect class="f-amber" x="248" y="94" width="124" height="48" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="260" y="114" font-weight="700" fill="#e8eeff">control logic</text>
+<text class="f-ink" x="260" y="133" fill="#e8eeff">hangs: SEFI</text>
+<rect class="f-amber" x="248" y="150" width="124" height="28" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="260" y="169" fill="#e8eeff">registers · SEU</text>
+<rect class="f-green" x="16" y="202" width="12" height="12" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-mute" x="34" y="213" fill="#a3abc4">tough</text>
+<rect class="f-amber" x="110" y="202" width="12" height="12" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-mute" x="128" y="213" fill="#a3abc4">upsets, hangs</text>
+<rect class="f-red" x="240" y="202" width="12" height="12" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-mute" x="258" y="213" fill="#a3abc4">destructive</text>
+</svg>

@@ -245,6 +245,11 @@ baseboard management controller (a server's management chip)
 **級聯（台：串接）** — Growing one system by adding units (X-Bricks), so capacity and performance rise together. → [§2.6.2](../core/ch2-controllers-afa.md#262-hardware-architecture)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
+### catastrophic SEE (CSEE) { #term-catastrophic-see-csee .sdd-term }
+
+**災難性單粒子效應（台：災難性單一事件效應）** — The destructive subset: latch-up, gate rupture and burnout. → [§E.2.2](../supplements/e-aerospace-storage.md#e22-see-single-event-effects-the-instantaneous-ones)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
 ### CBA { #term-cba .sdd-term }
 
 CMOS directly Bonded to Array (logic wafer bonded onto the cell-array wafer)  
@@ -345,6 +350,11 @@ complementary metal–oxide–semiconductor (standard logic process)
 **命令集（台：指令集）** — A family of NVMe I/O commands for one kind of storage: NVM (block), Zoned, Key-Value. → [§6.9](../core/ch6-nvme.md#69-modern-developments-the-nvme-2x-era)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
+### commercial off-the-shelf (COTS) { #term-commercial-off-the-shelf-cots .sdd-term }
+
+**商用現貨（台：現成商用品）** — Ordinary commercial parts, cheap and dense but not built for radiation. → [§E.2.4](../supplements/e-aerospace-storage.md#e24-mitigation-two-philosophies)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
 ### compatibility { #term-compatibility .sdd-term }
 
 **兼容性（台：相容性）** — Working correctly with every host, BIOS, OS and signal condition the drive meets. → [§1.5.6](../core/ch1-overview.md#156-system-compatibility)  
@@ -400,11 +410,6 @@ complementary metal–oxide–semiconductor (standard logic process)
 **糾錯能力（台：錯誤更正能力）** — How many bit errors per codeword a code can always fix: t = ⌊(dmin − 1)/2⌋. → [§A.3.1](../supplements/a-ecc-coding-theory.md#a31-hamming-distance-the-concept-everything-rests-on)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
-### COTS { #term-cots .sdd-term }
-
-Commercial Off-The-Shelf parts  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
 ### coupling capacitance { #term-coupling-capacitance .sdd-term }
 
 **耦合電容** — The capacitance between neighbouring cells that lets one cell's charge shift another's threshold. → [§3.3.1](../core/ch3-nand-flash.md#331-the-five-problems-a-catalog-to-know-cold)  
@@ -419,11 +424,6 @@ Completion with Data (PCIe TLP)
 
 central processing unit  
 <small>From: the site-wide acronym list</small>
-
-### CSEE { #term-csee .sdd-term }
-
-Catastrophic SEE (the destructive subset)  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### cyclic redundancy check (CRC) { #term-cyclic-redundancy-check-crc .sdd-term }
 
@@ -576,7 +576,7 @@ end-to-end CRC (optional PCIe TLP digest)
 
 ### EDAC / scrubbing { #term-edac-scrubbing .sdd-term }
 
-Error Detection And Correction; periodic read-correct-rewrite (≈ Read Scrub, Ch3)  
+**錯誤檢測與糾正 / 刷新（台：錯誤偵測與更正 / 刷新）** — Error detection and correction run continuously: read, correct, rewrite, so upsets never pile up. → [§E.2.5](../supplements/e-aerospace-storage.md#e25-the-system-level-toolkit-chapter-34-extremized)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### EDSFF { #term-edsff .sdd-term }
@@ -808,15 +808,15 @@ Force Unit Access (the write must reach non-volatile media before it completes)
 
 ## G { #letter-g }
 
+### galactic cosmic rays (GCR) { #term-galactic-cosmic-rays-gcr .sdd-term }
+
+**銀河宇宙射線** — High-energy particles from outside the solar system that shielding barely stops. → [§E.1](../supplements/e-aerospace-storage.md#e1-background-why-space-needs-storage-and-why-solid-state)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
 ### garbage collection (GC) { #term-garbage-collection-gc .sdd-term }
 
 **垃圾回收** — Copying the still-valid pages out of mostly-invalid blocks so those blocks can be erased and reused. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works); Reclaiming space: pick victim blocks, copy their valid pages elsewhere, then erase them. → [§4.3.3](../core/ch4-ftl.md#433-gc-implementation-three-steps)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
-
-### GCR { #term-gcr .sdd-term }
-
-Galactic Cosmic Rays (high-energy interstellar particles)  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### generator matrix G { #term-generator-matrix-g .sdd-term }
 
@@ -1080,12 +1080,12 @@ low-dropout regulator (a small linear voltage regulator)
 
 ### LEO / MEO / GEO { #term-leo-meo-geo .sdd-term }
 
-low / medium / geosynchronous orbit (rising radiation)  
+**低軌 / 中軌 / 地球靜止軌道（台：低軌道 / 中軌道 / 地球同步軌道）** — Low, medium and geostationary Earth orbit, in rising order of radiation. → [§E.1](../supplements/e-aerospace-storage.md#e1-background-why-space-needs-storage-and-why-solid-state)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
-### LET { #term-let .sdd-term }
+### linear energy transfer (LET) { #term-linear-energy-transfer-let .sdd-term }
 
-Linear Energy Transfer — particle energy deposition; sets upset threshold  
+**線性能量傳輸（台：線性能量轉移）** — Energy a particle deposits per unit of path; upsets begin above a threshold LET. → [§E.2.6](../supplements/e-aerospace-storage.md#e26-current-practice-trends)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### link { #term-link .sdd-term }
@@ -1189,11 +1189,6 @@ logical unit number
 
 Master Boot Record (legacy partition table)  
 <small>From: the site-wide acronym list</small>
-
-### MBU / MEU { #term-mbu-meu .sdd-term }
-
-Multiple-Bit Upset — one strike flips adjacent bits (challenges ECC)  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### MCU { #term-mcu .sdd-term }
 
@@ -1304,6 +1299,11 @@ mean time between failures
 
 **多路徑** — Reaching the same namespace over more than one path, for redundancy or bandwidth. → [§6.8](../core/ch6-nvme.md#68-nvme-over-fabrics)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
+
+### multiple-bit upset (MBU) { #term-multiple-bit-upset-mbu .sdd-term }
+
+**多位翻轉（台：多位元翻轉）** — One strike flipping several adjacent bits, which can overwhelm a codeword. → [§E.2.2](../supplements/e-aerospace-storage.md#e22-see-single-event-effects-the-instantaneous-ones)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### MWr { #term-mwr .sdd-term }
 
@@ -1680,14 +1680,19 @@ quality of service (how consistent latency is)
 
 ## R { #letter-r }
 
-### rad / krad / Gray { #term-rad-krad-gray .sdd-term }
+### rad / krad / gray { #term-rad-krad-gray .sdd-term }
 
-units of absorbed radiation dose  
+**拉德 / 千拉德 / 戈瑞（台：雷德 / 千雷德 / 戈雷）** — Units of absorbed radiation dose (1 gray = 100 rad). → [§E.2.1](../supplements/e-aerospace-storage.md#e21-tid-total-ionizing-dose-radiation-accelerated-aging)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### rad-hard vs rad-tolerant { #term-rad-hard-vs-rad-tolerant .sdd-term }
 
-hardened silicon vs COTS + system mitigation  
+**抗輻射加固 / 耐輻射（台：抗輻射強化 / 耐輻射）** — Hardened silicon versus commercial parts made safe by system-level mitigation. → [§E.2.4](../supplements/e-aerospace-storage.md#e24-mitigation-two-philosophies)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
+### radiation hardness assurance (RHA) { #term-radiation-hardness-assurance-rha .sdd-term }
+
+**抗輻射保證** — The process of showing that parts and system will survive the mission's radiation. → [§E.2.6](../supplements/e-aerospace-storage.md#e26-current-practice-trends)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### RAID { #term-raid .sdd-term }
@@ -1815,14 +1820,9 @@ read disturb
 **重傳** — Resending TLPs from the replay buffer after a NAK or timeout. → [§5.8](../core/ch5-pcie.md#58-data-link-layer)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
-### RHA { #term-rha .sdd-term }
-
-Radiation Hardness Assurance  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
 ### RHBD / RHBP { #term-rhbd-rhbp .sdd-term }
 
-Rad-Hardening By Design / By Process  
+**設計加固 / 工藝加固（台：設計強化 / 製程強化）** — Radiation hardening by design (layout, cells) and by process (substrates such as SOI). → [§E.2.4](../supplements/e-aerospace-storage.md#e24-mitigation-two-philosophies)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### ring / circular queue { #term-ring-circular-queue .sdd-term }
@@ -1927,16 +1927,6 @@ Small Computer System Interface
 software development kit  
 <small>From: the site-wide acronym list</small>
 
-### SEE { #term-see .sdd-term }
-
-Single Event Effect — single-particle-strike disruption  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
-### SEFI { #term-sefi .sdd-term }
-
-Single Event Functional Interrupt — device hangs, needs reset  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
 ### segment { #term-segment .sdd-term }
 
 **段（台：區段）** — A group of SGL descriptors stored together; segments chain to form the list. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
@@ -1957,16 +1947,6 @@ Single Event Functional Interrupt — device hangs, needs reset
 **段摘要區（台：區段摘要區）** — The record of which node owns each block, the twin of the FTL's P2L table. → [§C.2.1](../supplements/c-flash-file-systems.md#c21-disk-layout)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
-### SEGR / SEB { #term-segr-seb .sdd-term }
-
-Single Event Gate Rupture / Burnout — destructive, high-voltage nodes  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
-### SEL { #term-sel .sdd-term }
-
-Single Event Latchup — destructive high-current short  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
 ### sequence number { #term-sequence-number .sdd-term }
 
 **序列號（台：序號）** — A number the Data Link Layer stamps on each TLP so the receiver can detect gaps and duplicates. → [§5.8](../core/ch5-pcie.md#58-data-link-layer)  
@@ -1981,16 +1961,6 @@ Single Event Latchup — destructive high-current short
 
 **串行 / 並行總線（台：序列 / 平行匯流排）** — Sending bits one after another on few wires, versus many bits at once on many wires sharing a clock. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
-
-### SET { #term-set .sdd-term }
-
-Single Event Transient — voltage glitch  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
-### SEU { #term-seu .sdd-term }
-
-Single Event Upset — soft bit flip (≈ Ch3 bit error)  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### SHA { #term-sha .sdd-term }
 
@@ -2007,10 +1977,45 @@ Secure Hash Algorithm
 **邊帶信號（台：邊帶訊號）** — A slow single-purpose wire beside the data lanes, such as PERST# (reset) or CLKREQ# (clock request). → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management); A dedicated wire beside the data path; PCIe moved most of PCI's onto in-band messages. → [§5.4](../core/ch5-pcie.md#54-tlp-types)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
+### silicon on insulator (SOI) { #term-silicon-on-insulator-soi .sdd-term }
+
+**絕緣體上矽（台：絕緣層上覆矽）** — A substrate that isolates transistors and so prevents latch-up. → [§E.2.4](../supplements/e-aerospace-storage.md#e24-mitigation-two-philosophies)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
 ### simulation / emulation { #term-simulation-emulation .sdd-term }
 
 **仿真 / 模擬** — Modelling a chip in software, versus reproducing its design in hardware that runs at speed. → [§7.3.1](../core/ch7-testing.md#731-emulator-vs-fpga)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
+
+### single-event effect (SEE) { #term-single-event-effect-see .sdd-term }
+
+**單粒子效應（台：單一事件效應）** — Damage from one particle strike, from a flipped bit to a destroyed chip. → [§E.2.2](../supplements/e-aerospace-storage.md#e22-see-single-event-effects-the-instantaneous-ones)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
+### single-event functional interrupt (SEFI) { #term-single-event-functional-interrupt-sefi .sdd-term }
+
+**單粒子功能中斷（台：單一事件功能中斷）** — A strike that hangs control logic until a reset or power cycle. → [§E.2.2](../supplements/e-aerospace-storage.md#e22-see-single-event-effects-the-instantaneous-ones)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
+### single-event gate rupture / burnout (SEGR / SEB) { #term-single-event-gate-rupture-burnout-segr-seb .sdd-term }
+
+**單粒子柵穿 / 燒毀（台：單一事件閘極破裂 / 燒毀）** — Destructive strikes at high-voltage nodes such as NAND's charge pumps. → [§E.2.2](../supplements/e-aerospace-storage.md#e22-see-single-event-effects-the-instantaneous-ones)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
+### single-event latch-up (SEL) { #term-single-event-latch-up-sel .sdd-term }
+
+**單粒子閂鎖（台：單一事件閂鎖）** — A strike that turns on a parasitic thyristor and short-circuits the chip unless power is cut. → [§E.2.2](../supplements/e-aerospace-storage.md#e22-see-single-event-effects-the-instantaneous-ones)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
+### single-event transient (SET) { #term-single-event-transient-set .sdd-term }
+
+**單粒子瞬態（台：單一事件暫態）** — A momentary voltage glitch that can be latched as a wrong value. → [§E.2.2](../supplements/e-aerospace-storage.md#e22-see-single-event-effects-the-instantaneous-ones)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
+### single-event upset (SEU) { #term-single-event-upset-seu .sdd-term }
+
+**單粒子翻轉（台：單一事件翻轉）** — A bit flipped by a particle strike; correctable. → [§E.2.2](../supplements/e-aerospace-storage.md#e22-see-single-event-effects-the-instantaneous-ones)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### skip / replace strategy { #term-skip-replace-strategy .sdd-term }
 
@@ -2047,15 +2052,20 @@ Storage Networking Industry Association
 **軟件定義閃存（台：軟體定義快閃記憶體）** — Baidu's host-managed flash design, which writes whole erase blocks and so needs no GC. → [§4.10](../core/ch4-ftl.md#410-host-based-ftl)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
-### SOI { #term-soi .sdd-term }
+### solar particle event (SPE) { #term-solar-particle-event-spe .sdd-term }
 
-Silicon-On-Insulator (latchup-resistant substrate)  
+**太陽粒子事件** — A burst of protons and ions from a solar flare or coronal mass ejection. → [§E.1](../supplements/e-aerospace-storage.md#e1-background-why-space-needs-storage-and-why-solid-state)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### solid-state drive (SSD) { #term-solid-state-drive-ssd .sdd-term }
 
 **固態硬盤（台：固態硬碟）** — A storage device that keeps data as charge in flash chips, run by a controller, with no moving parts. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
+
+### solid-state recorder / mass memory unit (SSR / MMU) { #term-solid-state-recorder-mass-memory-unit-ssr-mmu .sdd-term }
+
+**固態記錄器 / 大容量存儲單元（台：固態記錄器 / 大容量記憶體單元）** — A spacecraft's flash-based data store for payload data and flight software. → [§E.1](../supplements/e-aerospace-storage.md#e1-background-why-space-needs-storage-and-why-solid-state)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### source block / destination block { #term-source-block-destination-block .sdd-term }
 
@@ -2064,18 +2074,13 @@ Silicon-On-Insulator (latchup-resistant substrate)
 
 ### South Atlantic Anomaly { #term-south-atlantic-anomaly .sdd-term }
 
-LEO region of elevated radiation  
+**南大西洋異常區** — Where the inner belt dips low, giving low orbits a dose hot spot. → [§E.1](../supplements/e-aerospace-storage.md#e1-background-why-space-needs-storage-and-why-solid-state)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### SPDK { #term-spdk .sdd-term }
 
 Storage Performance Development Kit (user-space NVMe driver)  
 <small>From: the site-wide acronym list</small>
-
-### SPE { #term-spe .sdd-term }
-
-Solar Particle Event (flare/CME particle burst)  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### SPI { #term-spi .sdd-term }
 
@@ -2091,11 +2096,6 @@ single-root I/O virtualization (one PCIe device appears as many)
 
 static random-access memory  
 <small>From: the site-wide acronym list</small>
-
-### SSR / MMU { #term-ssr-mmu .sdd-term }
-
-Solid State Recorder / Mass Memory Unit (spacecraft storage)  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### stacked gate layers { #term-stacked-gate-layers .sdd-term }
 
@@ -2209,11 +2209,6 @@ Transmission Control Protocol
 **吞吐量 / 帶寬（台：吞吐量 / 頻寬）** — Data moved per second (MB/s), the measure of sequential transfers. → [§1.5.2](../core/ch1-overview.md#152-performance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
-### TID { #term-tid .sdd-term }
-
-Total Ionizing Dose — cumulative radiation damage (≈ radiation-driven wear, Ch3)  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
 ### timestamp { #term-timestamp .sdd-term }
 
 **時間戳（台：時間戳記）** — A sequence number written with each page; during a rebuild the newest copy of an LBA wins. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
@@ -2224,15 +2219,15 @@ Total Ionizing Dose — cumulative radiation damage (≈ radiation-driven wear, 
 triple-level cell (3 bits per cell)  
 <small>From: the site-wide acronym list</small>
 
-### TMR { #term-tmr .sdd-term }
-
-Triple Modular Redundancy (triplicate + vote)  
-<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
-
 ### topology { #term-topology .sdd-term }
 
 **拓撲結構（台：拓樸結構）** — How the devices of a system are connected; PCIe's is a tree. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### total ionizing dose (TID) { #term-total-ionizing-dose-tid .sdd-term }
+
+**總電離劑量（台：總游離劑量）** — Radiation damage accumulated over a mission as charge trapped in oxides, like wear sped up. → [§E.2.1](../supplements/e-aerospace-storage.md#e21-tid-total-ionizing-dose-radiation-accelerated-aging)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### Transaction Layer { #term-transaction-layer .sdd-term }
 
@@ -2258,6 +2253,11 @@ Triple Modular Redundancy (triplicate + vote)
 
 **Trim 指令** — The host telling the drive which LBAs it no longer needs (Deallocate in NVMe, UNMAP in SCSI), so GC stops copying them. → [§4.4](../core/ch4-ftl.md#44-trim)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### triple modular redundancy (TMR) { #term-triple-modular-redundancy-tmr .sdd-term }
+
+**三模冗餘（台：三重模組冗餘）** — Three copies of critical logic with a majority vote on every output. → [§E.2.5](../supplements/e-aerospace-storage.md#e25-the-system-level-toolkit-chapter-34-extremized)  
+<small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### tunnel oxide { #term-tunnel-oxide .sdd-term }
 
@@ -2338,7 +2338,7 @@ uninterruptible power supply
 
 ### upscreening { #term-upscreening .sdd-term }
 
-testing/qualifying commercial parts for space use  
+**升級篩選** — Testing and qualifying commercial parts for use in space. → [§E.2.6](../supplements/e-aerospace-storage.md#e26-current-practice-trends)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### upstream / downstream port { #term-upstream-downstream-port .sdd-term }
@@ -2375,7 +2375,7 @@ vStorage APIs for Array Integration (VMware)
 
 ### Van Allen belts { #term-van-allen-belts .sdd-term }
 
-Earth's trapped-radiation regions  
+**范艾倫輻射帶** — The regions where Earth's magnetic field traps charged particles. → [§E.1](../supplements/e-aerospace-storage.md#e1-background-why-space-needs-storage-and-why-solid-state)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
 ### variable node (VN) { #term-variable-node-vn .sdd-term }
