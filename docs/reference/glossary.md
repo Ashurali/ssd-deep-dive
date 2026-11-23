@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 486 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 488 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -484,7 +484,7 @@ allocate blocks at flush time, not write time
 
 ### Descriptor / Attribute / Flag { #term-descriptor-attribute-flag .sdd-term }
 
-device config metadata  
+**描述符 / 屬性 / 標誌（台：描述元 / 屬性 / 旗標）** — The three kinds of device configuration data, read and written with Query UPIUs. → [§B.2](../supplements/b-ufs.md#b2-the-ufs-protocol-stack)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### DETO { #term-deto .sdd-term }
@@ -584,15 +584,15 @@ Error Detection And Correction; periodic read-correct-rewrite (≈ Read Scrub, C
 Enterprise and Data Center Standard Form Factor (E1 / E3 drives)  
 <small>From: the site-wide acronym list</small>
 
+### embedded MultiMediaCard (eMMC) { #term-embedded-multimediacard-emmc .sdd-term }
+
+**嵌入式多媒體卡** — UFS's predecessor: a parallel, half-duplex bus with no real command queuing. → [§B.1](../supplements/b-ufs.md#b1-what-ufs-is-the-emmc-successor)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
 ### EMI { #term-emi .sdd-term }
 
 electromagnetic interference  
 <small>From: the site-wide acronym list</small>
-
-### eMMC { #term-emmc .sdd-term }
-
-predecessor; parallel, half-duplex, no queuing  
-<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### empty (fresh) drive / full drive { #term-empty-fresh-drive-full-drive .sdd-term }
 
@@ -902,7 +902,7 @@ Host Controlled Thermal Management (NVMe)
 
 ### HIBERN8 { #term-hibern8 .sdd-term }
 
-deep low-power M-PHY link state (≈ DevSleep)  
+**休眠狀態** — M-PHY's deep low-power link state, UFS's counterpart of DevSleep. → [§B.6](../supplements/b-ufs.md#b6-ufs-low-power)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### host interface { #term-host-interface .sdd-term }
@@ -915,10 +915,20 @@ deep low-power M-PHY link state (≈ DevSleep)
 **主機內存緩衝區（台：主機記憶體緩衝區）** — An NVMe feature that lets a drive borrow a slice of host RAM for its map table. → [§4.2.3](../core/ch4-ftl.md#423-hmb-host-memory-buffer)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
+### Host Performance Booster (HPB) { #term-host-performance-booster-hpb .sdd-term }
+
+**主機性能加速（台：主機效能加速）** — The host caches slices of the device's L2P map and sends the physical address with each read. → [§B.8](../supplements/b-ufs.md#b8-hpb-host-performance-booster)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
 ### host-based / device-based { #term-host-based-device-based .sdd-term }
 
 **主機端 / 設備端（台：主機端 / 裝置端）** — An FTL run by software on the host, versus one run by the drive's own controller. → [§4.10](../core/ch4-ftl.md#410-host-based-ftl)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### host-initiated defragmentation { #term-host-initiated-defragmentation .sdd-term }
+
+**主機發起的碎片整理（台：主機啟動的磁碟重組）** — UFS 4.1's host-scheduled clean-up of scattered data to restore read speed. → [§B.9](../supplements/b-ufs.md#b9-modern-developments-ufs-41-and-50)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### hot / warm / cold data { #term-hot-warm-cold-data .sdd-term }
 
@@ -930,14 +940,9 @@ deep low-power M-PHY link state (≈ DevSleep)
 **熱插拔** — Inserting or removing a drive while the system runs, as U.2 and EDSFF bays allow. → [§5.12](../core/ch5-pcie.md#512-pcie-ssd-hot-plug)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
-### HPB { #term-hpb .sdd-term }
-
-Host Performance Booster (host caches L2P; ≈ HMB, Ch4)  
-<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
-
 ### HS-Gear (G1–G6) { #term-hs-gear-g1g6 .sdd-term }
 
-M-PHY speed grades (≈ PCIe generations)  
+**高速檔位** — M-PHY's speed grades, the counterpart of PCIe generations; HS-G6 moves to PAM4. → [§B.2](../supplements/b-ufs.md#b2-the-ufs-protocol-stack)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ## I { #letter-i }
@@ -969,7 +974,7 @@ ext2/3 per-block pointer scheme (fine-grained mapping)
 
 ### Inline Hashing { #term-inline-hashing .sdd-term }
 
-UFS 5.0 hardware integrity hashing  
+**內聯哈希（台：內嵌雜湊）** — UFS 5.0's on-the-fly hardware hashing of data for integrity checking. → [§B.9](../supplements/b-ufs.md#b9-modern-developments-ufs-41-and-50)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### inode { #term-inode .sdd-term }
@@ -1042,11 +1047,6 @@ PCIe **link** power states (active → off)
 
 L1 substates (partial / full link shutdown)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
-
-### L2P { #term-l2p .sdd-term }
-
-logical-to-physical mapping table (Ch4)  
-<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### lane { #term-lane .sdd-term }
 
@@ -1123,9 +1123,14 @@ inefficiency of a log-structured FS atop a log-structured FTL
 **邏輯頁 / 物理頁（台：邏輯頁 / 實體頁）** — The host-sized unit the map tracks, and the flash page that stores it, often holding several logical pages. → [§4.2.2](../core/ch4-ftl.md#422-how-mapping-works-and-the-dram-question)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
-### Logical Unit (LU) { #term-logical-unit-lu .sdd-term }
+### logical unit (LU) { #term-logical-unit-lu .sdd-term }
 
-addressable storage space (≈ NVMe Namespace / SCSI LUN)  
+**邏輯單元** — An independently addressed storage space with its own LBA range, UFS's counterpart of an NVMe namespace. → [§B.4](../supplements/b-ufs.md#b4-logical-units)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
+### logical-to-physical map (L2P) { #term-logical-to-physical-map-l2p .sdd-term }
+
+**邏輯到物理映射表（台：邏輯至實體映射表）** — The FTL's table from each logical address to the flash location that holds it. → [§B.8](../supplements/b-ufs.md#b8-hpb-host-performance-booster)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### low-density parity-check code (LDPC) { #term-low-density-parity-check-code-ldpc .sdd-term }
@@ -1147,12 +1152,7 @@ logical unit number
 
 ### M-PHY { #term-m-phy .sdd-term }
 
-UFS physical layer (differential serial, "Gears")  
-<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
-
-### MAC / HMAC { #term-mac-hmac .sdd-term }
-
-message authentication code (signs RPMB access)  
+**M-PHY物理層（台：M-PHY實體層）** — UFS's physical layer: differential serial lanes whose speed grade is the Gear. → [§B.2](../supplements/b-ufs.md#b2-the-ufs-protocol-stack)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### (main) controller { #term-main-controller .sdd-term }
@@ -1162,7 +1162,7 @@ message authentication code (signs RPMB access)
 
 ### managed NAND { #term-managed-nand .sdd-term }
 
-controller + flash + firmware in one package  
+**管理型NAND** — Controller, flash and firmware in one package, so the host never handles raw flash. → [§B.1](../supplements/b-ufs.md#b1-what-ufs-is-the-emmc-successor)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### mapping / map table (L2P) { #term-mapping-map-table-l2p .sdd-term }
@@ -1190,11 +1190,6 @@ Master Boot Record (legacy partition table)
 Multiple-Bit Upset — one strike flips adjacent bits (challenges ECC)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
-### MCQ { #term-mcq .sdd-term }
-
-Multi-Circular Queue (≈ NVMe multi-queue)  
-<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
-
 ### MCU { #term-mcu .sdd-term }
 
 microcontroller unit  
@@ -1209,6 +1204,11 @@ Minimum DEVSLP Assertion Time (SATA)
 
 **內存映射（台：記憶體映射）** — Making a device's registers appear as host memory addresses, so the CPU reaches them with ordinary reads and writes. → [§5.6](../core/ch5-pcie.md#56-config-space-and-bars)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### message authentication code (MAC / HMAC) { #term-message-authentication-code-mac-hmac .sdd-term }
+
+**消息認證碼（台：訊息鑑別碼）** — A keyed checksum proving that a message came from a key holder and was not altered; RPMB uses HMAC-SHA256. → [§B.5](../supplements/b-ufs.md#b5-rpmb-replay-protected-memory-block)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### metadata { #term-metadata .sdd-term }
 
@@ -1227,7 +1227,12 @@ Minimum DEVSLP Assertion Time (SATA)
 
 ### MIPI { #term-mipi .sdd-term }
 
-consortium behind mobile interface specs  
+MIPI Alliance (mobile interface standards body)  
+<small>From: the site-wide acronym list</small>
+
+### MIPI Alliance { #term-mipi-alliance .sdd-term }
+
+**MIPI聯盟** — The consortium that writes mobile interface standards, including UniPro and M-PHY. → [§B.2](../supplements/b-ufs.md#b2-the-ufs-protocol-stack)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### mirroring { #term-mirroring .sdd-term }
@@ -1279,6 +1284,11 @@ megatransfers (MT/s = millions of transfers per second)
 
 mean time between failures  
 <small>From: the site-wide acronym list</small>
+
+### Multi-Circular Queue (MCQ) { #term-multi-circular-queue-mcq .sdd-term }
+
+**多循環隊列（台：多重環狀佇列）** — UFS 4.0's multiple submission and completion queues, so each CPU core can submit in parallel. → [§B.9](../supplements/b-ufs.md#b9-modern-developments-ufs-41-and-50)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### multi-head logging { #term-multi-head-logging .sdd-term }
 
@@ -1787,7 +1797,12 @@ read disturb
 
 ### replay attack { #term-replay-attack .sdd-term }
 
-re-sending a recorded message to undo a security state  
+**重放攻擊（台：重送攻擊）** — Re-sending a recorded legitimate message later to undo a security state. → [§B.5](../supplements/b-ufs.md#b5-rpmb-replay-protected-memory-block)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
+### Replay Protected Memory Block (RPMB) { #term-replay-protected-memory-block-rpmb .sdd-term }
+
+**重放保護內存塊（台：重放保護記憶體區塊）** — A small authenticated region whose writes need a valid MAC and the current write counter. → [§B.5](../supplements/b-ufs.md#b5-rpmb-replay-protected-memory-block)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### retransmission (retry) { #term-retransmission-retry .sdd-term }
@@ -1839,11 +1854,6 @@ Rad-Hardening By Design / By Process
 
 remote procedure call  
 <small>From: the site-wide acronym list</small>
-
-### RPMB { #term-rpmb .sdd-term }
-
-Replay-Protected Memory Block (authenticated secure region)  
-<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### RRAM { #term-rram .sdd-term }
 
@@ -2276,14 +2286,19 @@ universal asynchronous receiver-transmitter (serial port)
 upper confidence limit  
 <small>From: the site-wide acronym list</small>
 
-### UFS { #term-ufs .sdd-term }
+### UFS InterConnect layer (UIC) { #term-ufs-interconnect-layer-uic .sdd-term }
 
-Universal Flash Storage (JEDEC mobile storage standard)  
+**UFS互連層** — UniPro and M-PHY together, the link-plus-physical foundation of the stack. → [§B.2](../supplements/b-ufs.md#b2-the-ufs-protocol-stack)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
-### UIC { #term-uic .sdd-term }
+### UFS Protocol Information Unit (UPIU) { #term-ufs-protocol-information-unit-upiu .sdd-term }
 
-UFS Interconnect (UniPro + M-PHY)  
+**UFS協議信息單元（台：UFS協定資訊單元）** — The UFS packet: a basic header naming the logical unit and task, then type-specific fields and optional data. → [§B.3](../supplements/b-ufs.md#b3-upiu-the-ufs-packet)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
+### UFS Transport Protocol (UTP) { #term-ufs-transport-protocol-utp .sdd-term }
+
+**UFS傳輸協議層（台：UFS傳輸協定層）** — The layer that wraps commands, data and responses into UPIUs. → [§B.2](../supplements/b-ufs.md#b2-the-ufs-protocol-stack)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### uncorrectable ECC error (UECC) { #term-uncorrectable-ecc-error-uecc .sdd-term }
@@ -2298,18 +2313,18 @@ UFS Interconnect (UniPro + M-PHY)
 
 ### UniPro { #term-unipro .sdd-term }
 
-UFS link/transport layer (flow control, retransmit)  
+**UniPro統一協議（台：UniPro統一協定）** — UFS's link layer: reliable delivery with flow control and retransmission. → [§B.2](../supplements/b-ufs.md#b2-the-ufs-protocol-stack)  
+<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
+### Universal Flash Storage (UFS) { #term-universal-flash-storage-ufs .sdd-term }
+
+**通用閃存存儲（台：通用快閃儲存）** — JEDEC's storage standard for phones and other mobile devices: managed NAND speaking SCSI over a MIPI serial link. → [§B.1](../supplements/b-ufs.md#b1-what-ufs-is-the-emmc-successor)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### UNMAP { #term-unmap .sdd-term }
 
 the SCSI / UFS equivalent of Trim  
 <small>From: the site-wide acronym list</small>
-
-### UPIU { #term-upiu .sdd-term }
-
-UFS Protocol Information Unit (the packet)  
-<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### UPS { #term-ups .sdd-term }
 
@@ -2335,11 +2350,6 @@ Universal Serial Bus
 
 **用戶態 / 內核態（台：使用者空間 / 核心空間）** — Where ordinary programs run versus where the operating-system kernel runs; XtremIO runs in user space. → [§2.6.3](../core/ch2-controllers-afa.md#263-software-architecture-the-real-value)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
-
-### UTP { #term-utp .sdd-term }
-
-UFS Transport Protocol (makes UPIUs)  
-<small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ## V { #letter-v }
 
@@ -2417,7 +2427,7 @@ workload-dependent preconditioning (SNIA)
 
 ### Well-Known LU { #term-well-known-lu .sdd-term }
 
-special LUs: Boot, RPMB, Device, Report  
+**知名邏輯單元** — A logical unit with a fixed role: Boot, RPMB, Device or Report LUNs. → [§B.4](../supplements/b-ufs.md#b4-logical-units)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### WIPC { #term-wipc .sdd-term }
@@ -2452,7 +2462,7 @@ wear leveling
 
 ### WriteBooster { #term-writebooster .sdd-term }
 
-UFS pseudo-SLC turbo write buffer (≈ SLC Cache, Ch4)  
+**寫入加速（WriteBooster）** — UFS's host-configurable SLC cache: part of the TLC or QLC array run as a fast write buffer. → [§B.7](../supplements/b-ufs.md#b7-writebooster)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ## X { #letter-x }
@@ -2486,9 +2496,9 @@ Yangtze Memory Technologies (China's NAND flash maker)
 **分區命名空間** — NVMe zones that must be written sequentially and reset as a whole, moving placement and GC to the host. → [§4.11](../core/ch4-ftl.md#zns-zoned-namespaces-nvme-20)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
-### ZUFS { #term-zufs .sdd-term }
+### Zoned UFS (ZUFS) { #term-zoned-ufs-zufs .sdd-term }
 
-Zoned UFS (≈ ZNS for mobile)  
+**分區UFS** — UFS 4.1's zoned storage, ZNS for mobile: host and device cooperate on data placement. → [§B.9](../supplements/b-ufs.md#b9-modern-developments-ufs-41-and-50)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
 ### ZUFS / zoned F2FS { #term-zufs-zoned-f2fs .sdd-term }

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The UFS protocol stack and its PCIe/NVMe counterparts</title>
+<desc>Four layers from top to bottom. The application layer (UAP) holds the SCSI-based command set and the Device and Task Managers; it corresponds to the NVMe command set. The transport layer (UTP) wraps commands and data in UPIU packets; it corresponds to the PCIe Transaction Layer. Below them, the interconnect layer (UIC) holds MIPI UniPro, the reliable link with flow control and retries, corresponding to the PCIe Data Link Layer, and MIPI M-PHY, the serial lanes whose speed is set by the Gear, corresponding to the PCIe Physical Layer. Host and device each run the whole stack and talk over M-PHY lanes.</desc>
+<rect class="f-cyan" x="16" y="10" width="368" height="48" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="30" font-weight="700" fill="#e8eeff">Application layer (UAP)</text>
+<text class="f-mute" x="372" y="30" text-anchor="end" fill="#a3abc4">≈ NVMe command set</text>
+<text class="f-ink" x="28" y="49" fill="#e8eeff">SCSI commands; Device and Task Managers</text>
+<rect class="f-amber" x="16" y="68" width="368" height="48" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="88" font-weight="700" fill="#e8eeff">Transport layer (UTP)</text>
+<text class="f-mute" x="372" y="88" text-anchor="end" fill="#a3abc4">≈ PCIe Transaction Layer</text>
+<text class="f-ink" x="28" y="107" fill="#e8eeff">wraps commands and data in UPIUs</text>
+<rect class="f-line f-dash" x="16" y="126" width="368" height="142" rx="8" fill="none" stroke="#7d86a3" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text class="f-ink" x="28" y="146" font-weight="700" fill="#e8eeff">Interconnect layer (UIC)</text>
+<rect class="f-violet" x="28" y="156" width="344" height="48" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="40" y="176" font-weight="700" fill="#e8eeff">MIPI UniPro</text>
+<text class="f-mute" x="360" y="176" text-anchor="end" fill="#a3abc4">≈ PCIe Data Link Layer</text>
+<text class="f-ink" x="40" y="195" fill="#e8eeff">reliable link: flow control, retries</text>
+<rect class="f-green" x="28" y="212" width="344" height="48" rx="6" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="40" y="232" font-weight="700" fill="#e8eeff">MIPI M-PHY</text>
+<text class="f-mute" x="360" y="232" text-anchor="end" fill="#a3abc4">≈ PCIe Physical Layer</text>
+<text class="f-ink" x="40" y="251" fill="#e8eeff">serial lanes; speed set by the Gear</text>
+<text class="f-mute" x="200" y="290" text-anchor="middle" fill="#a3abc4">host ⇄ device over the M-PHY lanes</text>
+</svg>
