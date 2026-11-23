@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 484 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 486 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -140,12 +140,12 @@ Advanced eXtensible Interface (Arm on-chip high-speed bus)
 
 ### BCH code { #term-bch-code .sdd-term }
 
-algebraic multi-error-correcting cyclic code (hard-decision)  
+**BCH碼** — An algebraic, cyclic code that corrects several errors per codeword from hard bits. → [§A.3.4](../supplements/a-ecc-coding-theory.md#a34-where-bch-fits)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### belief propagation / sum-product { #term-belief-propagation-sum-product .sdd-term }
 
-soft-decision iterative decoder  
+**置信傳播 / 和積算法（台：信念傳遞 / 和積演算法）** — The soft-decision iterative decoder that passes LLR messages along the Tanner graph. → [§A.5.2](../supplements/a-ecc-coding-theory.md#a52-sum-product-belief-propagation-soft-decision)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### BGA { #term-bga .sdd-term }
@@ -175,7 +175,7 @@ Basic Input/Output System (PC boot firmware)
 
 ### bit-flipping { #term-bit-flipping .sdd-term }
 
-hard-decision iterative decoder  
+**比特翻轉（台：位元翻轉）** — A hard-decision iterative decoder that flips the bits sitting in the most failed checks. → [§A.5.1](../supplements/a-ecc-coding-theory.md#a51-bit-flipping-hard-decision)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### block / inode bitmap { #term-block-inode-bitmap .sdd-term }
@@ -292,7 +292,7 @@ Configuration Write request (PCIe TLP)
 
 ### check node (CN) { #term-check-node-cn .sdd-term }
 
-one per parity equation (row of H)  
+**校驗節點（台：檢查節點）** — A Tanner-graph node for one parity equation, a row of H. → [§A.4.2](../supplements/a-ecc-coding-theory.md#a42-the-tanner-graph)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### checkpoint (CP) { #term-checkpoint-cp .sdd-term }
@@ -322,7 +322,12 @@ complementary metal–oxide–semiconductor (standard logic process)
 
 ### code rate R = k/n { #term-code-rate-r-kn .sdd-term }
 
-data bits ÷ total bits  
+**碼率（台：編碼率）** — The fraction of a codeword that is data; a higher rate means less overhead and weaker protection. → [§A.2](../supplements/a-ecc-coding-theory.md#a2-the-communication-system-model)  
+<small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
+
+### codeword { #term-codeword .sdd-term }
+
+**碼字** — The n bits the encoder produces from k data bits: the data plus its parity. → [§A.2](../supplements/a-ecc-coding-theory.md#a2-the-communication-system-model)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### cold data / hot data { #term-cold-data-hot-data .sdd-term }
@@ -392,7 +397,7 @@ F2FS's two write schemes
 
 ### correction capability t { #term-correction-capability-t .sdd-term }
 
-⌊(dmin−1)/2⌋ errors correctable  
+**糾錯能力（台：錯誤更正能力）** — How many bit errors per codeword a code can always fix: t = ⌊(dmin − 1)/2⌋. → [§A.3.1](../supplements/a-ecc-coding-theory.md#a31-hamming-distance-the-concept-everything-rests-on)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### COTS { #term-cots .sdd-term }
@@ -656,7 +661,7 @@ endpoint (a PCIe device at a leaf of the tree)
 
 ### error-locator polynomial { #term-error-locator-polynomial .sdd-term }
 
-BCH: its roots locate the errors  
+**錯誤位置多項式** — In BCH decoding, the polynomial built from the syndrome whose roots give the error positions. → [§A.3.4](../supplements/a-ecc-coding-theory.md#a34-where-bch-fits)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### exclusive OR (XOR) { #term-exclusive-or-xor .sdd-term }
@@ -815,12 +820,12 @@ Galactic Cosmic Rays (high-energy interstellar particles)
 
 ### generator matrix G { #term-generator-matrix-g .sdd-term }
 
-encodes: c = u·G  
+**生成矩陣** — The k × n matrix that encodes: c = u·G. → [§A.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### GF(2) { #term-gf2 .sdd-term }
 
-binary field; `+` is XOR  
+**二元域（台：二元有限體）** — The two-element Galois field, where addition is XOR and multiplication is AND. → [§A.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### GMR { #term-gmr .sdd-term }
@@ -855,14 +860,19 @@ graphical user interface
 hash-to-physical table (XtremIO metadata)  
 <small>From: the site-wide acronym list</small>
 
+### Hamming code { #term-hamming-code .sdd-term }
+
+**漢明碼** — The single-error-correcting code family; Hamming(7,4) protects 4 data bits with 3 parity bits. → [§A.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h)  
+<small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
+
 ### Hamming distance { #term-hamming-distance .sdd-term }
 
-# positions two codewords differ  
+**漢明距離** — The number of positions in which two words differ. → [§A.3.1](../supplements/a-ecc-coding-theory.md#a31-hamming-distance-the-concept-everything-rests-on)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### hard / soft decision read { #term-hard-soft-decision-read .sdd-term }
 
-single read vs multiple-strobe read for LLRs  
+**硬判決 / 軟判決讀取（台：硬式決策 / 軟式決策讀取）** — One sensing that yields bits only, versus several strobes that also yield each bit's confidence. → [§A.7](../supplements/a-ecc-coding-theory.md#a7-the-ldpc-codec-inside-the-ssd)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### hard disk drive (HDD) { #term-hard-disk-drive-hdd .sdd-term }
@@ -1063,11 +1073,6 @@ link CRC (PCIe Data Link Layer checksum)
 low-dropout regulator (a small linear voltage regulator)  
 <small>From: the site-wide acronym list</small>
 
-### LDPC { #term-ldpc .sdd-term }
-
-linear code with a **sparse** parity-check matrix  
-<small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
-
 ### LEO / MEO / GEO { #term-leo-meo-geo .sdd-term }
 
 low / medium / geosynchronous orbit (rising radiation)  
@@ -1088,9 +1093,9 @@ log-structured file system (append-only writes)
 **鏈路 (Link)（台：連結）** — The connection between two PCIe ports, made of one or more lanes. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
-### LLR { #term-llr .sdd-term }
+### log-likelihood ratio (LLR) { #term-log-likelihood-ratio-llr .sdd-term }
 
-log-likelihood ratio; sign = guess, magnitude = confidence  
+**對數似然比（台：對數概似比）** — log P(bit = 0) / P(bit = 1) given the reading: the sign is the best guess, the size is the confidence. → [§A.5.2](../supplements/a-ecc-coding-theory.md#a52-sum-product-belief-propagation-soft-decision)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### log-on-log { #term-log-on-log .sdd-term }
@@ -1122,6 +1127,11 @@ inefficiency of a log-structured FS atop a log-structured FTL
 
 addressable storage space (≈ NVMe Namespace / SCSI LUN)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
+### low-density parity-check code (LDPC) { #term-low-density-parity-check-code-ldpc .sdd-term }
+
+**低密度奇偶校驗碼（台：低密度同位元檢查碼）** — A linear code whose parity-check matrix is sparse, decoded iteratively with soft information. → [§A.4.1](../supplements/a-ecc-coding-theory.md#a41-what-ldpc-is)  
+<small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### LTSSM { #term-ltssm .sdd-term }
 
@@ -1207,12 +1217,12 @@ Minimum DEVSLP Assertion Time (SATA)
 
 ### min-sum { #term-min-sum .sdd-term }
 
-hardware-friendly approximation of sum-product  
+**最小和算法（台：最小和演算法）** — The hardware-friendly approximation of sum-product: the sign from the product of signs, the size from the smallest input. → [§A.5.2](../supplements/a-ecc-coding-theory.md#a52-sum-product-belief-propagation-soft-decision)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### minimum distance dmin { #term-minimum-distance-dmin .sdd-term }
 
-smallest distance between any two codewords  
+**最小距離** — The smallest Hamming distance between any two codewords; it fixes how many errors a code can detect and correct. → [§A.3.1](../supplements/a-ecc-coding-theory.md#a31-hamming-distance-the-concept-everything-rests-on)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### MIPI { #term-mipi .sdd-term }
@@ -1339,7 +1349,7 @@ F2FS metadata unit: inode / direct node / indirect node
 
 ### normalized / offset min-sum { #term-normalized-offset-min-sum .sdd-term }
 
-corrected min-sum variants  
+**歸一化 / 偏移最小和（台：正規化 / 偏移最小和）** — Min-sum corrected for its overconfidence, by scaling the messages down or subtracting a constant. → [§A.5.2](../supplements/a-ecc-coding-theory.md#a52-sum-product-belief-propagation-soft-decision)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### NQN { #term-nqn .sdd-term }
@@ -1463,7 +1473,7 @@ physical-to-logical (reverse map)
 
 ### parity-check matrix H { #term-parity-check-matrix-h .sdd-term }
 
-checks: H·cᵀ = 0  
+**校驗矩陣（台：同位檢查矩陣）** — The (n − k) × n matrix whose rows are the parity equations; every codeword satisfies H·cᵀ = 0. → [§A.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### Partial / Slumber / DevSleep { #term-partial-slumber-devsleep .sdd-term }
@@ -1630,7 +1640,7 @@ power disable (EDSFF sideband signal)
 
 ### QC-LDPC { #term-qc-ldpc .sdd-term }
 
-quasi-cyclic LDPC built from circulant blocks (HW-friendly)  
+**準循環LDPC碼** — Quasi-cyclic LDPC: H built from small circulant blocks, which makes encoders and decoders compact and parallel. → [§A.6](../supplements/a-ecc-coding-theory.md#a6-ldpc-encoding)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### QLC { #term-qlc .sdd-term }
@@ -1692,7 +1702,7 @@ filesystems that replace the FTL, managing bare NAND
 
 ### RBER / UBER { #term-rber-uber .sdd-term }
 
-raw / uncorrectable bit error rate (Ch1)  
+**原始誤碼率 / 不可糾正誤碼率（台：原始位元錯誤率 / 無法更正位元錯誤率）** — The raw bit error rate of the flash before ECC, and the uncorrectable bit error rate users see after it. → [§A.1](../supplements/a-ecc-coding-theory.md#a1-signal-and-noise-the-framing)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### RCB { #term-rcb .sdd-term }
@@ -1712,7 +1722,7 @@ read disturb
 
 ### read retry { #term-read-retry .sdd-term }
 
-**重讀（台：重新讀取）** — Re-reading a page with shifted reference voltages when decoding fails. → [§3.4.2](../core/ch3-nand-flash.md#342-read-retry); Ch3 mechanism; the basis of soft reads  
+**重讀（台：重新讀取）** — Re-reading a page with shifted reference voltages when decoding fails. → [§3.4.2](../core/ch3-nand-flash.md#342-read-retry); Re-reading at shifted reference voltages when decoding fails; soft reads extend it. → [§A.7](../supplements/a-ecc-coding-theory.md#a7-the-ldpc-codec-inside-the-ssd)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### read scrub { #term-read-scrub .sdd-term }
@@ -1727,7 +1737,7 @@ read disturb
 
 ### redundancy / parity { #term-redundancy-parity .sdd-term }
 
-extra bits added to enable correction  
+**冗餘 / 校驗位（台：冗餘 / 同位元）** — Extra bits stored with the data so that errors can be detected and corrected. → [§A.1](../supplements/a-ecc-coding-theory.md#a1-signal-and-noise-the-framing)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### redundancy / parity check { #term-redundancy-parity-check .sdd-term }
@@ -1755,9 +1765,9 @@ extra bits added to enable correction
 **回歸測試** — Re-running existing tests on each new build to catch anything it broke. → [§7.4](../core/ch7-testing.md#74-regression-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
-### regular / irregular { #term-regular-irregular .sdd-term }
+### regular / irregular LDPC { #term-regular-irregular-ldpc .sdd-term }
 
-uniform vs varied row/column weights  
+**規則 / 非規則（台：規則 / 不規則）** — Uniform versus varied row and column weights in H; production codes are irregular. → [§A.4.1](../supplements/a-ecc-coding-theory.md#a41-what-ldpc-is)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### reliability { #term-reliability .sdd-term }
@@ -2124,7 +2134,7 @@ filesystem-wide metadata
 
 ### syndrome s = H·rᵀ { #term-syndrome-s-hrt .sdd-term }
 
-depends only on the error; = 0 if no error  
+**伴隨式（台：症狀）** — The parity-check results for a received word; it depends only on the error and is zero when no error is detected. → [§A.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### System Management Bus (SMBus) { #term-system-management-bus-smbus .sdd-term }
@@ -2139,14 +2149,14 @@ depends only on the error; = 0 if no error
 
 ### systematic form { #term-systematic-form .sdd-term }
 
-G = [I \| P]; data appears uncoded in codeword  
+**系統形式** — G = [I \| P], so the data appears unchanged in the codeword, followed by its parity. → [§A.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ## T { #letter-t }
 
 ### Tanner graph { #term-tanner-graph .sdd-term }
 
-bipartite graph of variable nodes ↔ check nodes  
+**Tanner圖** — The bipartite graph of a code: variable nodes for bits, check nodes for parity equations, an edge for every 1 in H. → [§A.4.2](../supplements/a-ecc-coding-theory.md#a42-the-tanner-graph)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### TCAT { #term-tcat .sdd-term }
@@ -2266,11 +2276,6 @@ universal asynchronous receiver-transmitter (serial port)
 upper confidence limit  
 <small>From: the site-wide acronym list</small>
 
-### UECC { #term-uecc .sdd-term }
-
-uncorrectable ECC error → UBER event  
-<small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
-
 ### UFS { #term-ufs .sdd-term }
 
 Universal Flash Storage (JEDEC mobile storage standard)  
@@ -2280,6 +2285,11 @@ Universal Flash Storage (JEDEC mobile storage standard)
 
 UFS Interconnect (UniPro + M-PHY)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
+### uncorrectable ECC error (UECC) { #term-uncorrectable-ecc-error-uecc .sdd-term }
+
+**不可糾正ECC錯誤（台：無法更正的ECC錯誤）** — A read that every rung of the escalation ladder failed to correct; it is the event UBER counts. → [§A.7](../supplements/a-ecc-coding-theory.md#a7-the-ldpc-codec-inside-the-ssd)  
+<small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### unified / normalized (design) { #term-unified-normalized-design .sdd-term }
 
@@ -2355,7 +2365,7 @@ Earth's trapped-radiation regions
 
 ### variable node (VN) { #term-variable-node-vn .sdd-term }
 
-one per codeword bit  
+**變量節點（台：變數節點）** — A Tanner-graph node for one codeword bit. → [§A.4.2](../supplements/a-ecc-coding-theory.md#a42-the-tanner-graph)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
 ### VDI { #term-vdi .sdd-term }

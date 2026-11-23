@@ -1,6 +1,6 @@
 # Textbook v2 — the big fix (plan)
 
-> Status: **Phases 0–1 done; Phase 2 under way: all seven chapters done, supplements next (23 Nov 2026).** Work is
+> Status: **Phases 0–1 done; Phase 2 under way: all seven chapters and Supplement A done, Supplements B–E next (24 Nov 2026).** Work is
 > committed and pushed on the `textbook-v2` branch; fast-forwarding `main` to it publishes the live
 > site (last published after the Ch 1 pilot). Next: the rest of Phase 2, then Phases 3 and 4.
 
@@ -165,7 +165,7 @@ What was planned:
 
 Each page pass touches only that page and its figures folder, plus the page's new acronyms in
 `includes/abbreviations.md`. The passes run one at a time, so the shared-file rule in "Order of
-work" matters only for parallel sessions. Done: Ch 1–7. For every page:
+work" matters only for parallel sessions. Done: Ch 1–7, Supp A. For every page:
 
 1. Add figures from the table below, replacing every ASCII diagram.
 2. Expand acronyms at first use, and fix forward references (DMA in Ch 2, "interrupt", SMART and
