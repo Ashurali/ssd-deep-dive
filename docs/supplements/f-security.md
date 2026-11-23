@@ -98,7 +98,7 @@ So **sanitizing an SSD must happen inside the drive**, by firmware that knows wh
 
 The NVMe command set gives two ways to erase from inside:
 
-**Format NVM with Secure Erase Settings.** Format reformats a namespace ([Ch 6 §6.7](../core/ch6-nvme.md#67-namespaces)) and can erase it on the way: a *user data erase*, or a *cryptographic erase* that replaces the encryption key. It was designed as a formatting command, so its guarantees are weaker: its scope is a namespace or all of them, and it does not promise to finish if interrupted.
+**Format NVM with Secure Erase Settings.** Format NVM (NVM being non-volatile memory, the spec's word for the drive's storage) reformats a namespace ([Ch 6 §6.7](../core/ch6-nvme.md#67-namespaces)) and can erase it on the way: a *user data erase*, or a *cryptographic erase* that replaces the encryption key. It was designed as a formatting command, so its guarantees are weaker: its scope is a namespace or all of them, and it does not promise to finish if interrupted.
 
 **Sanitize** (added in NVMe 1.3, 2017) is the command built for the job. It offers three actions:
 
