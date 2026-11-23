@@ -311,7 +311,7 @@ M.2 defines only the connector and dimensions — whether a given card speaks SA
 
 **1.6.5 — U.2.** Also known as SFF-8639: a 2.5″-drive connector that **unifies SATA, SAS, and PCIe on one socket**. It lets enterprise chassis offer one bay that accepts anything — the bridge form factor for the PCIe transition.
 
-**1.6.6 — EDSFF.** The EDSFF family, defined by SNIA (the Storage Networking Industry Association) in its SFF-TA-1006 and SFF-TA-1008 specifications, is replacing 2.5″ in new data-center servers. Its hot-swappable "rulers" are shaped for density and airflow: **E1.S** (about 32 × 112 mm) stands upright in 1U servers, the long **E1.L** packs capacity, and **E3.S / E3.L** (76 mm wide) offer more power and board area. The 122 TB-class drives of 2024–2025 ship in E1.L and E3 versions as well as 2.5″.
+**1.6.6 — EDSFF.** The EDSFF family, defined by SNIA (the Storage Networking Industry Association) in its SFF-TA-1006 and SFF-TA-1008 specifications, is replacing 2.5″ in new data-center servers. Its hot-swappable "rulers" are shaped for density and airflow: **E1.S** (about 32 × 112 mm) stands upright in 1U servers, the long **E1.L** packs capacity, and **E3.S / E3.L** (76 mm wide) offer more power and board area. The 122 TB-class drives of 2024–2025 ship in E1.L and E3 versions as well as 2.5″, and by 2026 drives of about 245 TB were shipping. [Supplement I](../supplements/i-data-center.md#i2-form-factors-u2-u3-and-edsff) draws the whole family to scale and covers what data centers need from it.
 
 ---
 

@@ -381,6 +381,8 @@ The industry's answer to "ZNS is right but too expensive to adopt," driven by **
 - **The mechanism:** the host tags related writes with a **Reclaim Unit Handle (RUH)**, steering them into a shared **Reclaim Unit (RU)** — a group of NAND flash blocks that will fill and die together. This kills the "I/O blender": without FDP, many applications' data interleaves across every block, so any deletion leaves garbage smeared everywhere; with FDP, each application's data expires together and GC finds whole-dead reclaim units.
 - **The payoff:** Samsung's TP4146 authors project a **write amplification factor (WAF) ≈ 1 as the new normal** — eliminating most OP, roughly doubling drive lifetime and write rate at the same density. Micron's CacheLib/Aerospike tests confirm real reductions. Ecosystem support (Linux 6.2 passthrough, the Storage Performance Development Kit (SPDK), xNVMe, CacheLib) arrived fast precisely because adoption is cheap.
 
+FDP matters most for the largest QLC drives, whose large mapping units make small writes expensive; [Supplement I §I.7](../supplements/i-data-center.md#i7-the-capacity-race-qlc-large-indirection-units-and-fdp) explains why.
+
 ### How to hold the trade-off
 
 - **ZNS**: strictest control, guaranteed WAF ≈ 1 — for systems *designed* around sequential writes, willing to own GC.

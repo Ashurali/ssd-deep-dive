@@ -40,6 +40,18 @@ DRAM).
 
 $$ \text{map table} \approx \frac{\text{Capacity}}{1000} $$
 
+**Map size with a larger indirection unit** — capacity drives map in units
+larger than 4 KiB to keep the table small, at the cost of amplifying small
+writes. *Explained in [Supp I §I.7](../supplements/i-data-center.md#i7-the-capacity-race-qlc-large-indirection-units-and-fdp).*
+
+$$ \text{map table} \approx \frac{\text{Capacity}}{\text{indirection unit}} \times \text{entry size} $$
+
+**Inherent over-provisioning from units** — a drive sold in decimal
+gigabytes but built from binary gibibytes of flash keeps the difference.
+*Derived in [Ch 0 §0.1](../core/ch0-foundations.md#01-units-bits-bytes-and-the-two-kinds-of-kilo).*
+
+$$ OP_{inherent} = \frac{2^{30}}{10^{9}} - 1 \approx 7.4\% $$
+
 ## Performance
 
 **IOPS ceiling from link bandwidth** — an interface can never deliver more
@@ -49,6 +61,37 @@ I/Os per second than its usable bandwidth divided by the transfer size.
 (why the realized number is always lower).*
 
 $$ IOPS_{max} = \frac{\text{link bandwidth}}{\text{block size}} $$
+
+**Throughput from IOPS** — the data rate is the operation rate times the
+transfer size. *Derived in [Ch 0 §0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops).*
+
+$$ \text{throughput} = IOPS \times \text{transfer size} $$
+
+**Little's law** — the number of operations in flight equals the operation
+rate times the latency; it sets the queue depth a target IOPS needs.
+*Same section, [Ch 0 §0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops).*
+
+$$ \text{queue depth} = IOPS \times \text{latency} $$
+
+**Tail fan-out** — if a request touches \( n \) drives and each is slow with
+probability \( p \), the chance that the request waits on a slow drive.
+*From [Supp I §I.1](../supplements/i-data-center.md#i1-what-data-centers-want-consistent-latency).*
+
+$$ P(\text{slow request}) = 1 - (1 - p)^{n} $$
+
+## Power and reliability
+
+**Power-loss-protection energy** — capacitors charged to \( V_1 \) must
+deliver the energy to finish in-flight writes, \( P \times t \), before
+falling to the lowest usable voltage \( V_2 \).
+*Worked in [Ch 2 §2.8.3](../core/ch2-controllers-afa.md#283-power-loss-protection-capacitors-that-buy-milliseconds).*
+
+$$ \tfrac{1}{2}\, C \left(V_1^{2} - V_2^{2}\right) \ge P \times t $$
+
+**Expected errors** — an error rate means something only multiplied by the
+number of bits handled. *Derived in [Ch 0 §0.11](../core/ch0-foundations.md#011-error-rates-and-big-exponents).*
+
+$$ \text{expected errors} = \text{bits handled} \times \text{error rate} $$
 
 ## Endurance testing (JESD218A)
 
@@ -65,19 +108,19 @@ $$ UCL(\text{data errors}) \le \min(TBW, TBR) \times 8{\times}10^{12} \times UBE
 
 **Code rate** — the fraction of transmitted bits that are actual data
 (\( k \) data bits in an \( n \)-bit codeword).
-*Defined in [Supp A §7.3](../supplements/a-ecc-coding-theory.md#a3-the-foundations).*
+*Defined in [Supp A §A.3](../supplements/a-ecc-coding-theory.md#a3-the-foundations).*
 
 $$ R = \frac{k}{n} $$
 
 **Minimum distance ↔ correction capability** — a code with minimum Hamming
 distance \( d_{min} \) detects \( d_{min}-1 \) errors and corrects
 \( t \) of them.
-*Derived in [Supp A §7.3.1](../supplements/a-ecc-coding-theory.md#a31-hamming-distance-the-concept-everything-rests-on).*
+*Derived in [Supp A §A.3.1](../supplements/a-ecc-coding-theory.md#a31-hamming-distance-the-concept-everything-rests-on).*
 
 $$ t = \left\lfloor \frac{d_{min}-1}{2} \right\rfloor $$
 
 **Syndrome** — depends only on the error pattern, not the data; zero means
 "no detectable error".
-*Machinery in [Supp A §7.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h).*
+*Machinery in [Supp A §A.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h).*
 
 $$ s = H \cdot r^{T} $$

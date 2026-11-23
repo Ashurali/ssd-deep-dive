@@ -213,7 +213,7 @@ Metadata can travel **inline** with the block (the close-body bodyguard) or in a
 - **Five new Fabrics commands:** **Connect** (builds a queue pair; carries Host NQN, Subsystem NQN, Host Identifier — NQN = NVMe Qualified Name), **Property Get/Set** (replaces the BAR0 register access that a network doesn't have), **Authentication Send/Receive**.
 - **Discovery service** — a Discovery Log Page lets initiators find subsystems, their namespaces, and multiple paths to them.
 
-Result: the same command model you learned in §6.2–6.3, projected across a data center.
+Result: the same command model you learned in §6.2–6.3, projected across a data center. How hosts choose among several paths to one namespace, with Asymmetric Namespace Access, is covered in [Supplement I §I.5](../supplements/i-data-center.md#i5-dual-port-multipath-and-ana).
 
 ---
 

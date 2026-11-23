@@ -4,11 +4,13 @@ title: "Quiz Index"
 
 # Quiz index
 
-Every guide ends with a **Check yourself** section — self-quiz questions with
-no answer key (that's the point). Work through them in learning-path order.
+Every chapter and supplement ends with a **Check yourself** section. Each
+question has a worked answer hidden under it: try the question first, then open
+the answer. Work through them in learning-path order.
 
 ## Core chapters
 
+- [Ch 0 — Foundations](../core/ch0-foundations.md#check-yourself)
 - [Ch 1 — SSD Overview](../core/ch1-overview.md#check-yourself)
 - [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#check-yourself)
 - [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#check-yourself)
@@ -24,3 +26,7 @@ no answer key (that's the point). Work through them in learning-path order.
 - [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#check-yourself)
 - [Supp D — Power Management](../supplements/d-power-management.md#check-yourself)
 - [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#check-yourself)
+- [Supp F — Security & Sanitization](../supplements/f-security.md#check-yourself)
+- [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#check-yourself)
+- [Supp H — The Host Side](../supplements/h-host-stack.md#check-yourself)
+- [Supp I — Data-Center SSDs](../supplements/i-data-center.md#check-yourself)

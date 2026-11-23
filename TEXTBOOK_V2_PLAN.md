@@ -268,6 +268,8 @@ Figs…" line moves into a provenance note.
 
 ## Phase 5 — Integration
 
+**Done (24 Nov 2026):** nav for the new pages, the home learning path (00 → 07, A–I), the Start-here block, cross-links into Ch 0 and F–I, both Codas, the quizzes intro and index, new formulas (Little's law, throughput, tail fan-out, indirection-unit map size, inherent OP, PLP energy, expected errors), spec pointers, and the new pages' acronyms. **Still to do:** the generated Visual index, gallery cards as separate search sections, and the animation wrapper pages (with Phase 4).
+
 - **Nav**:
   - Ch 0 goes first under Core Chapters, and Supplements F–I are added;
   - the home learning path is updated (00 → 07, then A–I);

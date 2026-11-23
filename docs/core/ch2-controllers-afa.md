@@ -75,7 +75,7 @@ The CPU cluster looks like any embedded SoC: one or more cores plus their memori
 - **Symmetric multiprocessing (SMP):** all cores share one operating system (OS) image and one copy of code, plus shared I-RAM/D-RAM. Simpler — but cores contend for the shared memory, and contention costs speed.
 - **Asymmetric multiprocessing (AMP):** each core runs *its own* code out of *its own* I-RAM/D-RAM. Cores run independently, with no memory contention.
 
-SSD workloads decompose naturally into independent tasks, so when a controller needs more compute, AMP tends to win. Either way, the firmware architect's goal is **balancing load across cores** — no core worked to death while another idles — because that balance is where maximum throughput comes from.
+SSD workloads decompose naturally into independent tasks, so when a controller needs more compute, AMP tends to win. Either way, the firmware architect's goal is **balancing load across cores** — no core worked to death while another idles — because that balance is where maximum throughput comes from. [Supplement G](../supplements/g-firmware.md) follows that firmware's own life: boot, updates and debugging.
 
 ### 2.1.3 Back end (後端)
 
@@ -354,7 +354,7 @@ Besides the PCIe lanes and their 100 MHz reference clock (REFCLK), an M.2 connec
 - **PEWAKE#** (the PCIe wake signal). The drive pulls it low to ask the host to restore power and the link after the deepest sleep states, when only auxiliary power remains.
 - **SMBus** (System Management Bus): two wires, derived from the I²C chip-to-chip bus, that let a management controller read the drive's temperature, health and identity without the operating system. On an M.2 drive it is optional.
 
-SMBus is the backbone of *out-of-band* management in data centers. A server's baseboard management controller (BMC) polls every drive over SMBus using NVMe-MI, the NVMe Management Interface, so fans can be adjusted and failing drives flagged even while the operating system is down. U.2 and EDSFF connectors carry PERST# and SMBus too, and add signals of their own; EDSFF's PWRDIS (power disable), for example, lets a server power-cycle a hung drive without anyone pulling it out.
+SMBus is the backbone of *out-of-band* management in data centers. A server's baseboard management controller (BMC) polls every drive over SMBus using NVMe-MI, the NVMe Management Interface, so fans can be adjusted and failing drives flagged even while the operating system is down. U.2 and EDSFF connectors carry PERST# and SMBus too, and add signals of their own; EDSFF's PWRDIS (power disable), for example, lets a server power-cycle a hung drive without anyone pulling it out. [Supplement I §I.6](../supplements/i-data-center.md#i6-managing-fleets-nvme-mi-and-the-bmc) covers fleet management in full.
 
 ### 2.8.7 Client and enterprise boards compared
 

@@ -260,7 +260,7 @@ The three phases (schematic). Only the steady-state band is reported, and the me
 
 **Four setup concepts:**
 
-- **Purge** — before every test, return the drive to a known clean state ("back to FOB"): ATA (AT Attachment) Security Erase / Sanitize (Block Erase), SCSI Format Unit, or a vendor tool. Otherwise the previous test's write history contaminates this one's results.
+- **Purge** — before every test, return the drive to a known clean state ("back to FOB"): ATA (AT Attachment) Security Erase / Sanitize (Block Erase), SCSI Format Unit, or a vendor tool. Otherwise the previous test's write history contaminates this one's results. What each erase command really reaches inside the drive is the subject of [Supplement F §F.4](../supplements/f-security.md#f4-erasing-an-ssd-why-deleted-data-lingers).
 - **Precondition** — drive it *into* steady state deliberately: **WIPC** (workload-independent preconditioning: generic writes) then **WDPC** (workload-dependent preconditioning: the test workload itself).
 - **Active range** — the LBA span the test targets.
 - **Data pattern** — **random (incompressible) data, always** (§7.1.2's lesson, codified).
@@ -281,7 +281,7 @@ The three phases (schematic). Only the steady-state band is reported, and the me
 
 *Test methodology ages slower than hardware: JEDEC's endurance specs, SNIA's performance discipline, and the certification bodies all remain current essentially as described. The tooling moved — and one change rhymes beautifully with Chapter 6.*
 
-**The async-I/O sequel: io_uring.** §7.1's async story centered on `libaio`. Its successor came from the same author — **Jens Axboe** built **io_uring** into the Linux kernel in 2019, and it has become the high-performance I/O path for demanding storage work. The elegant part: io_uring is built on **two ring buffers shared between application and kernel — a submission queue and a completion queue** — *exactly the SQ/CQ producer-consumer design of [Chapter 6 §6.3](ch6-nvme.md#63-the-three-treasures-in-detail)*. The idea that made the device interface fast (rings, batched submissions, minimal expensive transitions) was applied to the software stack above it. Practically: FIO ships an `io_uring` engine (`-ioengine=io_uring`), and for maximum-IOPS testing of a fast NVMe drive it beats `libaio` on per-I/O overhead. It is the current best-practice engine.
+**The async-I/O sequel: io_uring.** §7.1's async story centered on `libaio`. Its successor came from the same author — **Jens Axboe** built **io_uring** into the Linux kernel in 2019, and it has become the high-performance I/O path for demanding storage work. The elegant part: io_uring is built on **two ring buffers shared between application and kernel — a submission queue and a completion queue** — *exactly the SQ/CQ producer-consumer design of [Chapter 6 §6.3](ch6-nvme.md#63-the-three-treasures-in-detail)*. The idea that made the device interface fast (rings, batched submissions, minimal expensive transitions) was applied to the software stack above it. Practically: FIO ships an `io_uring` engine (`-ioengine=io_uring`), and for maximum-IOPS testing of a fast NVMe drive it beats `libaio` on per-I/O overhead. It is the current best-practice engine. [Supplement H](../supplements/h-host-stack.md) follows the host's whole I/O path and works through the standard inspection tools: nvme-cli, lspci, iostat and blktrace.
 
 **Tool landscape.** FIO remains *the* serious standard; IOMeter persists through forks. **CrystalDiskMark** is actively maintained and now defaults to NVMe-shaped patterns (high-queue-depth `RND4K Q…T…` tests). **PCMark Vantage is obsolete** — its successors are **PCMark 10**'s storage test (real application traces) and **3DMark Storage** for gaming workloads. ATTO and AS SSD live on, still carrying the compressible-data caveat.
 
@@ -323,7 +323,7 @@ Aim the cuts at the **nasty windows** deliberately: mid-GC, mid-map-flush, mid-S
 
 ## Coda: the whole book
 
-Seven chapters, one arc:
+Seven chapters, one arc, built on the toolkit of [Chapter 0](ch0-foundations.md):
 
 1. **Overview** — what an SSD is, and the fact that generates the field: *flash cannot be overwritten in place.*
 2. **Controller & arrays** — the brain; channels × dies = parallelism; and what changes when you stack whole drives into arrays.
@@ -335,7 +335,7 @@ Seven chapters, one arc:
 
 Two threads run through everything. **Chapters 3 → 4 → 7:** flash is unreliable and wears out; firmware compensates with algorithms; testing proves the algorithms survive contact with reality. **Chapters 5 → 6 → 7:** PCIe carries the bits; NVMe gives them meaning; analyzers and jammers let you watch — and sabotage — the conversation. And the modern sections traced how 2018's snapshot evolved: host-managed flash became **ZNS/FDP** (zoned namespaces and flexible data placement), PCIe reached **Gen7** via PAM4, NVMe **modularized and gained TCP**, and even the OS's I/O path (**io_uring**) borrowed NVMe's ring design.
 
-From trapped electrons to test bench: the model is complete. The [supplements](../supplements/a-ecc-coding-theory.md) go deeper where the chapters pointed — ECC theory (A), Universal Flash Storage (B), flash file systems (C), power management (D), and storage in space (E) — and the [reference section](../reference/glossary.md) keeps the glossary, formulas, and quizzes one click away.
+From trapped electrons to test bench: the model is complete. The [supplements](../supplements/a-ecc-coding-theory.md) go deeper where the chapters pointed — ECC theory (A), Universal Flash Storage (B), flash file systems (C), power management (D), storage in space (E), security and sanitization (F), firmware boot, update and debug (G), the host's software stack and tools (H), and data-center drives (I) — and the [reference section](../reference/glossary.md) keeps the glossary, formulas, and quizzes one click away.
 
 ---
 
