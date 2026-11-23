@@ -210,7 +210,7 @@ baseboard management controller (a server's management chip)
 
 ### boundary-value test { #term-boundary-value-test .sdd-term }
 
-**邊界值測試**  
+**邊界值測試** — Testing at the edges of allowed inputs, where bugs cluster. → [§7.4](../core/ch7-testing.md#74-regression-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### burst performance { #term-burst-performance .sdd-term }
@@ -262,7 +262,7 @@ Chip Enable (NAND pin that selects one die on a shared channel)
 
 ### certification { #term-certification .sdd-term }
 
-**認證**  
+**認證** — Passing an industry body's tests, such as PCI-SIG's or UNH-IOL's, to join its Integrators List. → [§7.9](../core/ch7-testing.md#79-certification)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### CfgWr { #term-cfgwr .sdd-term }
@@ -367,7 +367,7 @@ data bits ÷ total bits
 
 ### conformance/compliance test { #term-conformancecompliance-test .sdd-term }
 
-**一致性測試**  
+**一致性測試（台：符合性測試）** — Testing a product against the specification itself. → [§7.6](../core/ch7-testing.md#76-pcie-interop)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### consumer-grade / enterprise-grade { #term-consumer-grade-enterprise-grade .sdd-term }
@@ -454,12 +454,12 @@ PCIe **device** power states (software-controlled)
 
 ### data retention { #term-data-retention .sdd-term }
 
-**數據保存期（台：資料保存期）；數據保持** — How long written data stays readable before leakage creates more errors than ECC can fix. → [§3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive)  
+**數據保存期（台：資料保存期）；數據保持（台：資料保存）** — How long written data stays readable before leakage creates more errors than ECC can fix. → [§3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive); Keeping data readable while unpowered; JESD218 checks it after the endurance writes. → [§7.8](../core/ch7-testing.md#78-endurance-testing)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### data verification { #term-data-verification .sdd-term }
 
-**數據校驗**  
+**數據校驗（台：資料驗證）** — Writing known data, reading it back and comparing (R/W/C) to catch corruption. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### deduplication { #term-deduplication .sdd-term }
@@ -621,7 +621,7 @@ predecessor; parallel, half-duplex, no queuing
 
 ### endurance test { #term-endurance-test .sdd-term }
 
-**耐久度測試**  
+**耐久度測試** — Writing a drive to its rated TBW and then checking that it still retains data. → [§7.8](../core/ch7-testing.md#78-endurance-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### enumeration { #term-enumeration .sdd-term }
@@ -646,7 +646,7 @@ endpoint (a PCIe device at a leaf of the tree)
 
 ### error handling { #term-error-handling .sdd-term }
 
-**錯誤處理**  
+**錯誤處理** — The firmware and hardware paths that detect errors and recover from them. → [§7.3.3](../core/ch7-testing.md#733-jammer)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### error-correcting code (ECC) { #term-error-correcting-code-ecc .sdd-term }
@@ -771,11 +771,6 @@ flow control unit (PCIe 6.0's fixed-size transfer unit)
 Function Level Reset (PCIe)  
 <small>From: the site-wide acronym list</small>
 
-### FOB (Fresh Out of Box) { #term-fob-fresh-out-of-box .sdd-term }
-
-**全新盤** — FOB = fresh out of box  
-<small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
-
 ### foreground / background GC { #term-foreground-background-gc .sdd-term }
 
 **前臺/後臺垃圾回收（台：前景/背景垃圾回收）** — GC forced into the write path when free blocks run out, versus GC done ahead of time in idle periods. → [§4.3.4](../core/ch4-ftl.md#434-when-gc-runs)  
@@ -790,6 +785,11 @@ First-Party DMA (SATA queued transfers)
 
 field-programmable gate array  
 <small>From: the site-wide acronym list</small>
+
+### fresh out of box (FOB) { #term-fresh-out-of-box-fob .sdd-term }
+
+**全新盤（台：全新碟）** — A new, empty drive, whose numbers are higher than it can sustain. → [§7.10](../core/ch7-testing.md#710-performance-testing-the-snia-methodology)  
+<small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### front end / back end { #term-front-end-back-end .sdd-term }
 
@@ -974,7 +974,7 @@ fixed-size per-file metadata record (attrs + block pointers)
 
 ### interoperability test { #term-interoperability-test .sdd-term }
 
-**交互性測試**  
+**交互性測試（台：互通性測試）** — Testing a product against other vendors' products. → [§7.6](../core/ch7-testing.md#76-pcie-interop)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### interrupt { #term-interrupt .sdd-term }
@@ -1100,7 +1100,7 @@ inefficiency of a log-structured FS atop a log-structured FTL
 
 ### logic analyzer { #term-logic-analyzer .sdd-term }
 
-**邏輯分析儀**  
+**邏輯分析儀** — An instrument that captures many digital signals over time for debugging. → [§7.3.1](../core/ch7-testing.md#731-emulator-vs-fpga)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### logical / physical address { #term-logical-physical-address .sdd-term }
@@ -1498,7 +1498,7 @@ PCI Express (Peripheral Component Interconnect Express)
 
 ### performance testing { #term-performance-testing .sdd-term }
 
-**性能測試**  
+**性能測試（台：效能測試）** — Measuring throughput, IOPS and latency under defined workloads and drive states. → [§7.10](../core/ch7-testing.md#710-performance-testing-the-snia-methodology)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### PERST { #term-perst .sdd-term }
@@ -1593,7 +1593,7 @@ deeper state = less power but slower wake (the core principle)
 
 ### preconditioning { #term-preconditioning .sdd-term }
 
-**預處理**  
+**預處理** — Writing a drive into steady state before measuring: generic writes first, then the test workload. → [§7.10](../core/ch7-testing.md#710-performance-testing-the-snia-methodology)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### producer / consumer { #term-producer-consumer .sdd-term }
@@ -1613,12 +1613,12 @@ deeper state = less power but slower wake (the core principle)
 
 ### protocol analyzer { #term-protocol-analyzer .sdd-term }
 
-**協議分析儀**  
+**協議分析儀（台：協定分析儀）** — An instrument that records and decodes every packet on a link without changing it. → [§7.3.2](../core/ch7-testing.md#732-protocol-analyzer)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### purge { #term-purge .sdd-term }
 
-**擦除 (預處理)**  
+**擦除（台：清除）** — Returning a drive to a known clean state before a test, by Security Erase, Sanitize or a vendor tool. → [§7.10](../core/ch7-testing.md#710-performance-testing-the-snia-methodology)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### PWRDIS { #term-pwrdis .sdd-term }
@@ -1650,7 +1650,7 @@ quality of service (how consistent latency is)
 
 ### queue depth { #term-queue-depth .sdd-term }
 
-**隊列深度（台：佇列深度）；隊列深度** — How many commands a queue can hold in flight; NVMe allows up to 64K per queue. → [§6.1](../core/ch6-nvme.md#61-from-ahci-to-nvme)  
+**隊列深度（台：佇列深度）** — How many commands a queue can hold in flight; NVMe allows up to 64K per queue. → [§6.1](../core/ch6-nvme.md#61-from-ahci-to-nvme); How many commands a test keeps outstanding at once. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ## R { #letter-r }
@@ -1752,7 +1752,7 @@ extra bits added to enable correction
 
 ### regression test { #term-regression-test .sdd-term }
 
-**回歸測試**  
+**回歸測試** — Re-running existing tests on each new build to catch anything it broke. → [§7.4](../core/ch7-testing.md#74-regression-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### regular / irregular { #term-regular-irregular .sdd-term }
@@ -1802,7 +1802,7 @@ Rad-Hardening By Design / By Process
 
 ### robustness { #term-robustness .sdd-term }
 
-**健壯性**  
+**健壯性（台：強健性）** — Continuing to work correctly when the host or link misbehaves. → [§7.3.3](../core/ch7-testing.md#733-jammer)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### Root Complex (RC) { #term-root-complex-rc .sdd-term }
@@ -1864,7 +1864,7 @@ host ACPI system power states (working → off)
 
 ### sample size { #term-sample-size .sdd-term }
 
-**樣本大小**  
+**樣本大小（台：樣本數）** — How many drives a qualification must test, set by the FFR and UBER constraints. → [§7.8](../core/ch7-testing.md#78-endurance-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### SAN { #term-san .sdd-term }
@@ -1939,7 +1939,7 @@ Single Event Latchup — destructive high-current short
 
 ### sequential / random read-write { #term-sequential-random-read-write .sdd-term }
 
-**順序 / 隨機讀寫**  
+**順序 / 隨機讀寫（台：循序 / 隨機讀寫）** — Accessing consecutive addresses versus scattered ones; the two stress a drive very differently. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### serial / parallel bus { #term-serial-parallel-bus .sdd-term }
@@ -1974,7 +1974,7 @@ two-copy scheme; one always valid
 
 ### simulation / emulation { #term-simulation-emulation .sdd-term }
 
-**仿真 / 模擬**  
+**仿真 / 模擬** — Modelling a chip in software, versus reproducing its design in hardware that runs at speed. → [§7.3.1](../core/ch7-testing.md#731-emulator-vs-fpga)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### SIT (Segment Info Table) { #term-sit-segment-info-table .sdd-term }
@@ -2084,7 +2084,7 @@ host pins the drive to a power budget
 
 ### steady state { #term-steady-state .sdd-term }
 
-**穩定態**  
+**穩定態（台：穩態）** — The phase where performance varies by no more than ±10%; SNIA measures only here. → [§7.10](../core/ch7-testing.md#710-performance-testing-the-snia-methodology)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### storage controller { #term-storage-controller .sdd-term }
@@ -2119,7 +2119,7 @@ filesystem-wide metadata
 
 ### synchronous / asynchronous { #term-synchronous-asynchronous .sdd-term }
 
-**同步 / 異步（台：同步 / 非同步）；同步 / 異步** — Interface timing with a clock and strobe versus pulse-driven timing without a clock. → [§3.2.2](../core/ch3-nand-flash.md#322-synchronous-timing)  
+**同步 / 異步（台：同步 / 非同步）** — Interface timing with a clock and strobe versus pulse-driven timing without a clock. → [§3.2.2](../core/ch3-nand-flash.md#322-synchronous-timing); Waiting for each I/O to finish before issuing the next, versus issuing many and collecting completions later. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### syndrome s = H·rᵀ { #term-syndrome-s-hrt .sdd-term }
@@ -2149,11 +2149,6 @@ G = [I \| P]; data appears uncoded in codeword
 bipartite graph of variable nodes ↔ check nodes  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
-### TBW (Total Bytes Written) { #term-tbw-total-bytes-written .sdd-term }
-
-**總寫入量** — TBW = terabytes written (endurance rating)  
-<small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
-
 ### TCAT { #term-tcat .sdd-term }
 
 Terabit Cell Array Transistor (Samsung 3D NAND structure)  
@@ -2166,12 +2161,17 @@ Transmission Control Protocol
 
 ### temperature acceleration { #term-temperature-acceleration .sdd-term }
 
-**溫度加速**  
+**溫度加速** — Testing hot so that flash ages faster and a year of use fits into days. → [§7.8](../core/ch7-testing.md#78-endurance-testing)  
+<small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
+
+### terabytes written (TBW) { #term-terabytes-written-tbw .sdd-term }
+
+**總寫入量** — The endurance rating: how much data the host may write over the drive's life. → [§7.8](../core/ch7-testing.md#78-endurance-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### thread { #term-thread .sdd-term }
 
-**線程**  
+**線程（台：執行緒）** — One stream of execution; a benchmark uses several to keep many I/Os in flight. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### threshold voltage { #term-threshold-voltage .sdd-term }
@@ -2226,7 +2226,7 @@ Triple Modular Redundancy (triplicate + vote)
 
 ### trigger { #term-trigger .sdd-term }
 
-**觸發**  
+**觸發** — The condition that makes an analyzer start or keep a capture. → [§7.3.2](../core/ch7-testing.md#732-protocol-analyzer)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### Trim { #term-trim .sdd-term }
@@ -2365,7 +2365,7 @@ virtual desktop infrastructure
 
 ### verification / validation { #term-verification-validation .sdd-term }
 
-**驗證 / 確認**  
+**驗證 / 確認** — Testing the design before the chip exists, versus testing the real silicon afterwards. → [§7.2](../core/ch7-testing.md#72-verification-vs-validation)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### VFS { #term-vfs .sdd-term }
@@ -2437,7 +2437,7 @@ wear leveling
 
 ### write saturation test { #term-write-saturation-test .sdd-term }
 
-**飽和寫測試**  
+**飽和寫測試（台：飽和寫入測試）** — Sustained random writes for days, to watch performance degrade and settle. → [§7.10](../core/ch7-testing.md#710-performance-testing-the-snia-methodology)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ### WriteBooster { #term-writebooster .sdd-term }

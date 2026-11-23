@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 276" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>A test rig with a protocol analyzer and a jammer</title>
+<desc>The host connects to the SSD under test through a jammer. A protocol analyzer taps the link between host and jammer and records every packet without changing anything. The jammer sits in the path and can corrupt, replace or drop packets on purpose, to test whether the device and the host recover.</desc>
+<rect class="f-line f-panel" x="110" y="8" width="180" height="34" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="200" y="30" text-anchor="middle" font-weight="700" fill="#e8eeff">Host</text>
+<line class="f-line" x1="200" y1="42" x2="200" y2="96" stroke="#7d86a3" stroke-width="3"/>
+<circle class="f-cyan-t" cx="200" cy="66" r="5" fill="#4dd0c4"/>
+<line class="f-cyan-l f-dash" x1="205" y1="66" x2="290" y2="66" stroke="#4dd0c4" stroke-width="1.5" stroke-dasharray="4 3"/>
+<rect class="f-cyan" x="290" y="46" width="94" height="40" rx="6" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="337" y="71" text-anchor="middle" font-weight="700" fill="#e8eeff">analyzer</text>
+<rect class="f-red" x="110" y="96" width="180" height="44" rx="6" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="123" text-anchor="middle" font-weight="700" fill="#e8eeff">jammer</text>
+<line class="f-line" x1="200" y1="140" x2="200" y2="176" stroke="#7d86a3" stroke-width="3"/>
+<rect class="f-violet" x="110" y="176" width="180" height="34" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="198" text-anchor="middle" font-weight="700" fill="#e8eeff">SSD under test</text>
+<text class="f-cyan-t" x="16" y="240" fill="#4dd0c4">analyzer: sees everything, changes nothing</text>
+<text class="f-red-t" x="16" y="260" fill="#ff7b72">jammer: corrupts packets on purpose</text>
+</svg>

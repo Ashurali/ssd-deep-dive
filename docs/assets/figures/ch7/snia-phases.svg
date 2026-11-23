@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 290" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The three phases of SSD performance: FOB, transition, steady state</title>
+<desc>A schematic chart of IOPS over test rounds. Fresh out of box, performance is high and flat. In the transition, it falls steeply as garbage collection wakes up. It then settles into a narrow band, the steady state, where it varies by no more than plus or minus 10 percent. The SNIA method measures only there, over the last five rounds.</desc>
+<text class="f-mute" x="16" y="20" fill="#a3abc4">IOPS</text>
+<line class="f-line" x1="44" y1="28" x2="44" y2="220" stroke="#7d86a3" stroke-width="1.5"/>
+<line class="f-line" x1="44" y1="220" x2="384" y2="220" stroke="#7d86a3" stroke-width="1.5"/>
+<rect class="f-green-b" x="200" y="166" width="184" height="28" fill="#7ee2a8" fill-opacity=".14"/>
+<path class="f-cyan-l" d="M44,50 L64,48 L84,52 L104,54 L124,80 L144,120 L164,150 L184,166 L204,176 L224,182 L244,177 L264,184 L284,178 L304,183 L324,179 L344,183 L364,180 L384,182" fill="none" stroke="#4dd0c4" stroke-width="2.5"/>
+<text class="f-ink" x="54" y="40" font-weight="700" fill="#e8eeff">fresh out of box</text>
+<text class="f-ink" x="54" y="150" fill="#e8eeff">transition</text>
+<text class="f-green-t" x="208" y="158" fill="#7ee2a8">steady state (±10%)</text>
+<path class="f-line" d="M304,232 V238 H384 V232" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="384" y="256" text-anchor="end" fill="#a3abc4">measured: last 5 rounds</text>
+<text class="f-mute" x="384" y="280" text-anchor="end" fill="#a3abc4">test rounds →</text>
+</svg>

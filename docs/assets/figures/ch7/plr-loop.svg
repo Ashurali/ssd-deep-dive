@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 270" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The power-loss test loop</title>
+<desc>A four-step loop repeated thousands of times. 1, write data whose acknowledgments are tracked. 2, cut the power at a random moment. 3, restore power; the drive must enumerate and rebuild its map. 4, verify that every acknowledged write is intact and no older data was lost. Then repeat. The cuts are aimed at the riskiest moments: during garbage collection, a map flush, an SLC cache fold or a firmware update.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-cyan" x="16" y="16" width="168" height="62" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="40" font-weight="700" fill="#e8eeff">1 · write data</text>
+<text class="f-ink" x="28" y="60" fill="#e8eeff">track every ack</text>
+<rect class="f-red" x="216" y="16" width="168" height="62" rx="8" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-ink" x="228" y="40" font-weight="700" fill="#e8eeff">2 · cut power</text>
+<text class="f-ink" x="228" y="60" fill="#e8eeff">at a random instant</text>
+<rect class="f-amber" x="216" y="128" width="168" height="62" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="228" y="152" font-weight="700" fill="#e8eeff">3 · restore power</text>
+<text class="f-ink" x="228" y="172" fill="#e8eeff">enumerate, rebuild</text>
+<rect class="f-green" x="16" y="128" width="168" height="62" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="152" font-weight="700" fill="#e8eeff">4 · verify</text>
+<text class="f-ink" x="28" y="172" fill="#e8eeff">acked data intact</text>
+<line class="f-line" x1="184" y1="47" x2="213" y2="47" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="f-line" x1="300" y1="78" x2="300" y2="125" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="f-line" x1="216" y1="159" x2="187" y2="159" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="f-line" x1="100" y1="128" x2="100" y2="81" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="200" y="108" text-anchor="middle" fill="#a3abc4">× thousands</text>
+<text class="f-ink" x="16" y="226" fill="#e8eeff">Aim the cuts at the riskiest moments:</text>
+<text class="f-mute" x="16" y="246" fill="#a3abc4">mid-GC, mid-map-flush, mid-cache-fold,</text>
+<text class="f-mute" x="16" y="264" fill="#a3abc4">mid-firmware-update</text>
+</svg>

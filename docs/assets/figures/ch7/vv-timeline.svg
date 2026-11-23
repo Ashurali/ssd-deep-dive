@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 318" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Verification before tape-out, validation after</title>
+<desc>The chip-design flow from top to bottom: requirements, architecture, RTL design, then verification on an emulator or FPGA, then tape-out, silicon returning from the fab, validation on a development board, and shipping. A bug found during verification costs an RTL edit and a re-run. A bug found during validation costs a new tape-out or a permanent firmware workaround.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="16" y="8" width="200" height="26" rx="5"/><rect x="16" y="44" width="200" height="26" rx="5"/><rect x="16" y="80" width="200" height="26" rx="5"/><rect x="16" y="196" width="200" height="26" rx="5"/><rect x="16" y="284" width="200" height="26" rx="5"/></g>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle"><text x="116" y="26">requirements</text><text x="116" y="62">architecture</text><text x="116" y="98">RTL design</text><text x="116" y="214">silicon returns</text><text x="116" y="302">ship</text></g>
+<rect class="f-cyan" x="16" y="116" width="200" height="34" rx="5" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="116" y="138" text-anchor="middle" font-weight="700" fill="#e8eeff">verification</text>
+<rect class="f-amber" x="16" y="160" width="200" height="26" rx="5" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="116" y="178" text-anchor="middle" font-weight="700" fill="#e8eeff">tape-out</text>
+<rect class="f-violet" x="16" y="232" width="200" height="42" rx="5" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="116" y="258" text-anchor="middle" font-weight="700" fill="#e8eeff">validation</text>
+<text class="f-cyan-t" x="232" y="128" fill="#4dd0c4">emulator or FPGA;</text>
+<text class="f-cyan-t" x="232" y="146" fill="#4dd0c4">bug = edit RTL</text>
+<text class="f-violet-t" x="232" y="248" fill="#a78bfa">dev board; bug =</text>
+<text class="f-violet-t" x="232" y="266" fill="#a78bfa">new tape-out</text>
+<path class="f-line" d="M116,34 V42 M116,70 V78 M116,106 V114 M116,150 V158 M116,186 V194 M116,222 V230 M116,274 V282" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+</svg>

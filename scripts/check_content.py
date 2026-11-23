@@ -174,7 +174,9 @@ def unexpanded_acronyms(body: str, abbrs: dict[str, str]) -> list[str]:
     text = re.sub(r"^#{1,6} .*$", "", text, flags=re.M)
     text = re.sub(r"^\s*\|.*$", "", text, flags=re.M)  # tables
     text = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", text)  # images (alt text)
-    text = re.sub(r"<[^>]+>|\]\([^)]*\)|[*`]", " ", text)
+    # Only real tags: a bare "<" in prose ("<10 mW") must not swallow text
+    # up to the next ">" on some later line.
+    text = re.sub(r"</?[A-Za-z][^<>\n]*>|\]\([^)]*\)|[*`]", " ", text)
     missing = []
     for acr, title in abbrs.items():
         if acr.endswith("s") and acr[:-1] in abbrs:
