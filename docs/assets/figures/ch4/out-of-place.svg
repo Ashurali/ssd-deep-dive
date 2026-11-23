@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 344" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>An overwrite goes to a new page, and the map follows it</title>
+<desc>Two snapshots of a map table beside twelve flash pages, P0 to P11. First write: the map says LBA 6 is in P2, LBA 7 in P3 and LBA 8 in P4. Overwrite of LBA 7: flash can't rewrite P3 in place, so the new data goes to the free page P9, the map entry for LBA 7 changes to P9, and P3 is left holding a stale copy, garbage that a later garbage collection will reclaim.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">1 · First write of LBA 7</text>
+<rect class="f-line f-panel" x="16" y="34" width="124" height="110" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-mute" x="28" y="54" fill="#a3abc4">map table</text>
+<text class="f-ink" x="28" y="80" fill="#e8eeff">LBA 6 → P2</text>
+<text class="f-ink" x="28" y="104" font-weight="700" fill="#e8eeff">LBA 7 → P3</text>
+<text class="f-ink" x="28" y="128" fill="#e8eeff">LBA 8 → P4</text>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="172" y="94" width="68" height="26" rx="3"/><rect x="244" y="94" width="68" height="26" rx="3"/><rect x="316" y="94" width="68" height="26" rx="3"/><rect x="172" y="124" width="68" height="26" rx="3"/><rect x="244" y="124" width="68" height="26" rx="3"/><rect x="316" y="124" width="68" height="26" rx="3"/></g>
+<g class="f-violet" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"><rect x="172" y="34" width="68" height="26" rx="3"/><rect x="244" y="34" width="68" height="26" rx="3"/><rect x="316" y="34" width="68" height="26" rx="3"/><rect x="244" y="64" width="68" height="26" rx="3"/><rect x="316" y="64" width="68" height="26" rx="3"/></g>
+<rect class="f-cyan" x="172" y="64" width="68" height="26" rx="3" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="206" y="52" text-anchor="middle" fill="#e8eeff">P0 · 4</text>
+<text class="f-ink" x="278" y="52" text-anchor="middle" fill="#e8eeff">P1 · 5</text>
+<text class="f-ink" x="350" y="52" text-anchor="middle" fill="#e8eeff">P2 · 6</text>
+<text class="f-ink" x="206" y="82" text-anchor="middle" font-weight="700" fill="#e8eeff">P3 · 7</text>
+<text class="f-ink" x="278" y="82" text-anchor="middle" fill="#e8eeff">P4 · 8</text>
+<text class="f-ink" x="350" y="82" text-anchor="middle" fill="#e8eeff">P5 · 2</text>
+<text class="f-mute" x="206" y="112" text-anchor="middle" fill="#a3abc4">P6 free</text>
+<text class="f-mute" x="278" y="112" text-anchor="middle" fill="#a3abc4">P7 free</text>
+<text class="f-mute" x="350" y="112" text-anchor="middle" fill="#a3abc4">P8 free</text>
+<text class="f-mute" x="206" y="142" text-anchor="middle" fill="#a3abc4">P9 free</text>
+<text class="f-mute" x="278" y="142" text-anchor="middle" fill="#a3abc4">P10 free</text>
+<text class="f-mute" x="350" y="142" text-anchor="middle" fill="#a3abc4">P11 free</text>
+<line class="f-line" x1="140" y1="99" x2="168" y2="80" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="f-faint" x1="16" y1="164" x2="384" y2="164" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="190" font-weight="700" fill="#e8eeff">2 · Overwrite LBA 7</text>
+<rect class="f-line f-panel" x="16" y="204" width="124" height="110" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-mute" x="28" y="224" fill="#a3abc4">map table</text>
+<text class="f-ink" x="28" y="250" fill="#e8eeff">LBA 6 → P2</text>
+<text class="f-cyan-t" x="28" y="274" font-weight="700" fill="#4dd0c4">LBA 7 → P9</text>
+<text class="f-ink" x="28" y="298" fill="#e8eeff">LBA 8 → P4</text>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="244" y="264" width="68" height="26" rx="3"/><rect x="316" y="264" width="68" height="26" rx="3"/><rect x="244" y="294" width="68" height="26" rx="3"/><rect x="316" y="294" width="68" height="26" rx="3"/><rect x="172" y="264" width="68" height="26" rx="3"/></g>
+<g class="f-violet" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"><rect x="172" y="204" width="68" height="26" rx="3"/><rect x="244" y="204" width="68" height="26" rx="3"/><rect x="316" y="204" width="68" height="26" rx="3"/><rect x="244" y="234" width="68" height="26" rx="3"/><rect x="316" y="234" width="68" height="26" rx="3"/></g>
+<rect class="f-red" x="172" y="234" width="68" height="26" rx="3" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<rect class="f-cyan" x="172" y="294" width="68" height="26" rx="3" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="206" y="222" text-anchor="middle" fill="#e8eeff">P0 · 4</text>
+<text class="f-ink" x="278" y="222" text-anchor="middle" fill="#e8eeff">P1 · 5</text>
+<text class="f-ink" x="350" y="222" text-anchor="middle" fill="#e8eeff">P2 · 6</text>
+<text class="f-red-t" x="206" y="252" text-anchor="middle" fill="#ff7b72">P3 stale</text>
+<text class="f-ink" x="278" y="252" text-anchor="middle" fill="#e8eeff">P4 · 8</text>
+<text class="f-ink" x="350" y="252" text-anchor="middle" fill="#e8eeff">P5 · 2</text>
+<text class="f-mute" x="206" y="282" text-anchor="middle" fill="#a3abc4">P6 free</text>
+<text class="f-mute" x="278" y="282" text-anchor="middle" fill="#a3abc4">P7 free</text>
+<text class="f-mute" x="350" y="282" text-anchor="middle" fill="#a3abc4">P8 free</text>
+<text class="f-ink" x="206" y="312" text-anchor="middle" font-weight="700" fill="#e8eeff">P9 · 7</text>
+<text class="f-mute" x="278" y="312" text-anchor="middle" fill="#a3abc4">P10 free</text>
+<text class="f-mute" x="350" y="312" text-anchor="middle" fill="#a3abc4">P11 free</text>
+<line class="f-cyan-l" x1="140" y1="269" x2="168" y2="304" stroke="#4dd0c4" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="200" y="338" text-anchor="middle" fill="#a3abc4">P3 is garbage until garbage collection erases its block</text>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 330" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Garbage collection before and after</title>
+<desc>Before: block A and block B each hold nine pages, three valid and six garbage; block C is free. Garbage collection copies the six valid pages into block C, then erases A and B. After: A and B are free again, and C holds the six valid pages with three pages still free. Six page writes bought back twelve pages of space.</desc>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">Before</text>
+<text class="f-ink" x="16" y="50" fill="#e8eeff">block A</text>
+<text class="f-ink" x="16" y="82" fill="#e8eeff">block B</text>
+<text class="f-ink" x="16" y="114" fill="#e8eeff">block C</text>
+<g class="f-cyan" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"><rect x="96" y="32" width="28" height="26" rx="3"/><rect x="192" y="32" width="28" height="26" rx="3"/><rect x="288" y="32" width="28" height="26" rx="3"/><rect x="128" y="64" width="28" height="26" rx="3"/><rect x="256" y="64" width="28" height="26" rx="3"/><rect x="352" y="64" width="28" height="26" rx="3"/></g>
+<g class="f-red" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"><rect x="128" y="32" width="28" height="26" rx="3"/><rect x="160" y="32" width="28" height="26" rx="3"/><rect x="224" y="32" width="28" height="26" rx="3"/><rect x="256" y="32" width="28" height="26" rx="3"/><rect x="320" y="32" width="28" height="26" rx="3"/><rect x="352" y="32" width="28" height="26" rx="3"/><rect x="96" y="64" width="28" height="26" rx="3"/><rect x="160" y="64" width="28" height="26" rx="3"/><rect x="192" y="64" width="28" height="26" rx="3"/><rect x="224" y="64" width="28" height="26" rx="3"/><rect x="288" y="64" width="28" height="26" rx="3"/><rect x="320" y="64" width="28" height="26" rx="3"/></g>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="96" y="96" width="28" height="26" rx="3"/><rect x="128" y="96" width="28" height="26" rx="3"/><rect x="160" y="96" width="28" height="26" rx="3"/><rect x="192" y="96" width="28" height="26" rx="3"/><rect x="224" y="96" width="28" height="26" rx="3"/><rect x="256" y="96" width="28" height="26" rx="3"/><rect x="288" y="96" width="28" height="26" rx="3"/><rect x="320" y="96" width="28" height="26" rx="3"/><rect x="352" y="96" width="28" height="26" rx="3"/></g>
+<text class="f-ink" x="200" y="152" text-anchor="middle" fill="#e8eeff">copy the 6 valid pages into C,</text>
+<text class="f-ink" x="200" y="170" text-anchor="middle" fill="#e8eeff">then erase A and B</text>
+<text class="f-ink" x="16" y="200" font-weight="700" fill="#e8eeff">After</text>
+<text class="f-ink" x="16" y="230" fill="#e8eeff">block A</text>
+<text class="f-ink" x="16" y="262" fill="#e8eeff">block B</text>
+<text class="f-ink" x="16" y="294" fill="#e8eeff">block C</text>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="96" y="212" width="28" height="26" rx="3"/><rect x="128" y="212" width="28" height="26" rx="3"/><rect x="160" y="212" width="28" height="26" rx="3"/><rect x="192" y="212" width="28" height="26" rx="3"/><rect x="224" y="212" width="28" height="26" rx="3"/><rect x="256" y="212" width="28" height="26" rx="3"/><rect x="288" y="212" width="28" height="26" rx="3"/><rect x="320" y="212" width="28" height="26" rx="3"/><rect x="352" y="212" width="28" height="26" rx="3"/><rect x="96" y="244" width="28" height="26" rx="3"/><rect x="128" y="244" width="28" height="26" rx="3"/><rect x="160" y="244" width="28" height="26" rx="3"/><rect x="192" y="244" width="28" height="26" rx="3"/><rect x="224" y="244" width="28" height="26" rx="3"/><rect x="256" y="244" width="28" height="26" rx="3"/><rect x="288" y="244" width="28" height="26" rx="3"/><rect x="320" y="244" width="28" height="26" rx="3"/><rect x="352" y="244" width="28" height="26" rx="3"/><rect x="288" y="276" width="28" height="26" rx="3"/><rect x="320" y="276" width="28" height="26" rx="3"/><rect x="352" y="276" width="28" height="26" rx="3"/></g>
+<g class="f-cyan" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"><rect x="96" y="276" width="28" height="26" rx="3"/><rect x="128" y="276" width="28" height="26" rx="3"/><rect x="160" y="276" width="28" height="26" rx="3"/><rect x="192" y="276" width="28" height="26" rx="3"/><rect x="224" y="276" width="28" height="26" rx="3"/><rect x="256" y="276" width="28" height="26" rx="3"/></g>
+<rect class="f-cyan" x="16" y="310" width="14" height="12" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-mute" x="36" y="321" fill="#a3abc4">valid</text>
+<rect class="f-red" x="96" y="310" width="14" height="12" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-mute" x="116" y="321" fill="#a3abc4">garbage</text>
+<rect class="f-line f-panel" x="196" y="310" width="14" height="12" fill="#111832" stroke="#7d86a3"/>
+<text class="f-mute" x="216" y="321" fill="#a3abc4">free</text>
+</svg>

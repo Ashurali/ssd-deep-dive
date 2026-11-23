@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>An SLC cache: a fast burst, then the native speed</title>
+<desc>A schematic chart of write speed (vertical) against the amount of data written in one long burst (horizontal). At first the writes land in the SLC cache and run fast. When the cache is full, speed drops to what the drive's native cells can sustain: moderately lower for a TLC drive, far lower for a QLC drive. In idle time the drive folds the cached data into TLC or QLC blocks and frees the cache for the next burst.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-mute" x="16" y="20" fill="#a3abc4">write speed</text>
+<line class="f-line" x1="40" y1="30" x2="40" y2="220" stroke="#7d86a3" stroke-width="1.5"/>
+<line class="f-line" x1="40" y1="220" x2="378" y2="220" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="384" y="240" text-anchor="end" fill="#a3abc4">data written in one burst</text>
+<path class="f-cyan-l" d="M40,64 H200" fill="none" stroke="#4dd0c4" stroke-width="3"/>
+<text class="f-cyan-t" x="48" y="54" fill="#4dd0c4">into the SLC cache</text>
+<line class="f-line f-dash" x1="200" y1="40" x2="200" y2="220" stroke="#7d86a3" stroke-dasharray="4 3"/>
+<text class="f-mute" x="208" y="54" fill="#a3abc4">cache full</text>
+<path class="f-amber-l" d="M200,64 V130 H380" fill="none" stroke="#f2b13c" stroke-width="3"/>
+<text class="f-amber-t" x="214" y="122" fill="#f2b13c">TLC drive, direct</text>
+<path class="f-red-l f-dash" d="M200,130 V196 H380" fill="none" stroke="#ff7b72" stroke-width="3" stroke-dasharray="6 4"/>
+<text class="f-red-t" x="214" y="188" fill="#ff7b72">QLC drive, direct</text>
+<text class="f-ink" x="16" y="268" fill="#e8eeff">In idle time the drive folds cached data into</text>
+<text class="f-ink" x="16" y="286" fill="#e8eeff">TLC or QLC blocks, freeing the cache again.</text>
+</svg>

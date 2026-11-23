@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 482 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 483 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -120,7 +120,7 @@ Advanced eXtensible Interface (Arm on-chip high-speed bus)
 
 ### bad block { #term-bad-block .sdd-term }
 
-**壞塊（台：壞區塊）；壞塊** — A block that can no longer hold data reliably, from the factory or from wear, and is retired. → [§3.3.1](../core/ch3-nand-flash.md#331-the-five-problems-a-catalog-to-know-cold)  
+**壞塊（台：壞區塊）** — A block that can no longer hold data reliably, from the factory or from wear, and is retired. → [§3.3.1](../core/ch3-nand-flash.md#331-the-five-problems-a-catalog-to-know-cold); A block the FTL has retired; it is recorded in the bad-block table and never written again. → [§4.7](../core/ch4-ftl.md#47-bad-block-management)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### bad block management { #term-bad-block-management .sdd-term }
@@ -195,7 +195,7 @@ free/used tracking in EXT4
 
 ### block / page / hybrid mapping { #term-block-page-hybrid-mapping .sdd-term }
 
-**塊映射 / 頁映射 / 混合映射**  
+**塊映射 / 頁映射 / 混合映射（台：區塊映射 / 頁映射 / 混合映射）** — Mapping granularities: whole blocks (small table, slow small writes), single pages (big table, fast), or a mix. → [§4.2.1](../core/ch4-ftl.md#421-mapping-granularity)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### block group { #term-block-group .sdd-term }
@@ -220,7 +220,7 @@ baseboard management controller (a server's management chip)
 
 ### burst performance { #term-burst-performance .sdd-term }
 
-**突發性能**  
+**突發性能（台：突發效能）** — Write speed while the SLC cache lasts, as opposed to the sustained speed once it is full. → [§4.8](../core/ch4-ftl.md#48-slc-cache)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ## C { #letter-c }
@@ -332,7 +332,7 @@ data bits ÷ total bits
 
 ### cold data / hot data { #term-cold-data-hot-data .sdd-term }
 
-**冷數據 / 熱數據**  
+**冷數據 / 熱數據（台：冷資料 / 熱資料）** — Data rarely updated versus data rewritten often; mixing the two in one block causes needless GC. → [§4.5](../core/ch4-ftl.md#45-wear-leveling)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### command decode/parsing { #term-command-decodeparsing .sdd-term }
@@ -554,7 +554,7 @@ drive writes per day (endurance rating)
 
 ### dynamic / static wear leveling { #term-dynamic-static-wear-leveling .sdd-term }
 
-**動態/靜態磨損平衡**  
+**動態/靜態磨損平衡（台：動態/靜態平均抹寫）** — Placing new, hot writes on young blocks, versus deliberately moving cold data onto worn blocks. → [§4.5](../core/ch4-ftl.md#45-wear-leveling)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### dynamic power management { #term-dynamic-power-management .sdd-term }
@@ -641,7 +641,7 @@ endpoint (a PCIe device at a leaf of the tree)
 
 ### erase count (EC) { #term-erase-count-ec .sdd-term }
 
-**擦除次數** — EC = erase count  
+**擦除次數（台：抹除次數）** — How many times a block has been erased, tracked per block to drive wear leveling. → [§4.5](../core/ch4-ftl.md#45-wear-leveling)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### error handling { #term-error-handling .sdd-term }
@@ -683,17 +683,12 @@ Flash-Friendly File System (flash-native LFS)
 
 ### factory / grown bad block { #term-factory-grown-bad-block .sdd-term }
 
-**出廠/增長壞塊**  
+**出廠/增長壞塊（台：出廠/增長壞區塊）** — Bad from manufacture and marked by the vendor, versus failing in service through an erase, program or uncorrectable read failure. → [§4.7](../core/ch4-ftl.md#47-bad-block-management)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### FC { #term-fc .sdd-term }
 
 Fibre Channel  
-<small>From: the site-wide acronym list</small>
-
-### FDP { #term-fdp .sdd-term }
-
-Flexible Data Placement (NVMe)  
 <small>From: the site-wide acronym list</small>
 
 ### FEC { #term-fec .sdd-term }
@@ -748,7 +743,12 @@ Flexible I/O tester (Linux benchmark tool)
 
 ### Flash Translation Layer (FTL) { #term-flash-translation-layer-ftl .sdd-term }
 
-**閃存轉換層** — FTL = Flash Translation Layer (firmware that maps logical addresses onto flash)  
+**閃存轉換層（台：快閃記憶體轉換層）** — The drive's firmware that maps logical addresses to flash pages and runs garbage collection, wear leveling and recovery. → [§4.1](../core/ch4-ftl.md#41-ftl-overview)  
+<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### Flexible Data Placement (FDP) { #term-flexible-data-placement-fdp .sdd-term }
+
+**靈活數據放置（台：彈性資料放置）** — NVMe hints that steer related writes into shared reclaim units, cutting WA while the drive keeps its FTL. → [§4.11](../core/ch4-ftl.md#fdp-flexible-data-placement-nvme-tp4146)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### FLIT { #term-flit .sdd-term }
@@ -778,7 +778,7 @@ Function Level Reset (PCIe)
 
 ### foreground / background GC { #term-foreground-background-gc .sdd-term }
 
-**前臺/後臺垃圾回收**  
+**前臺/後臺垃圾回收（台：前景/背景垃圾回收）** — GC forced into the write path when free blocks run out, versus GC done ahead of time in idle periods. → [§4.3.4](../core/ch4-ftl.md#434-when-gc-runs)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### FPDMA { #term-fpdma .sdd-term }
@@ -805,7 +805,7 @@ Force Unit Access (the write must reach non-volatile media before it completes)
 
 ### garbage collection (GC) { #term-garbage-collection-gc .sdd-term }
 
-**垃圾回收** — Copying the still-valid pages out of mostly-invalid blocks so those blocks can be erased and reused. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
+**垃圾回收** — Copying the still-valid pages out of mostly-invalid blocks so those blocks can be erased and reused. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works); Reclaiming space: pick victim blocks, copy their valid pages elsewhere, then erase them. → [§4.3.3](../core/ch4-ftl.md#433-gc-implementation-three-steps)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### GCR { #term-gcr .sdd-term }
@@ -895,19 +895,19 @@ Host Controlled Thermal Management (NVMe)
 deep low-power M-PHY link state (≈ DevSleep)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
-### HMB { #term-hmb .sdd-term }
-
-Host Memory Buffer (NVMe: the drive borrows host DRAM)  
-<small>From: the site-wide acronym list</small>
-
 ### host interface { #term-host-interface .sdd-term }
 
 **主機接口（台：主機介面）** — The link to the computer and the protocol spoken over it: SATA, SAS, or PCIe with NVMe. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
+### Host Memory Buffer (HMB) { #term-host-memory-buffer-hmb .sdd-term }
+
+**主機內存緩衝區（台：主機記憶體緩衝區）** — An NVMe feature that lets a drive borrow a slice of host RAM for its map table. → [§4.2.3](../core/ch4-ftl.md#423-hmb-host-memory-buffer)  
+<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
 ### host-based / device-based { #term-host-based-device-based .sdd-term }
 
-**主機端 / 設備端**  
+**主機端 / 設備端（台：主機端 / 裝置端）** — An FTL run by software on the host, versus one run by the drive's own controller. → [§4.10](../core/ch4-ftl.md#410-host-based-ftl)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### hot / warm / cold data { #term-hot-warm-cold-data .sdd-term }
@@ -1105,7 +1105,7 @@ inefficiency of a log-structured FS atop a log-structured FTL
 
 ### logical / physical address { #term-logical-physical-address .sdd-term }
 
-**邏輯地址 / 物理地址**  
+**邏輯地址 / 物理地址（台：邏輯位址 / 實體位址）** — The address the host uses, and the place in flash where the data actually sits. → [§4.1](../core/ch4-ftl.md#41-ftl-overview)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### Logical Block Address { #term-logical-block-address .sdd-term }
@@ -1115,7 +1115,7 @@ inefficiency of a log-structured FS atop a log-structured FTL
 
 ### logical page / physical page { #term-logical-page-physical-page .sdd-term }
 
-**邏輯頁 / 物理頁**  
+**邏輯頁 / 物理頁（台：邏輯頁 / 實體頁）** — The host-sized unit the map tracks, and the flash page that stores it, often holding several logical pages. → [§4.2.2](../core/ch4-ftl.md#422-how-mapping-works-and-the-dram-question)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### Logical Unit (LU) { #term-logical-unit-lu .sdd-term }
@@ -1155,9 +1155,9 @@ message authentication code (signs RPMB access)
 controller + flash + firmware in one package  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
 
-### mapping / map table { #term-mapping-map-table .sdd-term }
+### mapping / map table (L2P) { #term-mapping-map-table-l2p .sdd-term }
 
-**映射 / 映射表**  
+**映射 / 映射表** — The logical-to-physical table that records which flash page holds each logical page. → [§4.2.2](../core/ch4-ftl.md#422-how-mapping-works-and-the-dram-question)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### mapping table { #term-mapping-table .sdd-term }
@@ -1197,7 +1197,7 @@ Minimum DEVSLP Assertion Time (SATA)
 
 ### metadata { #term-metadata .sdd-term }
 
-**元數據（台：中繼資料）；元數據** — Data about data, such as XtremIO's address-to-hash and hash-to-physical tables. → [§2.6.4](../core/ch2-controllers-afa.md#264-workflow-how-io-actually-flows)  
+**元數據（台：中繼資料）；元數據** — Data about data, such as XtremIO's address-to-hash and hash-to-physical tables. → [§2.6.4](../core/ch2-controllers-afa.md#264-workflow-how-io-actually-flows); Information stored with each flash page, chiefly its LBA and a timestamp, which lets the map be rebuilt. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) · [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### min-sum { #term-min-sum .sdd-term }
@@ -1334,7 +1334,7 @@ F2FS metadata unit: inode / direct node / indirect node
 
 ### normal / abnormal power loss { #term-normal-abnormal-power-loss .sdd-term }
 
-**正常/異常掉電**  
+**正常/異常掉電（台：正常/異常斷電）** — Power-off after the host warns the drive and it flushes everything, versus power vanishing without warning. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### normalized / offset min-sum { #term-normalized-offset-min-sum .sdd-term }
@@ -1436,7 +1436,7 @@ operating system
 
 ### over-provisioning (OP) { #term-over-provisioning-op .sdd-term }
 
-**預留空間** — OP = over-provisioning (spare flash hidden from the host)  
+**預留空間** — Flash kept beyond the user capacity, as a fraction of user space; more OP makes GC cheaper and WA lower. → [§4.3.2](../core/ch4-ftl.md#432-write-amplification)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### overwrite-in-place { #term-overwrite-in-place .sdd-term }
@@ -1583,7 +1583,7 @@ Power Management Event (device-initiated wake signal)
 
 ### power-loss recovery { #term-power-loss-recovery .sdd-term }
 
-**掉電恢復**  
+**掉電恢復（台：斷電復原）** — Rebuilding a consistent map and drive state after the power is cut without warning. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### power-vs-latency tradeoff { #term-power-vs-latency-tradeoff .sdd-term }
@@ -1772,7 +1772,7 @@ uniform vs varied row/column weights
 
 ### remap table { #term-remap-table .sdd-term }
 
-**重映射表**  
+**重映射表** — The table that redirects each replaced bad block to its spare. → [§4.7](../core/ch4-ftl.md#47-bad-block-management)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### replay attack { #term-replay-attack .sdd-term }
@@ -1984,13 +1984,13 @@ valid-block counts/bitmaps (≈ SSD VPC/VPBM, Ch4)
 
 ### skip / replace strategy { #term-skip-replace-strategy .sdd-term }
 
-**略過 / 替換策略**  
+**略過 / 替換策略** — Stepping over bad blocks, versus remapping each one to a spare on the same die so parallelism stays steady. → [§4.7](../core/ch4-ftl.md#47-bad-block-management)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
-### SLC { #term-slc .sdd-term }
+### SLC cache { #term-slc-cache .sdd-term }
 
-single-level cell (1 bit per cell)  
-<small>From: the site-wide acronym list</small>
+**SLC 緩存（台：SLC 快取）** — TLC or QLC blocks run in fast, robust one-bit-per-cell mode to absorb bursts of writes. → [§4.8](../core/ch4-ftl.md#48-slc-cache)  
+<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### SMART { #term-smart .sdd-term }
 
@@ -2004,7 +2004,7 @@ Self-Monitoring, Analysis and Reporting Technology (drive health data)
 
 ### snapshot / checkpoint { #term-snapshot-checkpoint .sdd-term }
 
-**快照 / 檢查點**  
+**快照 / 檢查點** — A periodic save of the map and drive state, so a rebuild only scans pages written since. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### SNIA { #term-snia .sdd-term }
@@ -2014,7 +2014,7 @@ Storage Networking Industry Association
 
 ### software-defined flash (SDF) { #term-software-defined-flash-sdf .sdd-term }
 
-**軟件定義閃存** — SDF = Software-Defined Flash (Baidu)  
+**軟件定義閃存（台：軟體定義快閃記憶體）** — Baidu's host-managed flash design, which writes whole erase blocks and so needs no GC. → [§4.10](../core/ch4-ftl.md#410-host-based-ftl)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### SOI { #term-soi .sdd-term }
@@ -2029,7 +2029,7 @@ Silicon-On-Insulator (latchup-resistant substrate)
 
 ### source block / destination block { #term-source-block-destination-block .sdd-term }
 
-**源閃存塊 / 目標閃存塊**  
+**源閃存塊 / 目標閃存塊（台：來源區塊 / 目標區塊）** — The victim block GC copies valid data out of, and the fresh block it copies into. → [§4.3.3](../core/ch4-ftl.md#433-gc-implementation-three-steps)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### South Atlantic Anomaly { #term-south-atlantic-anomaly .sdd-term }
@@ -2191,7 +2191,7 @@ Total Ionizing Dose — cumulative radiation damage (≈ radiation-driven wear, 
 
 ### timestamp { #term-timestamp .sdd-term }
 
-**時間戳**  
+**時間戳（台：時間戳記）** — A sequence number written with each page; during a rebuild the newest copy of an LBA wins. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### TLC { #term-tlc .sdd-term }
@@ -2229,6 +2229,11 @@ Triple Modular Redundancy (triplicate + vote)
 **觸發**  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
+### Trim { #term-trim .sdd-term }
+
+**Trim 指令** — The host telling the drive which LBAs it no longer needs (Deallocate in NVMe, UNMAP in SCSI), so GC stops copying them. → [§4.4](../core/ch4-ftl.md#44-trim)  
+<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
 ### tunnel oxide { #term-tunnel-oxide .sdd-term }
 
 **隧道氧化層（台：穿隧氧化層）** — The thin insulator electrons tunnel through to enter or leave the storage layer; it wears with every cycle. → [§3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out)  
@@ -2239,9 +2244,9 @@ Triple Modular Redundancy (triplicate + vote)
 **交鑰匙方案（台：統包方案）** — A controller sold with firmware, a reference board and flash pairing, so a small brand can ship a drive quickly. → [§2.2.3](../core/ch2-controllers-afa.md#223-taiwanese-mainland-chinese-controllers)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
-### two-level mapping (L2P) { #term-two-level-mapping-l2p .sdd-term }
+### two-level mapping { #term-two-level-mapping .sdd-term }
 
-**二級映射**  
+**二級映射** — A DRAM-less scheme: a small index in SRAM points to map pages kept in flash and cached on demand. → [§4.2.2](../core/ch4-ftl.md#422-how-mapping-works-and-the-dram-question)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ## U { #letter-u }
@@ -2335,7 +2340,12 @@ vStorage APIs for Array Integration (VMware)
 
 ### valid data / invalid (garbage) data { #term-valid-data-invalid-garbage-data .sdd-term }
 
-**有效數據 / 無效(垃圾)數據**  
+**有效數據 / 無效(垃圾)數據（台：有效資料 / 無效(垃圾)資料）** — Pages still mapped to an LBA, versus stale copies that only wait to be erased. → [§4.3.1](../core/ch4-ftl.md#431-the-gc-principle-via-a-toy-ssd)  
+<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### valid-page count (VPC) { #term-valid-page-count-vpc .sdd-term }
+
+**有效頁數** — A per-block count of valid pages that lets GC find the cheapest victim at once. → [§4.3.3](../core/ch4-ftl.md#433-gc-implementation-three-steps)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### Van Allen belts { #term-van-allen-belts .sdd-term }
@@ -2368,11 +2378,6 @@ Virtual File System (uniform kernel API above all filesystems)
 virtual machine  
 <small>From: the site-wide acronym list</small>
 
-### VPC { #term-vpc .sdd-term }
-
-valid page count  
-<small>From: the site-wide acronym list</small>
-
 ## W { #letter-w }
 
 ### WAF { #term-waf .sdd-term }
@@ -2397,7 +2402,7 @@ workload-dependent preconditioning (SNIA)
 
 ### wear leveling { #term-wear-leveling .sdd-term }
 
-**磨損平衡（台：平均抹寫）；磨損平衡** — Spreading erases evenly over all blocks so that none wears out early. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works); Spreading erases evenly over all blocks so that none wears out early. → [§3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out)  
+**磨損平衡（台：平均抹寫）** — Spreading erases evenly over all blocks so that none wears out early. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works); Spreading erases evenly over all blocks so that none wears out early. → [§3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out); Keeping erase counts even: dynamic wear leveling sends hot data to young blocks, static moves cold data onto old ones. → [§4.5](../core/ch4-ftl.md#45-wear-leveling)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### Well-Known LU { #term-well-known-lu .sdd-term }
@@ -2422,7 +2427,7 @@ wear leveling
 
 ### write amplification (WA) { #term-write-amplification-wa .sdd-term }
 
-**寫放大（台：寫入放大）；寫放大** — Bytes the drive writes to flash divided by bytes the host asked it to write; garbage collection pushes it above 1. → [§1.5.3](../core/ch1-overview.md#153-endurance); Bytes written to flash divided by bytes the host wrote; lowering it slows wear. → [§3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out)  
+**寫放大（台：寫入放大）** — Bytes the drive writes to flash divided by bytes the host asked it to write; garbage collection pushes it above 1. → [§1.5.3](../core/ch1-overview.md#153-endurance); Bytes written to flash divided by bytes the host wrote; lowering it slows wear. → [§3.3.2](../core/ch3-nand-flash.md#332-endurance-the-physics-of-wearing-out); Data written to flash divided by data the host wrote; GC, wear leveling and refreshes push it above 1. → [§4.3.2](../core/ch4-ftl.md#432-write-amplification)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### write buffer / buffer { #term-write-buffer-buffer .sdd-term }
@@ -2461,10 +2466,10 @@ Yangtze Memory Technologies (China's NAND flash maker)
 
 ## Z { #letter-z }
 
-### ZNS { #term-zns .sdd-term }
+### Zoned Namespaces (ZNS) { #term-zoned-namespaces-zns .sdd-term }
 
-Zoned Namespaces (NVMe)  
-<small>From: the site-wide acronym list</small>
+**分區命名空間** — NVMe zones that must be written sequentially and reset as a whole, moving placement and GC to the host. → [§4.11](../core/ch4-ftl.md#zns-zoned-namespaces-nvme-20)  
+<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### ZUFS { #term-zufs .sdd-term }
 

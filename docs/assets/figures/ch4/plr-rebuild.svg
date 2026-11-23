@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Rebuilding the map after a power loss</title>
+<desc>Top: a timeline with an older checkpoint, the latest checkpoint C and the power loss X. On reboot the drive loads the snapshot taken at C and scans only the pages written between C and X. Bottom: two flash pages both claim LBA 7; page P3 carries timestamp 105 and page P9 carries timestamp 142. The newest timestamp wins, so the rebuilt map points LBA 7 to P9.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">1 · Load the snapshot, scan the rest</text>
+<line class="f-line" x1="16" y1="78" x2="378" y2="78" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="f-line" x1="60" y1="66" x2="60" y2="90" stroke="#7d86a3" stroke-width="2"/>
+<text class="f-mute" x="60" y="56" text-anchor="middle" fill="#a3abc4">older</text>
+<line class="f-green-l" x1="150" y1="62" x2="150" y2="94" stroke="#7ee2a8" stroke-width="3"/>
+<text class="f-green-t" x="150" y="52" text-anchor="middle" font-weight="700" fill="#7ee2a8">checkpoint C</text>
+<line class="f-red-l" x1="324" y1="62" x2="324" y2="94" stroke="#ff7b72" stroke-width="3"/>
+<text class="f-red-t" x="324" y="52" text-anchor="middle" font-weight="700" fill="#ff7b72">power lost X</text>
+<path class="f-amber-l" d="M150,104 V112 H324 V104" fill="none" stroke="#f2b13c" stroke-width="2"/>
+<text class="f-amber-t" x="237" y="132" text-anchor="middle" fill="#f2b13c">scan only this slice</text>
+<text class="f-mute" x="384" y="96" text-anchor="end" fill="#a3abc4">time</text>
+<line class="f-faint" x1="16" y1="150" x2="384" y2="150" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="174" font-weight="700" fill="#e8eeff">2 · Two pages claim LBA 7</text>
+<rect class="f-line f-panel" x="16" y="186" width="180" height="40" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="28" y="202" fill="#e8eeff">P3 · LBA 7</text>
+<text class="f-mute" x="28" y="220" fill="#a3abc4">timestamp 105</text>
+<rect class="f-cyan" x="204" y="186" width="180" height="40" rx="6" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="216" y="202" fill="#e8eeff">P9 · LBA 7</text>
+<text class="f-ink" x="216" y="220" font-weight="700" fill="#e8eeff">timestamp 142</text>
+<line class="f-line" x1="294" y1="228" x2="294" y2="254" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="204" y="258" width="180" height="32" rx="6" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="294" y="279" text-anchor="middle" font-weight="700" fill="#e8eeff">map: LBA 7 → P9</text>
+<text class="f-mute" x="16" y="279" fill="#a3abc4">newest timestamp wins</text>
+</svg>
