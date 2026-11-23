@@ -2,6 +2,7 @@
 *[ACK]: acknowledgment
 *[ACPI]: Advanced Configuration and Power Interface (OS power-management standard)
 *[ACTP]: Active Power (NVMe power-state field, averaged over a 10 s window)
+*[AES]: Advanced Encryption Standard
 *[AFA]: all-flash array
 *[AHCI]: Advanced Host Controller Interface (the SATA-era host interface)
 *[AIPR]: asynchronous independent plane read
@@ -32,6 +33,7 @@
 *[CLKREQ]: clock request (PCIe sideband signal CLKREQ#)
 *[CMB]: Controller Memory Buffer (NVMe)
 *[CMOS]: complementary metal–oxide–semiconductor (standard logic process)
+*[CMVP]: Cryptographic Module Validation Program (NIST)
 *[CN]: check node (Tanner graph)
 *[COTS]: commercial off-the-shelf
 *[CP]: checkpoint (F2FS)
@@ -48,10 +50,12 @@
 *[DB]: doorbell register (NVMe)
 *[DETO]: DevSleep Exit Timeout (SATA)
 *[DEVSLP]: Device Sleep signal (SATA pin)
+*[DICE]: Device Identifier Composition Engine (TCG device-identity standard)
 *[DLLP]: Data Link Layer Packet (PCIe)
 *[DLLPs]: Data Link Layer Packets (PCIe)
 *[DMA]: direct memory access (a device copies data to or from memory without the CPU)
 *[DMAC]: DMA controller
+*[DMTF]: Distributed Management Task Force (management standards body)
 *[DQS]: data strobe (NAND / DRAM timing signal)
 *[DR]: data retention
 *[DRAM]: dynamic random-access memory
@@ -60,6 +64,7 @@
 *[DevSleep]: Device Sleep (SATA's deepest low-power state)
 *[EC]: erase count
 *[ECC]: error-correcting code
+*[ECDSA]: Elliptic Curve Digital Signature Algorithm
 *[ECRC]: end-to-end CRC (optional PCIe TLP digest)
 *[EDAC]: error detection and correction
 *[EDSFF]: Enterprise and Data Center Standard Form Factor (E1 / E3 drives)
@@ -74,6 +79,7 @@
 *[FEC]: forward error correction
 *[FFR]: functional failure requirement (JEDEC endurance metric)
 *[FIO]: Flexible I/O tester (Linux benchmark tool)
+*[FIPS]: Federal Information Processing Standard (US)
 *[FIS]: Frame Information Structure (SATA packet)
 *[FLIT]: flow control unit (PCIe 6.0's fixed-size transfer unit)
 *[FLR]: Function Level Reset (PCIe)
@@ -98,6 +104,7 @@
 *[HDD]: hard disk drive
 *[HDDs]: hard disk drives
 *[HIBERN8]: hibernate (UFS / UniPro deepest link low-power state)
+*[HMAC]: hash-based message authentication code
 *[HMB]: Host Memory Buffer (NVMe: the drive borrows host DRAM)
 *[HPB]: Host Performance Booster (UFS: the host caches the map)
 *[IEEE]: Institute of Electrical and Electronics Engineers
@@ -107,6 +114,8 @@
 *[JEDEC]: JEDEC Solid State Technology Association (memory standards body)
 *[JFFS2]: Journalling Flash File System, version 2
 *[JTAG]: Joint Test Action Group (the standard chip debug and test port)
+*[KDF]: key derivation function
+*[KEK]: key encryption key
 *[KV]: key-value
 *[L2P]: logical-to-physical (address map)
 *[LBA]: logical block address
@@ -128,10 +137,13 @@
 *[MBR]: Master Boot Record (legacy partition table)
 *[MBU]: multiple-bit upset
 *[MCQ]: Multi-Circular Queue (UFS 4.0 multi-queue interface)
+*[MCTP]: Management Component Transport Protocol (DMTF)
 *[MCU]: microcontroller unit
 *[MDAT]: Minimum DEVSLP Assertion Time (SATA)
+*[MEK]: media encryption key
 *[MEO]: medium Earth orbit
 *[MIPI]: MIPI Alliance (mobile interface standards body)
+*[ML-DSA]: Module-Lattice Digital Signature Algorithm (post-quantum signatures, FIPS 204)
 *[MLC]: multi-level cell (2 bits per cell)
 *[MMU]: mass memory unit (spacecraft storage)
 *[MOSFET]: metal–oxide–semiconductor field-effect transistor
@@ -151,6 +163,7 @@
 *[NGFF]: Next Generation Form Factor (M.2's original name)
 *[NIC]: network interface card
 *[NICs]: network interface cards
+*[NIST]: National Institute of Standards and Technology (US)
 *[NQN]: NVMe Qualified Name
 *[NRZ]: non-return-to-zero (two-level signaling)
 *[NS]: namespace (NVMe)
@@ -161,11 +174,13 @@
 *[NVMe]: NVM Express (the SSD command protocol that runs over PCIe)
 *[NVMe-MI]: NVMe Management Interface (out-of-band drive management)
 *[NVMe-oF]: NVMe over Fabrics
+*[OCP]: Open Compute Project
 *[OLTP]: online transaction processing
 *[ONFI]: Open NAND Flash Interface
 *[OOB]: out-of-band (SATA link signaling)
 *[OP]: over-provisioning (spare flash hidden from the host)
 *[OS]: operating system
+*[OTP]: one-time programmable (fuse memory)
 *[P2L]: physical-to-logical (reverse map)
 *[PAM4]: 4-level pulse-amplitude modulation
 *[PCB]: printed circuit board
@@ -181,7 +196,9 @@
 *[PLP]: power-loss protection
 *[PME]: Power Management Event (PCIe)
 *[PMIC]: power management integrated circuit
+*[PQC]: post-quantum cryptography
 *[PRP]: Physical Region Page (NVMe data pointer)
+*[PSID]: physical security ID (printed on the drive's label; resets the drive)
 *[PWRDIS]: power disable (EDSFF sideband signal)
 *[QLC]: quad-level cell (4 bits per cell)
 *[QoS]: quality of service (how consistent latency is)
@@ -195,9 +212,12 @@
 *[REFCLK]: reference clock (PCIe's 100 MHz clock)
 *[RHBD]: radiation hardening by design
 *[RHBP]: radiation hardening by process
+*[RMA]: return merchandise authorization (a drive sent back to its vendor)
+*[ROM]: read-only memory
 *[RPC]: remote procedure call
 *[RPMB]: Replay Protected Memory Block
 *[RRAM]: resistive RAM
+*[RSA]: Rivest–Shamir–Adleman (public-key algorithm)
 *[RTD3]: Runtime D3 (the device is powered off while the system keeps running)
 *[RTL]: register-transfer level (hardware design description)
 *[SAN]: storage area network
@@ -207,6 +227,7 @@
 *[SDF]: Software-Defined Flash (Baidu)
 *[SDK]: software development kit
 *[SEB]: single-event burnout
+*[SED]: self-encrypting drive
 *[SEE]: single-event effect
 *[SEEs]: single-event effects
 *[SEFI]: single-event functional interrupt
@@ -223,18 +244,21 @@
 *[SNIA]: Storage Networking Industry Association
 *[SOI]: silicon on insulator
 *[SPDK]: Storage Performance Development Kit (user-space NVMe driver)
+*[SPDM]: Security Protocol and Data Model (DMTF attestation protocol)
 *[SPI]: Serial Peripheral Interface
 *[SQ]: Submission Queue (NVMe)
 *[SQs]: Submission Queues (NVMe)
 *[SR-IOV]: single-root I/O virtualization (one PCIe device appears as many)
 *[SRAM]: static random-access memory
 *[SSA]: Segment Summary Area (F2FS)
+*[SSC]: Security Subsystem Class (a TCG storage profile, such as Opal)
 *[SSD]: solid-state drive
 *[SSDs]: solid-state drives
 *[SSR]: solid-state recorder (spacecraft storage)
 *[SoC]: system on chip
 *[TBW]: terabytes written (endurance rating)
 *[TCAT]: Terabit Cell Array Transistor (Samsung 3D NAND structure)
+*[TCG]: Trusted Computing Group
 *[TCP]: Transmission Control Protocol
 *[TID]: total ionizing dose
 *[TLC]: triple-level cell (3 bits per cell)
@@ -271,6 +295,7 @@
 *[WL]: wear leveling
 *[XDP]: XtremIO Data Protection (its flash-optimized RAID)
 *[XOR]: exclusive OR
+*[XTS]: XEX-based tweaked-codebook mode with ciphertext stealing (disk-encryption mode)
 *[YAFFS]: Yet Another Flash File System
 *[YMTC]: Yangtze Memory Technologies (China's NAND flash maker)
 *[ZNS]: Zoned Namespaces (NVMe)

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 258" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Secure boot with anti-rollback</title>
+<desc>A chain of trust from top to bottom. The boot ROM is fixed in silicon at manufacture and reads fuses holding the hash of the vendor's public key and a version counter. It checks the bootloader's signature before running it; the bootloader, signed by the vendor's key, checks the main firmware the same way, including that its version is not below the counter. The main firmware runs the FTL, garbage collection and the host interface. A bad signature or an older version stops the boot. Each stage's hash is recorded as a measurement, which SPDM attestation reports to the host.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-violet" x="16" y="8" width="234" height="44" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="27" font-weight="700" fill="#e8eeff">Boot ROM</text>
+<text class="f-ink" x="28" y="45" fill="#e8eeff">fixed in silicon at manufacture</text>
+<rect class="f-violet f-dash" x="266" y="8" width="118" height="44" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text class="f-ink" x="278" y="27" font-weight="700" fill="#e8eeff">fuses</text>
+<text class="f-ink" x="278" y="45" fill="#e8eeff">key hash, counter</text>
+<line class="f-line" x1="266" y1="30" x2="252" y2="30" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="f-line" x1="133" y1="54" x2="133" y2="74" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="141" y="68" fill="#a3abc4">checks signature</text>
+<rect class="f-cyan" x="16" y="76" width="234" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="95" font-weight="700" fill="#e8eeff">Bootloader</text>
+<text class="f-ink" x="28" y="113" fill="#e8eeff">signed with the vendor's key</text>
+<line class="f-line" x1="133" y1="122" x2="133" y2="142" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="141" y="136" fill="#a3abc4">checks again</text>
+<rect class="f-green" x="16" y="144" width="234" height="44" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="163" font-weight="700" fill="#e8eeff">Main firmware</text>
+<text class="f-ink" x="28" y="181" fill="#e8eeff">FTL, GC, host interface</text>
+<g class="f-red-t" fill="#ff7b72">
+<text x="266" y="96" font-weight="700">bad signature</text>
+<text x="266" y="114">or older version:</text>
+<text x="266" y="132">the boot stops</text>
+</g>
+<line class="f-line f-dash" x1="133" y1="190" x2="133" y2="210" stroke="#7d86a3" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<rect class="f-amber" x="16" y="212" width="368" height="40" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="229" font-weight="700" fill="#e8eeff">Measurements</text>
+<text class="f-ink" x="28" y="246" fill="#e8eeff">each stage's hash, reported by SPDM attestation</text>
+</svg>

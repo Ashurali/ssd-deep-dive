@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 188" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Where copies of your data live inside an SSD</title>
+<desc>The drive's flash drawn as one bar in four parts: current data, which the host can address; stale copies left behind by overwrites and garbage collection; the spare area kept for over-provisioning; and retired blocks. Three brackets below show what reaches what. Delete and Trim reach only the current data, and even there they only change what the host sees. Sanitize with block erase reaches all four parts. Crypto erase makes all four unreadable by destroying the key that encrypted them.</desc>
+<text class="f-mute" x="16" y="16" fill="#a3abc4">where copies of your data live inside an SSD</text>
+<rect class="f-cyan" x="16" y="26" width="134" height="40" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="150" y="26" width="100" height="40" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-violet" x="250" y="26" width="80" height="40" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-red" x="330" y="26" width="54" height="40" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle">
+<text x="83" y="51">current data</text>
+<text x="200" y="51">stale copies</text>
+<text x="290" y="51">spare (OP)</text>
+<text x="357" y="51">retired</text>
+</g>
+<path class="f-line" d="M16,72 V78 H150 V72 M16,110 V116 H384 V110 M16,148 V154 H384 V148" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-ink" x="16" y="96" fill="#e8eeff">delete and Trim reach only this</text>
+<text class="f-green-t" x="16" y="134" fill="#7ee2a8">Sanitize, block erase: reaches all of it</text>
+<text class="f-green-t" x="16" y="172" fill="#7ee2a8">crypto erase: makes all of it unreadable</text>
+</svg>

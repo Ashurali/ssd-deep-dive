@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 13 chapters and supplements, plus every acronym the site uses: 505 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 14 chapters and supplements, plus every acronym the site uses: 547 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -56,6 +56,16 @@ Advanced Configuration and Power Interface (OS power-management standard)
 **管理命令（台：管理指令）** — A command that manages the drive (creating queues, Identify, features) rather than moving data. → [§6.2](../core/ch6-nvme.md#62-nvme-overview-the-command-model)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
+### AES { #term-aes .sdd-term }
+
+Advanced Encryption Standard  
+<small>From: the site-wide acronym list</small>
+
+### AES-XTS { #term-aes-xts .sdd-term }
+
+**AES-XTS加密模式** — AES in XTS mode (IEEE 1619), which mixes each block's address into its encryption. → [§F.2](../supplements/f-security.md#f2-self-encrypting-drives)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### Aggressive Link Power Management (ALPM) { #term-aggressive-link-power-management-alpm .sdd-term }
 
 **積極鏈路電源管理（台：積極鏈結電源管理）** — SATA's ladder of link power states. → [§D.4](../supplements/d-power-management.md#d4-sata-power-management-consolidated)  
@@ -86,6 +96,11 @@ Address Latch Enable (NAND pin)
 **無定形態 / 晶體態（台：非晶態 / 結晶態）** — PCM's high-resistance (disordered) and low-resistance (ordered) states. → [§3.1.7](../core/ch3-nand-flash.md#317-3d-xpoint-and-the-emerging-memory-zoo)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
+### anti-rollback { #term-anti-rollback .sdd-term }
+
+**防回滾（台：防降版）** — Refusing validly signed firmware older than a version counter kept in fuses. → [§F.5](../supplements/f-security.md#f5-secure-boot-and-signed-firmware)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### APB { #term-apb .sdd-term }
 
 Advanced Peripheral Bus (Arm on-chip bus for slow peripherals)  
@@ -110,6 +125,11 @@ AT Attachment (the disk command set behind SATA)
 
 **原子操作** — An operation that completes entirely or not at all, as shared-namespace access must. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
+
+### attestation { #term-attestation .sdd-term }
+
+**證明（台：認證）** — A device proving to the host who it is and what firmware it runs. → [§F.6](../supplements/f-security.md#f6-attestation-spdm-and-caliptra)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### Autonomous Power State Transition (APST) { #term-autonomous-power-state-transition-apst .sdd-term }
 
@@ -255,6 +275,11 @@ baseboard management controller (a server's management chip)
 **緩存寄存器 / 頁寄存器（台：快取暫存器 / 頁暫存器）** — A plane's two page-sized buffers, which let a bus transfer overlap an array access. → [§3.1.3](../core/ch3-nand-flash.md#313-the-hierarchy-cell-page-block-plane-die)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
+### Caliptra { #term-caliptra .sdd-term }
+
+**Caliptra信任根** — The open-source silicon root of trust from OCP and the CHIPS Alliance. → [§F.6](../supplements/f-security.md#f6-attestation-spdm-and-caliptra)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### capacity { #term-capacity .sdd-term }
 
 **容量** — The user-visible size of the drive, quoted in decimal units (1 GB = 10⁹ bytes). → [§1.5.1](../core/ch1-overview.md#151-basic-information)  
@@ -300,6 +325,11 @@ Chip Enable (NAND pin that selects one die on a shared channel)
 Configuration Write request (PCIe TLP)  
 <small>From: the site-wide acronym list</small>
 
+### chain of trust { #term-chain-of-trust .sdd-term }
+
+**信任鏈** — Each boot stage verifying the next before running it. → [§F.5](../supplements/f-security.md#f5-secure-boot-and-signed-firmware)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### channel { #term-channel .sdd-term }
 
 **通道** — One shared bus from the flash controller to a group of dies; separate channels work in parallel. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
@@ -340,6 +370,11 @@ Command Latch Enable (NAND pin)
 **清理** — F2FS's garbage collection, choosing victims greedily or by cost-benefit. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
+### clear / purge / destroy { #term-clear-purge-destroy .sdd-term }
+
+**清除 / 淨化 / 銷毀** — The sanitization levels, from defeating simple recovery to making the media unusable. → [§F.4.3](../supplements/f-security.md#f43-the-standards-nist-sp-800-88-and-ieee-2883)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### clock request (CLKREQ#) { #term-clock-request-clkreq .sdd-term }
 
 **時鐘請求信號（台：時脈請求訊號）** — The PCIe sideband pin that gates the deep link states, like SATA's DEVSLP. → [§D.1](../supplements/d-power-management.md#d1-pcie-link-power-states-aspm)  
@@ -348,6 +383,11 @@ Command Latch Enable (NAND pin)
 ### CMOS { #term-cmos .sdd-term }
 
 complementary metal–oxide–semiconductor (standard logic process)  
+<small>From: the site-wide acronym list</small>
+
+### CMVP { #term-cmvp .sdd-term }
+
+Cryptographic Module Validation Program (NIST)  
 <small>From: the site-wide acronym list</small>
 
 ### code rate R = k/n { #term-code-rate-r-kn .sdd-term }
@@ -445,6 +485,11 @@ complementary metal–oxide–semiconductor (standard logic process)
 Completion with Data (PCIe TLP)  
 <small>From: the site-wide acronym list</small>
 
+### crypto erase { #term-crypto-erase .sdd-term }
+
+**加密擦除（台：密碼抹除）** — Erasing by destroying the media key, which makes all ciphertext unreadable at once. → [§F.2](../supplements/f-security.md#f2-self-encrypting-drives)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### cyclic redundancy check (CRC) { #term-cyclic-redundancy-check-crc .sdd-term }
 
 **循環冗餘校驗（台：循環冗餘檢查）** — A checksum that detects corrupted data; PI's guard field is a 16-bit CRC. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
@@ -522,6 +567,11 @@ DevSleep Exit Timeout (SATA)
 **設備睡眠信號（台：裝置睡眠訊號）** — The SATA pin that puts the drive into DevSleep. → [§D.4](../supplements/d-power-management.md#d4-sata-power-management-consolidated)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
+### DICE { #term-dice .sdd-term }
+
+Device Identifier Composition Engine (TCG device-identity standard)  
+<small>From: the site-wide acronym list</small>
+
 ### differential signaling { #term-differential-signaling .sdd-term }
 
 **差分信號（台：差動訊號）** — Sending each bit as the difference between two wires, so noise that hits both cancels out. → [§5.9](../core/ch5-pcie.md#59-physical-layer)  
@@ -540,6 +590,11 @@ DevSleep Exit Timeout (SATA)
 ### DMAC { #term-dmac .sdd-term }
 
 DMA controller  
+<small>From: the site-wide acronym list</small>
+
+### DMTF { #term-dmtf .sdd-term }
+
+Distributed Management Task Force (management standards body)  
 <small>From: the site-wide acronym list</small>
 
 ### doorbell { #term-doorbell .sdd-term }
@@ -598,6 +653,11 @@ drive writes per day (endurance rating)
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ## E { #letter-e }
+
+### ECDSA { #term-ecdsa .sdd-term }
+
+Elliptic Curve Digital Signature Algorithm  
+<small>From: the site-wide acronym list</small>
 
 ### ECRC { #term-ecrc .sdd-term }
 
@@ -746,6 +806,16 @@ functional failure requirement (JEDEC endurance metric)
 Flexible I/O tester (Linux benchmark tool)  
 <small>From: the site-wide acronym list</small>
 
+### FIPS { #term-fips .sdd-term }
+
+Federal Information Processing Standard (US)  
+<small>From: the site-wide acronym list</small>
+
+### FIPS 140-3 { #term-fips-140-3 .sdd-term }
+
+**FIPS 140-3認證** — The US and Canadian validation of cryptographic modules; it replaced FIPS 140-2 in 2026. → [§F.7](../supplements/f-security.md#f7-certifications)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### firmware { #term-firmware .sdd-term }
 
 **固件（台：韌體）** — The program that runs inside a device on its own processors. → [§0.8](../core/ch0-foundations.md#08-firmware-and-software); The code running on the controller: command handling, the FTL and error recovery. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
@@ -810,6 +880,11 @@ Function Level Reset (PCIe)
 
 **前臺/後臺垃圾回收（台：前景/背景垃圾回收）** — GC forced into the write path when free blocks run out, versus GC done ahead of time in idle periods. → [§4.3.4](../core/ch4-ftl.md#434-when-gc-runs)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### Format NVM (secure erase) { #term-format-nvm-secure-erase .sdd-term }
+
+**格式化NVM（安全擦除）** — The NVMe format command, which can erase a namespace's user data or its key. → [§F.4.2](../supplements/f-security.md#f42-format-nvm-and-sanitize)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### FPDMA { #term-fpdma .sdd-term }
 
@@ -1071,6 +1146,16 @@ Joint Test Action Group (the standard chip debug and test port)
 
 ## K { #letter-k }
 
+### key derivation function (KDF) { #term-key-derivation-function-kdf .sdd-term }
+
+**密鑰派生函數（台：金鑰衍生函數）** — A function that turns a password into a key, slowly enough to resist guessing. → [§F.2](../supplements/f-security.md#f2-self-encrypting-drives)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
+### key encryption key (KEK) { #term-key-encryption-key-kek .sdd-term }
+
+**密鑰加密密鑰（台：金鑰加密金鑰）** — The key, derived from a password, that wraps the media key. → [§F.2](../supplements/f-security.md#f2-self-encrypting-drives)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### KV { #term-kv .sdd-term }
 
 key-value  
@@ -1137,6 +1222,11 @@ low-dropout regulator (a small linear voltage regulator)
 
 **鏈路 (Link)（台：連結）** — The connection between two PCIe ports, made of one or more lanes. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### locking range { #term-locking-range .sdd-term }
+
+**鎖定範圍** — An LBA range with its own key and its own read and write locks. → [§F.3](../supplements/f-security.md#f3-the-tcg-storage-specifications-opal-pyrite-and-ruby)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### log-likelihood ratio (LLR) { #term-log-likelihood-ratio-llr .sdd-term }
 
@@ -1235,6 +1325,11 @@ logical unit number
 Master Boot Record (legacy partition table)  
 <small>From: the site-wide acronym list</small>
 
+### MCTP { #term-mctp .sdd-term }
+
+Management Component Transport Protocol (DMTF)  
+<small>From: the site-wide acronym list</small>
+
 ### MCU { #term-mcu .sdd-term }
 
 microcontroller unit  
@@ -1244,6 +1339,11 @@ microcontroller unit
 
 Minimum DEVSLP Assertion Time (SATA)  
 <small>From: the site-wide acronym list</small>
+
+### media encryption key (MEK) { #term-media-encryption-key-mek .sdd-term }
+
+**介質加密密鑰（台：媒體加密金鑰）** — The random key that encrypts the stored data; it never leaves the drive. → [§F.2](../supplements/f-security.md#f2-self-encrypting-drives)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### memory mapping { #term-memory-mapping .sdd-term }
 
@@ -1284,6 +1384,11 @@ MIPI Alliance (mobile interface standards body)
 
 **鏡像** — Keeping two copies of the data, so either can serve it if the other fails. → [§2.6.3](../core/ch2-controllers-afa.md#263-software-architecture-the-real-value)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
+### ML-DSA { #term-ml-dsa .sdd-term }
+
+Module-Lattice Digital Signature Algorithm (post-quantum signatures, FIPS 204)  
+<small>From: the site-wide acronym list</small>
 
 ### MLC { #term-mlc .sdd-term }
 
@@ -1382,6 +1487,11 @@ Next Generation Form Factor (M.2's original name)
 network interface card  
 <small>From: the site-wide acronym list</small>
 
+### NIST { #term-nist .sdd-term }
+
+National Institute of Standards and Technology (US)  
+<small>From: the site-wide acronym list</small>
+
 ### node { #term-node .sdd-term }
 
 **節點** — F2FS's metadata unit: an inode, a direct node or an indirect node. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
@@ -1464,6 +1574,11 @@ NVMe over Fabrics
 
 ## O { #letter-o }
 
+### OCP { #term-ocp .sdd-term }
+
+Open Compute Project  
+<small>From: the site-wide acronym list</small>
+
 ### OLTP { #term-oltp .sdd-term }
 
 online transaction processing  
@@ -1478,6 +1593,11 @@ Open NAND Flash Interface
 
 out-of-band (SATA link signaling)  
 <small>From: the site-wide acronym list</small>
+
+### Opal / Pyrite / Ruby { #term-opal-pyrite-ruby .sdd-term }
+
+**Opal / Pyrite / Ruby規範** — TCG's client class with encryption, its unencrypted variant, and its data-center class. → [§F.3](../supplements/f-security.md#f3-the-tcg-storage-specifications-opal-pyrite-and-ruby)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### operational / non-operational state { #term-operational-non-operational-state .sdd-term }
 
@@ -1502,6 +1622,11 @@ out-of-band (SATA link signaling)
 ### OS { #term-os .sdd-term }
 
 operating system  
+<small>From: the site-wide acronym list</small>
+
+### OTP { #term-otp .sdd-term }
+
+one-time programmable (fuse memory)  
 <small>From: the site-wide acronym list</small>
 
 ### out-of-band management { #term-out-of-band-management .sdd-term }
@@ -1611,6 +1736,11 @@ PCIe wake signal (PEWAKE#)
 **物理區域頁（台：實體區域頁）** — An NVMe pointer to a host memory page; PRP lists describe longer buffers in whole pages. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
+### physical security ID (PSID) { #term-physical-security-id-psid .sdd-term }
+
+**物理安全標識（台：實體安全識別碼）** — The code on the drive's label that resets it to factory state, erasing all data. → [§F.3](../supplements/f-security.md#f3-the-tcg-storage-specifications-opal-pyrite-and-ruby)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### plane { #term-plane .sdd-term }
 
 **平面** — A slice of a die with its own registers; planes can work in parallel within one die. → [§3.1.3](../core/ch3-nand-flash.md#313-the-hierarchy-cell-page-block-plane-die)  
@@ -1630,6 +1760,11 @@ phase-locked loop (clock generator)
 
 **點到點（台：點對點）** — Each link connects exactly two devices and its bandwidth is theirs alone. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### post-quantum cryptography (PQC) { #term-post-quantum-cryptography-pqc .sdd-term }
+
+**後量子密碼（台：後量子密碼學）** — Algorithms, such as ML-DSA, designed to resist attack by quantum computers. → [§F.5](../supplements/f-security.md#f5-secure-boot-and-signed-firmware)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### power consumption { #term-power-consumption .sdd-term }
 
@@ -1885,15 +2020,30 @@ read disturb
 **環形緩衝區（台：環狀緩衝區）** — A fixed array used as a circle, with a head where entries are taken and a tail where they are added. → [§0.10](../core/ch0-foundations.md#010-queues-and-ring-buffers)  
 <small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
+### RMA { #term-rma .sdd-term }
+
+return merchandise authorization (a drive sent back to its vendor)  
+<small>From: the site-wide acronym list</small>
+
 ### robustness { #term-robustness .sdd-term }
 
 **健壯性（台：強健性）** — Continuing to work correctly when the host or link misbehaves. → [§7.3.3](../core/ch7-testing.md#733-jammer)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
+### ROM { #term-rom .sdd-term }
+
+read-only memory  
+<small>From: the site-wide acronym list</small>
+
 ### Root Complex (RC) { #term-root-complex-rc .sdd-term }
 
 **根複合體** — The root of the PCIe tree, which connects the CPU and memory to PCIe and alone may start configuration. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### root of trust { #term-root-of-trust .sdd-term }
+
+**信任根** — The first code to run, fixed in silicon, which every later stage depends on. → [§F.5](../supplements/f-security.md#f5-secure-boot-and-signed-firmware)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### routing { #term-routing .sdd-term }
 
@@ -1918,6 +2068,11 @@ remote procedure call
 ### RRAM { #term-rram .sdd-term }
 
 resistive RAM  
+<small>From: the site-wide acronym list</small>
+
+### RSA { #term-rsa .sdd-term }
+
+Rivest–Shamir–Adleman (public-key algorithm)  
 <small>From: the site-wide acronym list</small>
 
 ### RTD3 resume latency (RTD3R) { #term-rtd3-resume-latency-rtd3r .sdd-term }
@@ -1951,6 +2106,16 @@ register-transfer level (hardware design description)
 
 storage area network  
 <small>From: the site-wide acronym list</small>
+
+### sanitization { #term-sanitization .sdd-term }
+
+**數據清除（台：資料清除）** — Removing data so that it can't be recovered, at a stated level of effort. → [§F.4](../supplements/f-security.md#f4-erasing-an-ssd-why-deleted-data-lingers)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
+### Sanitize { #term-sanitize .sdd-term }
+
+**清除命令（台：清除指令）** — The NVMe command that erases all user data in the subsystem by block erase, crypto erase or overwrite, and finishes even after a power loss. → [§F.4.2](../supplements/f-security.md#f42-format-nvm-and-sanitize)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### SAS { #term-sas .sdd-term }
 
@@ -1987,6 +2152,16 @@ software development kit
 **扇區（台：磁區）** — One block of a block device, usually 512 or 4,096 bytes. → [§0.4](../core/ch0-foundations.md#04-storage-as-a-block-device)  
 <small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
+### Security Protocol and Data Model (SPDM) { #term-security-protocol-and-data-model-spdm .sdd-term }
+
+**安全協議與數據模型（台：安全協定與資料模型）** — DMTF's protocol for device identity, signed measurements and secure sessions. → [§F.6](../supplements/f-security.md#f6-attestation-spdm-and-caliptra)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
+### Security Send / Receive { #term-security-send-receive .sdd-term }
+
+**安全發送 / 接收命令（台：安全傳送 / 接收指令）** — The NVMe commands that carry TCG and other security protocols. → [§F.3](../supplements/f-security.md#f3-the-tcg-storage-specifications-opal-pyrite-and-ruby)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### segment { #term-segment .sdd-term }
 
 **段（台：區段）** — A group of SGL descriptors stored together; segments chain to form the list. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
@@ -2006,6 +2181,11 @@ software development kit
 
 **段摘要區（台：區段摘要區）** — The record of which node owns each block, the twin of the FTL's P2L table. → [§C.2.1](../supplements/c-flash-file-systems.md#c21-disk-layout)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### self-encrypting drive (SED) { #term-self-encrypting-drive-sed .sdd-term }
+
+**自加密硬盤（台：自我加密硬碟）** — A drive that encrypts all data in hardware on its own data path. → [§F.2](../supplements/f-security.md#f2-self-encrypting-drives)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### sequence number { #term-sequence-number .sdd-term }
 
@@ -2031,6 +2211,11 @@ Secure Hash Algorithm
 
 **影子副本（台：影子複本）** — Keeping two copies and updating them alternately, so one is always valid. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### shadow MBR { #term-shadow-mbr .sdd-term }
+
+**影子主引導記錄（台：影子主開機紀錄）** — The pre-boot image a locked drive shows at its start, to ask for the password. → [§F.3](../supplements/f-security.md#f3-the-tcg-storage-specifications-opal-pyrite-and-ruby)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### sideband signal { #term-sideband-signal .sdd-term }
 
@@ -2157,10 +2342,20 @@ single-root I/O virtualization (one PCIe device appears as many)
 **靜態 / 動態隨機存取存儲器（台：靜態 / 動態隨機存取記憶體）** — Fast six-transistor memory, and dense capacitor-based memory that must be refreshed. → [§0.7](../core/ch0-foundations.md#07-volatile-and-non-volatile-memory)  
 <small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
+### SSC { #term-ssc .sdd-term }
+
+Security Subsystem Class (a TCG storage profile, such as Opal)  
+<small>From: the site-wide acronym list</small>
+
 ### stacked gate layers { #term-stacked-gate-layers .sdd-term }
 
 **堆疊柵極層（台：堆疊閘極層）** — The wordline layers of 3D flash; each one forms a cell where it meets a channel hole. → [§3.1.5](../core/ch3-nand-flash.md#315-3d-flash)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
+
+### stale copy { #term-stale-copy .sdd-term }
+
+**陳舊副本（台：過期副本）** — An old version of data left in flash after an overwrite, until garbage collection erases it. → [§F.4.1](../supplements/f-security.md#f41-delete-trim-and-overwrite)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### static power management { #term-static-power-management .sdd-term }
 
@@ -2264,6 +2459,11 @@ Transmission Control Protocol
 **線程（台：執行緒）** — One stream of execution; a benchmark uses several to keep many I/Os in flight. → [§7.1.1](../core/ch7-testing.md#711-fio-the-king-of-performance-testing)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
+### threat model { #term-threat-model .sdd-term }
+
+**威脅模型** — A statement of which attackers a defense is meant to stop, and which it isn't. → [§F.1](../supplements/f-security.md#f1-the-threat-model)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
 ### threshold voltage { #term-threshold-voltage .sdd-term }
 
 **閾值電壓（台：臨界電壓）** — The gate voltage at which a cell starts to conduct; the stored charge sets it, so it encodes the data. → [§3.1.2](../core/ch3-nand-flash.md#312-slc-mlc-tlc-the-threshold-voltage-picture)  
@@ -2333,6 +2533,11 @@ triple-level cell (3 bits per cell)
 
 **三模冗餘（台：三重模組冗餘）** — Three copies of critical logic with a majority vote on every output. → [§E.2.5](../supplements/e-aerospace-storage.md#e25-the-system-level-toolkit-chapter-34-extremized)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
+
+### Trusted Computing Group (TCG) { #term-trusted-computing-group-tcg .sdd-term }
+
+**可信計算組織（台：可信賴運算組織）** — The industry body behind the Opal, Pyrite and Ruby storage specifications. → [§F.3](../supplements/f-security.md#f3-the-tcg-storage-specifications-opal-pyrite-and-ruby)  
+<small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
 
 ### tunnel oxide { #term-tunnel-oxide .sdd-term }
 
@@ -2555,6 +2760,11 @@ wear leveling
 ### XDP { #term-xdp .sdd-term }
 
 XtremIO Data Protection (its flash-optimized RAID)  
+<small>From: the site-wide acronym list</small>
+
+### XTS { #term-xts .sdd-term }
+
+XEX-based tweaked-codebook mode with ciphertext stealing (disk-encryption mode)  
 <small>From: the site-wide acronym list</small>
 
 ## Y { #letter-y }
