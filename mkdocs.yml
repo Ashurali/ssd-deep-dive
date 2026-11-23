@@ -134,6 +134,7 @@ nav:
       - supplements/f-security.md
       - supplements/g-firmware.md
       - supplements/h-host-stack.md
+      - supplements/i-data-center.md
   - Animations:
       - animations/index.md
       - animations/vt-playground.md

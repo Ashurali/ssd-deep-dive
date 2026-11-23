@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 232" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>A dual-port SSD shared by two hosts</title>
+<desc>Two hosts, A and B, each connect to their own port of one SSD, each port two PCIe lanes wide. Both ports reach the same shared namespace. The path through port A is reported as optimized and the one through port B as non-optimized, so the hosts normally use A; if host A fails, host B carries on through port B.</desc>
+<rect class="f-violet" x="16" y="8" width="160" height="40" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="224" y="8" width="160" height="40" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" font-weight="700" text-anchor="middle">
+<text x="96" y="33">Host A</text>
+<text x="304" y="33">Host B</text>
+</g>
+<line class="f-green-l" x1="96" y1="48" x2="105" y2="130" stroke="#7ee2a8" stroke-width="2"/>
+<line class="f-amber-l f-dash" x1="304" y1="48" x2="295" y2="130" stroke="#f2b13c" stroke-width="2" stroke-dasharray="4 3"/>
+<text class="f-green-t" x="112" y="94" fill="#7ee2a8">optimized</text>
+<text class="f-amber-t" x="288" y="94" text-anchor="end" fill="#f2b13c">non-optimized</text>
+<rect class="f-line" x="16" y="120" width="368" height="84" rx="8" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<rect class="f-cyan" x="40" y="130" width="130" height="28" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-cyan" x="230" y="130" width="130" height="28" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-green" x="100" y="168" width="200" height="28" rx="4" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle">
+<text x="105" y="149">port A · x2</text>
+<text x="295" y="149">port B · x2</text>
+<text x="200" y="187">shared namespace</text>
+</g>
+<text class="f-mute" x="16" y="224" fill="#a3abc4">if host A fails, host B carries on through port B</text>
+</svg>

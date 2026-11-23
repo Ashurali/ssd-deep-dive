@@ -279,4 +279,4 @@ For load generation rather than observation, the standard tool is **fio**, whose
     command outputs are illustrative: real formats, invented values. Its
     figures are original drawings.
 
-*Next: Supplement I — Data-center SSDs: tail latency, form factors, fleet management, and the drives built for clouds.*
+*Next: [Supplement I — Data-center SSDs](i-data-center.md): tail latency, form factors, fleet management, and the drives built for clouds.*

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 366" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Data-center SSD form factors, to scale</title>
+<desc>Top views of six SSD form factors drawn at the same scale. M.2 2280 is 22 by 80 millimetres. E1.S is 31.5 by 111.5. The 2.5-inch U.2 is 70 by 100. E3.S is 76 by 112.75. E3.L is 76 by 142.2. E1.L, the long ruler, is 38.4 by 318.75 millimetres, far longer than all the others.</desc>
+<rect class="f-violet" x="16" y="19" width="88" height="24" rx="3" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-cyan" x="124" y="8" width="123" height="35" rx="3" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" font-weight="700" text-anchor="middle">
+<text x="60" y="36">M.2 2280</text>
+<text x="185.5" y="30">E1.S</text>
+</g>
+<g class="f-mute" fill="#a3abc4">
+<text x="16" y="60">22 × 80 mm</text>
+<text x="124" y="60">31.5 × 111.5 mm</text>
+</g>
+<rect class="f-line" x="16" y="76" width="110" height="77" rx="3" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<rect class="f-amber" x="146" y="76" width="124" height="84" rx="3" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" font-weight="700" text-anchor="middle">
+<text x="71" y="119">U.2 (2.5")</text>
+<text x="208" y="123">E3.S</text>
+</g>
+<g class="f-mute" fill="#a3abc4">
+<text x="16" y="176">70 × 100 mm</text>
+<text x="146" y="176">76 × 112.75 mm</text>
+</g>
+<rect class="f-amber" x="16" y="192" width="156" height="84" rx="3" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="94" y="239" font-weight="700" text-anchor="middle" fill="#e8eeff">E3.L</text>
+<text class="f-mute" x="16" y="292" fill="#a3abc4">76 × 142.2 mm</text>
+<line class="f-line" x1="200" y1="240" x2="255" y2="240" stroke="#7d86a3" stroke-width="2"/>
+<line class="f-line" x1="200" y1="234" x2="200" y2="246" stroke="#7d86a3" stroke-width="1.2"/>
+<line class="f-line" x1="255" y1="234" x2="255" y2="246" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-mute" x="263" y="245" fill="#a3abc4">50 mm</text>
+<rect class="f-cyan" x="16" y="304" width="351" height="42" rx="3" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="191.5" y="330" font-weight="700" text-anchor="middle" fill="#e8eeff">E1.L, the "ruler"</text>
+<text class="f-mute" x="16" y="362" fill="#a3abc4">38.4 × 318.75 mm</text>
+</svg>

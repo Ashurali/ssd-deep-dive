@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 16 chapters and supplements, plus every acronym the site uses: 586 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 17 chapters and supplements, plus every acronym the site uses: 597 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -126,6 +126,11 @@ application-specific integrated circuit
 **斷言** — A check on something that must always be true; failing it means a bug or corrupted state. → [§G.5](../supplements/g-firmware.md#g5-debugging-from-serial-console-to-crash-dump)  
 <small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
+### Asymmetric Namespace Access (ANA) { #term-asymmetric-namespace-access-ana .sdd-term }
+
+**非對稱命名空間訪問（台：非對稱命名空間存取）** — NVMe's per-path state reports (optimized, non-optimized, inaccessible) that steer multipath I/O. → [§I.5](../supplements/i-data-center.md#i5-dual-port-multipath-and-ana)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
+
 ### ATA { #term-ata .sdd-term }
 
 AT Attachment (the disk command set behind SATA)  
@@ -172,6 +177,11 @@ Advanced eXtensible Interface (Arm on-chip high-speed bus)
 
 **基地址寄存器（台：基底位址暫存器）** — A config register that holds where one of a device's memory regions appears in the host's address space. → [§5.6](../core/ch5-pcie.md#56-config-space-and-bars)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### baseboard management controller (BMC) { #term-baseboard-management-controller-bmc .sdd-term }
+
+**基板管理控制器** — A server's always-on management computer, which talks to the operator's network. → [§I.6](../supplements/i-data-center.md#i6-managing-fleets-nvme-mi-and-the-bmc)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### BCH code { #term-bch-code .sdd-term }
 
@@ -252,11 +262,6 @@ Basic Input/Output System (PC boot firmware)
 
 **塊層（台：區塊層）** — The kernel layer that queues, merges and dispatches block requests, one software queue per core. → [§H.2](../supplements/h-host-stack.md#h2-queues-per-core)  
 <small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
-
-### BMC { #term-bmc .sdd-term }
-
-baseboard management controller (a server's management chip)  
-<small>From: the site-wide acronym list</small>
 
 ### boot ROM { #term-boot-rom .sdd-term }
 
@@ -475,6 +480,11 @@ Cryptographic Module Validation Program (NIST)
 **帶計算功能的存儲（台：運算型儲存）** — Putting processing, such as an FPGA, inside the drive so that only results travel to the host. → [§2.7](../core/ch2-controllers-afa.md#27-computational-storage-ssds-that-compute)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
+### Compute Express Link (CXL) { #term-compute-express-link-cxl .sdd-term }
+
+**計算快速鏈路（台：運算快速連結）** — Protocols on the PCIe physical layer that let devices share coherent memory with the host. → [§I.8](../supplements/i-data-center.md#i8-cxl-memory-over-the-pcie-wires)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
+
 ### configuration space { #term-configuration-space .sdd-term }
 
 **配置空間（台：組態空間）** — The standard register file of every Function, 4 KB in PCIe, holding IDs, capabilities and BARs. → [§5.6](../core/ch5-pcie.md#56-config-space-and-bars)  
@@ -529,6 +539,11 @@ Completion with Data (PCIe TLP)
 
 **加密擦除（台：密碼抹除）** — Erasing by destroying the media key, which makes all ciphertext unreadable at once. → [§F.2](../supplements/f-security.md#f2-self-encrypting-drives)  
 <small>From: [Supp F — Security & Sanitization](../supplements/f-security.md#key-vocabulary)</small>
+
+### CXL memory expander { #term-cxl-memory-expander .sdd-term }
+
+**CXL內存擴展器（台：CXL記憶體擴充裝置）** — A card that adds DRAM to a server over CXL rather than memory channels. → [§I.8](../supplements/i-data-center.md#i8-cxl-memory-over-the-pcie-wires)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### cyclic redundancy check (CRC) { #term-cyclic-redundancy-check-crc .sdd-term }
 
@@ -667,6 +682,11 @@ data strobe (NAND / DRAM timing signal)
 data retention  
 <small>From: the site-wide acronym list</small>
 
+### drive writes per day (DWPD) { #term-drive-writes-per-day-dwpd .sdd-term }
+
+**每日全盤寫入次數（台：每日全碟寫入次數）** — How many times the full capacity can be written each day over the warranty. → [§I.4](../supplements/i-data-center.md#i4-power-loss-protection-and-endurance-classes)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
+
 ### driver { #term-driver .sdd-term }
 
 **驅動程序（台：驅動程式）** — Operating-system software that speaks one device's protocol. → [§0.3](../core/ch0-foundations.md#03-how-a-computer-is-wired)  
@@ -674,8 +694,8 @@ data retention
 
 ### dual port { #term-dual-port .sdd-term }
 
-**雙端口（台：雙埠）** — Two independent PCIe ports on one drive, so a second path survives the loss of the first. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
-<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
+**雙端口（台：雙埠）** — Two independent PCIe ports on one drive, so a second path survives the loss of the first. → [§6.7](../core/ch6-nvme.md#67-namespaces); Splitting a drive's lanes into two independent ports for two hosts. → [§I.5](../supplements/i-data-center.md#i5-dual-port-multipath-and-ana)  
+<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary) · [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### dual-simplex / full-duplex / half-duplex { #term-dual-simplex-full-duplex-half-duplex .sdd-term }
 
@@ -685,11 +705,6 @@ data retention
 ### DW { #term-dw .sdd-term }
 
 doubleword (4 bytes)  
-<small>From: the site-wide acronym list</small>
-
-### DWPD { #term-dwpd .sdd-term }
-
-drive writes per day (endurance rating)  
 <small>From: the site-wide acronym list</small>
 
 ### dynamic / static wear leveling { #term-dynamic-static-wear-leveling .sdd-term }
@@ -719,10 +734,10 @@ end-to-end CRC (optional PCIe TLP digest)
 **錯誤檢測與糾正 / 刷新（台：錯誤偵測與更正 / 刷新）** — Error detection and correction run continuously: read, correct, rewrite, so upsets never pile up. → [§E.2.5](../supplements/e-aerospace-storage.md#e25-the-system-level-toolkit-chapter-34-extremized)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
-### EDSFF { #term-edsff .sdd-term }
+### EDSFF (E1.S, E1.L, E3.S, E3.L) { #term-edsff-e1s-e1l-e3s-e3l .sdd-term }
 
-Enterprise and Data Center Standard Form Factor (E1 / E3 drives)  
-<small>From: the site-wide acronym list</small>
+**企業及數據中心標準外形（台：企業與資料中心標準外形）** — The family of flash-first form factors for servers. → [§I.2](../supplements/i-data-center.md#i2-form-factors-u2-u3-and-edsff)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### embedded MultiMediaCard (eMMC) { #term-embedded-multimediacard-emmc .sdd-term }
 
@@ -763,6 +778,11 @@ electromagnetic interference
 
 **壽命** — How much data a drive can write before it wears out, stated as TBW or DWPD. → [§1.5.3](../core/ch1-overview.md#153-endurance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
+
+### endurance class { #term-endurance-class .sdd-term }
+
+**耐久等級** — Read-intensive, mixed-use or write-intensive: drives sorted by DWPD. → [§I.4](../supplements/i-data-center.md#i4-power-loss-protection-and-endurance-classes)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### endurance test { #term-endurance-test .sdd-term }
 
@@ -938,8 +958,8 @@ Federal Information Processing Standard (US)
 
 ### Flexible Data Placement (FDP) { #term-flexible-data-placement-fdp .sdd-term }
 
-**靈活數據放置（台：彈性資料放置）** — NVMe hints that steer related writes into shared reclaim units, cutting WA while the drive keeps its FTL. → [§4.11](../core/ch4-ftl.md#fdp-flexible-data-placement-nvme-tp4146)  
-<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+**靈活數據放置（台：彈性資料放置）；靈活數據放置（台：彈性資料配置）** — NVMe hints that steer related writes into shared reclaim units, cutting WA while the drive keeps its FTL. → [§4.11](../core/ch4-ftl.md#fdp-flexible-data-placement-nvme-tp4146); NVMe's way for the host to tell the drive which data belongs together. → [§I.7](../supplements/i-data-center.md#i7-the-capacity-race-qlc-large-indirection-units-and-fdp)  
+<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) · [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### FLIT { #term-flit .sdd-term }
 
@@ -1140,6 +1160,11 @@ Host Controlled Thermal Management (NVMe)
 **熱插拔** — Inserting or removing a drive while the system runs, as U.2 and EDSFF bays allow. → [§5.12](../core/ch5-pcie.md#512-pcie-ssd-hot-plug)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
+### hot-swap { #term-hot-swap .sdd-term }
+
+**熱插拔** — Replacing a drive while the server keeps running. → [§I.2](../supplements/i-data-center.md#i2-form-factors-u2-u3-and-edsff)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
+
 ### HS-Gear (G1–G6) { #term-hs-gear-g1g6 .sdd-term }
 
 **高速檔位** — M-PHY's speed grades, the counterpart of PCIe generations; HS-G6 moves to PAM4. → [§B.2](../supplements/b-ufs.md#b2-the-ufs-protocol-stack)  
@@ -1186,6 +1211,11 @@ Institute of Electrical and Electronics Engineers
 
 **間接塊（台：間接區塊）** — ext2/3's scheme of one pointer per block, with pointer blocks for large files. → [§C.1.4](../supplements/c-flash-file-systems.md#c14-extents)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### indirection unit (IU) { #term-indirection-unit-iu .sdd-term }
+
+**映射單元（台：對應單位）** — The size of the data each map entry covers; larger units shrink the map. → [§I.7](../supplements/i-data-center.md#i7-the-capacity-race-qlc-large-indirection-units-and-fdp)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### Inline Hashing { #term-inline-hashing .sdd-term }
 
@@ -1577,8 +1607,8 @@ mean time between failures
 
 ### multipath { #term-multipath .sdd-term }
 
-**多路徑** — Reaching the same namespace over more than one path, for redundancy or bandwidth. → [§6.8](../core/ch6-nvme.md#68-nvme-over-fabrics)  
-<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
+**多路徑** — Reaching the same namespace over more than one path, for redundancy or bandwidth. → [§6.8](../core/ch6-nvme.md#68-nvme-over-fabrics); Reaching the same namespace through more than one path, for failover. → [§I.5](../supplements/i-data-center.md#i5-dual-port-multipath-and-ana)  
+<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary) · [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### multiple-bit upset (MBU) { #term-multiple-bit-upset-mbu .sdd-term }
 
@@ -1692,6 +1722,11 @@ non-volatile memory
 NVM Express (the SSD command protocol that runs over PCIe)  
 <small>From: the site-wide acronym list</small>
 
+### NVMe Management Interface (NVMe-MI) { #term-nvme-management-interface-nvme-mi .sdd-term }
+
+**NVMe管理接口（台：NVMe管理介面）** — The out-of-band protocol a BMC uses to monitor and manage drives without the host. → [§I.6](../supplements/i-data-center.md#i6-managing-fleets-nvme-mi-and-the-bmc)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
+
 ### NVMe power state (PS0–PS31) { #term-nvme-power-state-ps0ps31 .sdd-term }
 
 **NVMe電源狀態** — Up to 32 controller power states, described in the Identify data. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
@@ -1701,11 +1736,6 @@ NVM Express (the SSD command protocol that runs over PCIe)
 
 **nvme命令行工具（台：nvme命令列工具）** — The standard Linux tool for sending NVMe administrative commands and reading logs. → [§H.4](../supplements/h-host-stack.md#h4-looking-at-a-drive-nvme-cli-and-smartctl)  
 <small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
-
-### NVMe-MI { #term-nvme-mi .sdd-term }
-
-NVMe Management Interface (out-of-band drive management)  
-<small>From: the site-wide acronym list</small>
 
 ### NVMe-oF { #term-nvme-of .sdd-term }
 
@@ -1718,6 +1748,11 @@ NVMe over Fabrics
 
 Open Compute Project  
 <small>From: the site-wide acronym list</small>
+
+### OCP Datacenter NVMe SSD Specification { #term-ocp-datacenter-nvme-ssd-specification .sdd-term }
+
+**OCP數據中心NVMe SSD規範（台：OCP資料中心NVMe SSD規範）** — The Open Compute Project's requirements for data-center drives, written by their largest buyers. → [§I.3](../supplements/i-data-center.md#i3-the-ocp-datacenter-nvme-ssd-specification)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### OLTP { #term-oltp .sdd-term }
 
@@ -1771,8 +1806,8 @@ one-time programmable (fuse memory)
 
 ### out-of-band management { #term-out-of-band-management .sdd-term }
 
-**帶外管理（台：頻外管理）** — Monitoring and controlling a device over a separate path, such as SMBus, that works without the host operating system. → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management)  
-<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+**帶外管理（台：頻外管理）** — Monitoring and controlling a device over a separate path, such as SMBus, that works without the host operating system. → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management); Managing a device over a separate path that works even when the host is down. → [§I.6](../supplements/i-data-center.md#i6-managing-fleets-nvme-mi-and-the-bmc)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### over-provisioning (OP) { #term-over-provisioning-op .sdd-term }
 
@@ -1931,6 +1966,11 @@ phase-locked loop (clock generator)
 **功耗** — The power a drive draws in each state, from active down to DevSleep. → [§1.5.5](../core/ch1-overview.md#155-power-thermals)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
+### power envelope { #term-power-envelope .sdd-term }
+
+**功耗上限（台：功率上限）** — The most power a form factor and slot allow a drive to draw. → [§I.2](../supplements/i-data-center.md#i2-form-factors-u2-u3-and-edsff)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
+
 ### power loss / power on { #term-power-loss-power-on .sdd-term }
 
 **掉電 / 上電（台：斷電 / 通電）** — Losing or restoring supply power; an SSD must survive a sudden loss without corrupting its data. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
@@ -1948,8 +1988,8 @@ phase-locked loop (clock generator)
 
 ### power-loss protection (PLP) { #term-power-loss-protection-plp .sdd-term }
 
-**掉電保護（台：斷電保護）** — Capacitors and firmware that keep a drive running long enough to save its buffered data when power fails. → [§2.8.3](../core/ch2-controllers-afa.md#283-power-loss-protection-capacitors-that-buy-milliseconds)  
-<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+**掉電保護（台：斷電保護）** — Capacitors and firmware that keep a drive running long enough to save its buffered data when power fails. → [§2.8.3](../core/ch2-controllers-afa.md#283-power-loss-protection-capacitors-that-buy-milliseconds); Stored energy that lets the drive finish acknowledged writes when power is lost. → [§I.4](../supplements/i-data-center.md#i4-power-loss-protection-and-endurance-classes)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### power-loss recovery { #term-power-loss-recovery .sdd-term }
 
@@ -1975,6 +2015,11 @@ phase-locked loop (clock generator)
 
 **寫干擾 / 編程干擾（台：寫入干擾）** — Unwanted charge added to cells near the ones being programmed. → [§3.3.1](../core/ch3-nand-flash.md#331-the-five-problems-a-catalog-to-know-cold)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
+
+### program/erase suspend { #term-programerase-suspend .sdd-term }
+
+**編程/擦除暫停（台：寫入/抹除暫停）** — Pausing a long flash operation so that a waiting read can run first. → [§I.1](../supplements/i-data-center.md#i1-what-data-centers-want-consistent-latency)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### Protection Information (PI) { #term-protection-information-pi .sdd-term }
 
@@ -2008,10 +2053,10 @@ power disable (EDSFF sideband signal)
 quad-level cell (4 bits per cell)  
 <small>From: the site-wide acronym list</small>
 
-### QoS { #term-qos .sdd-term }
+### quality of service (QoS) { #term-quality-of-service-qos .sdd-term }
 
-quality of service (how consistent latency is)  
-<small>From: the site-wide acronym list</small>
+**服務質量（台：服務品質）** — In storage, how consistent latency is, usually stated as tail-latency limits. → [§I.1](../supplements/i-data-center.md#i1-what-data-centers-want-consistent-latency)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### quantum tunneling { #term-quantum-tunneling .sdd-term }
 
@@ -2604,6 +2649,11 @@ Security Subsystem Class (a TCG storage profile, such as Opal)
 
 ## T { #letter-t }
 
+### tail latency { #term-tail-latency .sdd-term }
+
+**尾延遲** — The latency that 99%, 99.9% or 99.99% of requests beat, which describes the slow ones. → [§I.1](../supplements/i-data-center.md#i1-what-data-centers-want-consistent-latency)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
+
 ### tail latency (percentile) { #term-tail-latency-percentile .sdd-term }
 
 **尾延遲（百分位）** — The latency that 99% or 99.99% of requests beat, which describes the slow ones. → [§0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops)  
@@ -2740,6 +2790,11 @@ triple-level cell (3 bits per cell)
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ## U { #letter-u }
+
+### U.2 / U.3 { #term-u2-u3 .sdd-term }
+
+**U.2 / U.3接口（台：U.2 / U.3介面）** — The 2.5-inch NVMe drive form, and its tri-mode bay that also takes SAS and SATA drives. → [§I.2](../supplements/i-data-center.md#i2-form-factors-u2-u3-and-edsff)  
+<small>From: [Supp I — Data-Center SSDs](../supplements/i-data-center.md#key-vocabulary)</small>
 
 ### UAP { #term-uap .sdd-term }
 

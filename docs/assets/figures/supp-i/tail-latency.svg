@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 196" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Read latency by percentile</title>
+<desc>An illustrative set of read latencies on a logarithmic axis from 10 microseconds to 10 milliseconds: the median read takes 85 microseconds, the 99th percentile 160 microseconds, the 99.9th percentile 700 microseconds and the 99.99th percentile 3 milliseconds. One request in ten thousand waits about 35 times as long as the median.</desc>
+<text class="f-ink" x="16" y="22" fill="#e8eeff">median (p50) · 85 µs</text>
+<rect class="f-green" x="16" y="27" width="113.9" height="9" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="54" fill="#e8eeff">99th percentile · 160 µs</text>
+<rect class="f-cyan" x="16" y="59" width="147.6" height="9" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="86" fill="#e8eeff">99.9th percentile · 700 µs</text>
+<rect class="f-amber" x="16" y="91" width="226.2" height="9" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="16" y="118" fill="#e8eeff">99.99th percentile · 3 ms</text>
+<rect class="f-red" x="16" y="123" width="303.7" height="9" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<g class="f-line" stroke="#7d86a3" stroke-width="1.2">
+<line x1="16" y1="144" x2="384" y2="144"/>
+<line x1="16" y1="144" x2="16" y2="149"/>
+<line x1="138.6" y1="144" x2="138.6" y2="149"/>
+<line x1="261.2" y1="144" x2="261.2" y2="149"/>
+<line x1="383.8" y1="144" x2="383.8" y2="149"/>
+</g>
+<g class="f-mute" fill="#a3abc4">
+<text x="16" y="164">10 µs</text>
+<text x="138.6" y="164" text-anchor="middle">100 µs</text>
+<text x="261.2" y="164" text-anchor="middle">1 ms</text>
+<text x="384" y="164" text-anchor="end">10 ms</text>
+</g>
+<text class="f-red-t" x="16" y="188" fill="#ff7b72">one read in 10,000 waits about 35× the median</text>
+</svg>

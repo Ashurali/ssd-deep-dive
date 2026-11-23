@@ -97,7 +97,7 @@ For each `.md` dropped in `incoming/`:
 
 ### 6.2 Tag taxonomy *(decided — apply exactly; you may ADD tags, not remove)*
 
-Controlled vocabulary (kebab-case): `ssd-basics`, `controllers`, `all-flash-array`, `flash-physics`, `3d-nand`, `charge-trap`, `threshold-voltage`, `reliability`, `read-disturb`, `data-retention`, `endurance`, `ftl`, `mapping`, `garbage-collection`, `write-amplification`, `over-provisioning`, `trim`, `wear-leveling`, `power-loss-recovery`, `bad-blocks`, `slc-cache`, `pcie`, `tlp`, `link-layer`, `nvme`, `queues`, `prp-sgl`, `namespaces`, `nvme-of`, `zns`, `fdp`, `testing`, `fio`, `jedec`, `snia`, `ecc`, `bch`, `ldpc`, `soft-decision`, `ufs`, `writebooster`, `hpb`, `filesystems`, `f2fs`, `ext4`, `power-management`, `aspm`, `apst`, `aerospace`, `radiation`, `patents`, `bics8`, `animations`, `foundations`, `security`, `sanitize`, `firmware`, `debug`, `host-stack`, `tools`.
+Controlled vocabulary (kebab-case): `ssd-basics`, `controllers`, `all-flash-array`, `flash-physics`, `3d-nand`, `charge-trap`, `threshold-voltage`, `reliability`, `read-disturb`, `data-retention`, `endurance`, `ftl`, `mapping`, `garbage-collection`, `write-amplification`, `over-provisioning`, `trim`, `wear-leveling`, `power-loss-recovery`, `bad-blocks`, `slc-cache`, `pcie`, `tlp`, `link-layer`, `nvme`, `queues`, `prp-sgl`, `namespaces`, `nvme-of`, `zns`, `fdp`, `testing`, `fio`, `jedec`, `snia`, `ecc`, `bch`, `ldpc`, `soft-decision`, `ufs`, `writebooster`, `hpb`, `filesystems`, `f2fs`, `ext4`, `power-management`, `aspm`, `apst`, `aerospace`, `radiation`, `patents`, `bics8`, `animations`, `foundations`, `security`, `sanitize`, `firmware`, `debug`, `host-stack`, `tools`, `data-center`, `form-factors`, `ocp`, `cxl`.
 
 Assignments:
 | Page | Tags |
@@ -118,6 +118,7 @@ Assignments:
 | supp F | security, sanitize, firmware, nvme |
 | supp G | firmware, debug, nvme, testing |
 | supp H | host-stack, tools, nvme, queues |
+| supp I | data-center, form-factors, ocp, cxl, fdp |
 | atlas | animations, plus every topic tag it touches (use judgment) |
 | each animation wrapper | animations + the topics it teaches |
 
