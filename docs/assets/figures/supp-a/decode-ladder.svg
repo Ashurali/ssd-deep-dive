@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 306" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The decode escalation ladder</title>
+<desc>Five rungs, from fast and common at the top to slow and rare at the bottom. A read moves down a rung only when decoding fails, and stops at the first rung that succeeds. Rung 1, hard read and hard decode: every read starts here, with one sensing. Rung 2, read retry: re-read at shifted reference voltages. Rung 3, soft read and soft decode: extra strobes build log-likelihood ratios for the min-sum decoder. Rung 4, die-RAID rebuild: XOR the page back from the other dies in its stripe. Last, the error is reported to the host as uncorrectable, the event that UBER counts.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-mute" x="16" y="36" fill="#a3abc4">fast,</text>
+<text class="f-mute" x="16" y="54" fill="#a3abc4">common</text>
+<line class="f-line" x1="40" y1="66" x2="40" y2="238" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="16" y="262" fill="#a3abc4">slow,</text>
+<text class="f-mute" x="16" y="280" fill="#a3abc4">rare</text>
+<rect class="f-green" x="88" y="14" width="296" height="48" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="34" font-weight="700" fill="#e8eeff">1 · Hard read, hard decode</text>
+<text class="f-ink" x="100" y="53" fill="#e8eeff">every read starts here: one sensing</text>
+<rect class="f-cyan" x="88" y="72" width="296" height="48" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="92" font-weight="700" fill="#e8eeff">2 · Read retry</text>
+<text class="f-ink" x="100" y="111" fill="#e8eeff">decode failed: re-read at new levels</text>
+<rect class="f-amber" x="88" y="130" width="296" height="48" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="150" font-weight="700" fill="#e8eeff">3 · Soft read, soft decode</text>
+<text class="f-ink" x="100" y="169" fill="#e8eeff">extra strobes build LLRs for min-sum</text>
+<rect class="f-violet" x="88" y="188" width="296" height="48" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="100" y="208" font-weight="700" fill="#e8eeff">4 · Die-RAID rebuild</text>
+<text class="f-ink" x="100" y="227" fill="#e8eeff">XOR the page back from its stripe</text>
+<rect class="f-red f-dash" x="88" y="246" width="296" height="48" rx="8" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text class="f-ink" x="100" y="266" font-weight="700" fill="#e8eeff">Uncorrectable: UECC to the host</text>
+<text class="f-ink" x="100" y="285" fill="#e8eeff">the error that UBER counts</text>
+</svg>

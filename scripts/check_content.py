@@ -38,7 +38,9 @@ PHONE_PX, WIDE_PX, MIN_PX = 343, 560, 11
 SVG_NS = "{http://www.w3.org/2000/svg}"
 ABBR_RE = re.compile(r"^\*\[(?P<abbr>[^\]]+)\]:\s*(?P<title>\S.*)$")
 FIG_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+\.svg)\)(\{[^}]*\})?")
-FENCE_RE = re.compile(r"^(\s*)(```|~~~).*?^\1\2", re.S | re.M)
+# [ \t]*, not \s*: \s would let the indent swallow blank lines above the
+# fence and pair it with the wrong closing fence, hiding real prose.
+FENCE_RE = re.compile(r"^([ \t]*)(```|~~~).*?^\1\2", re.S | re.M)
 
 
 def front_matter(text: str) -> tuple[str, str]:

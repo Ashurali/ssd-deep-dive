@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 330" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Storage as a noisy channel</title>
+<desc>A top-to-bottom flow traced with the Hamming(7,4) example. The data u = 1011, four bits, enters the encoder, which appends three parity bits to make the seven-bit codeword c = 1011010. The channel, the flash cell over time, flips bit 3, so the word read back is r = 1001010: the codeword XOR an error vector. The decoder's parity checks locate the flipped bit and flip it back, recovering the data 1011.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-ink" x="28" y="24" font-family="IBM Plex Mono, monospace" fill="#e8eeff">u = 1011</text>
+<text class="f-mute" x="384" y="24" text-anchor="end" fill="#a3abc4">k = 4 data bits</text>
+<line class="f-line" x1="40" y1="31" x2="40" y2="50" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="16" y="52" width="368" height="32" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="73" fill="#e8eeff"><tspan font-weight="700">Encoder</tspan> · appends 3 parity bits</text>
+<line class="f-line" x1="40" y1="86" x2="40" y2="105" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-ink" x="28" y="122" font-family="IBM Plex Mono, monospace" fill="#e8eeff">c = 1011 010</text>
+<text class="f-mute" x="384" y="122" text-anchor="end" fill="#a3abc4">n = 7-bit codeword</text>
+<line class="f-line" x1="40" y1="129" x2="40" y2="148" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-red" x="16" y="150" width="368" height="32" rx="8" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="171" fill="#e8eeff"><tspan font-weight="700">Channel</tspan> · the flash flips bit 3</text>
+<line class="f-line" x1="40" y1="184" x2="40" y2="203" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-ink" x="28" y="220" font-family="IBM Plex Mono, monospace" fill="#e8eeff">r = 10<tspan class="f-red-t" font-weight="700" fill="#ff7b72">0</tspan>1 010</text>
+<text class="f-mute" x="384" y="220" text-anchor="end" fill="#a3abc4">c ⊕ e: bit 3 flipped</text>
+<line class="f-line" x1="40" y1="227" x2="40" y2="246" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-green" x="16" y="248" width="368" height="32" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="269" fill="#e8eeff"><tspan font-weight="700">Decoder</tspan> · parity checks locate the flip</text>
+<line class="f-line" x1="40" y1="282" x2="40" y2="301" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-ink" x="28" y="318" font-family="IBM Plex Mono, monospace" fill="#e8eeff">û = 1011</text>
+<text class="f-green-t" x="384" y="318" text-anchor="end" fill="#7ee2a8">data recovered</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 214" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The Tanner graph of a small LDPC code</title>
+<desc>Six variable nodes, v1 to v6, one per codeword bit, form a row of circles at the top. Four check nodes, c1 to c4, one per parity equation, form a row of squares below. An edge joins a bit to a check wherever the parity-check matrix has a 1: c1 joins v1, v2 and v4; c2 joins v2, v3 and v5; c3 joins v1, v5 and v6; c4 joins v3, v4 and v6. Every bit has two edges and every check has three.</desc>
+<text class="f-mute" x="200" y="16" text-anchor="middle" fill="#a3abc4">variable nodes · one per bit</text>
+<g class="f-line" stroke="#7d86a3" stroke-width="1.5">
+<line x1="50" y1="63" x2="80" y2="140"/>
+<line x1="110" y1="63" x2="80" y2="140"/>
+<line x1="230" y1="63" x2="80" y2="140"/>
+<line x1="110" y1="63" x2="160" y2="140"/>
+<line x1="170" y1="63" x2="160" y2="140"/>
+<line x1="290" y1="63" x2="160" y2="140"/>
+<line x1="50" y1="63" x2="240" y2="140"/>
+<line x1="290" y1="63" x2="240" y2="140"/>
+<line x1="350" y1="63" x2="240" y2="140"/>
+<line x1="170" y1="63" x2="320" y2="140"/>
+<line x1="230" y1="63" x2="320" y2="140"/>
+<line x1="350" y1="63" x2="320" y2="140"/>
+</g>
+<circle class="f-cyan" cx="50" cy="46" r="17" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<circle class="f-cyan" cx="110" cy="46" r="17" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<circle class="f-cyan" cx="170" cy="46" r="17" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<circle class="f-cyan" cx="230" cy="46" r="17" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<circle class="f-cyan" cx="290" cy="46" r="17" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<circle class="f-cyan" cx="350" cy="46" r="17" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle">
+<text x="50" y="51">v1</text>
+<text x="110" y="51">v2</text>
+<text x="170" y="51">v3</text>
+<text x="230" y="51">v4</text>
+<text x="290" y="51">v5</text>
+<text x="350" y="51">v6</text>
+</g>
+<rect class="f-violet" x="64" y="140" width="32" height="32" rx="4" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="144" y="140" width="32" height="32" rx="4" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="224" y="140" width="32" height="32" rx="4" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="304" y="140" width="32" height="32" rx="4" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle">
+<text x="80" y="161">c1</text>
+<text x="160" y="161">c2</text>
+<text x="240" y="161">c3</text>
+<text x="320" y="161">c4</text>
+</g>
+<text class="f-mute" x="200" y="202" text-anchor="middle" fill="#a3abc4">check nodes · one per parity equation</text>
+</svg>
