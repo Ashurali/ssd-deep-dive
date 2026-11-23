@@ -13,5 +13,5 @@ An interactive Hamming(12,8) visualizer: flip any data bit and watch the parity 
 
 <!-- ../ because directory URLs render this page one level deeper -->
 <iframe src="../files/ecc_bit_correction.html" width="100%" height="720"
-        style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
+        class="sdd-anim"
         loading="lazy" title="How ECC finds and fixes a bit — Hamming visualizer"></iframe>

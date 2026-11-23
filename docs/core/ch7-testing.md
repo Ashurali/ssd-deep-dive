@@ -110,7 +110,7 @@ An **analyzer is a wiretap**: inserted invisibly on the link, it records everyth
 
     [Animation page](../animations/packet-dresser.md) · [open full-screen ↗](../animations/files/packet_dresser.html)
 
-    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
+    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
 
 
 **The motivation.** A drive ships into unknown hosts, OSes, drivers, and electrical environments — someday, some host *will* send it garbage. The classic vignette: the SSD lovingly reads the data, ECC-corrects it, presents an `X_RDY`, awaits its `R_RDY` — and the host coldly answers `R_ERR`. The requirement — *no matter how many times the host abuses you, treat it like your first love* — is called **robustness**, and it demands deep error handling in RTL and firmware. The problem: those error paths might not fire once in a week of normal lab time, and nobody can enumerate every possible abuse.
@@ -169,7 +169,7 @@ In internal testing this becomes trivial with one conversation: ask the firmware
 
     [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
 
-    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The SSD Calculator Bundle"></iframe>
 
 
 **JEDEC** governs endurance qualification with two specs: **JESD218A** (the *method*) and **JESD219** (the *workload*). The vocabulary:
@@ -231,7 +231,7 @@ The external gauntlet, body by body:
 
     [Animation page](../animations/toy-ssd-sandbox.md) · [open full-screen ↗](../animations/files/toy_ssd_sandbox.html)
 
-    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Toy SSD Sandbox"></iframe>
+    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Toy SSD Sandbox"></iframe>
 
 
 **SNIA**'s performance-test specification rests on the truth from [Ch 1 §1.5.2](ch1-overview.md#152-performance): **SSD performance depends on drive state**, so honest measurement requires a controlled, repeatable state.

@@ -61,6 +61,78 @@
   border: 1px solid var(--sdd-line);
 }
 
+/* ---- glossary: one compact entry per term (scripts/build_glossary.py) ---- */
+.md-typeset h3.sdd-term {
+  font-size: 1.05em;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 1.3em 0 0.15em;
+}
+.md-typeset h3.sdd-term + p { margin-top: 0; }
+.md-typeset h3.sdd-term + p small { color: var(--md-default-fg-color--light); }
+
+/* ---- acronym tooltips (includes/abbreviations.md): a page can hold 300+,
+   so the dotted underline is a faint hint, not a pattern across every line;
+   none in headings ---- */
+.md-typeset abbr {
+  border-bottom-color: var(--md-default-fg-color--lighter);
+}
+.md-typeset :is(h1, h2, h3, h4, h5, h6) abbr {
+  border-bottom: none;
+}
+
+/* acronyms link to their glossary entry (hooks/acronym_links.py) but read as
+   text, not as 300 cyan links a page */
+.md-typeset a.sdd-acr,
+.md-typeset a.sdd-acr:hover {
+  color: inherit;
+}
+.md-typeset a.sdd-acr abbr {
+  cursor: pointer;
+}
+.md-typeset a.sdd-acr:hover abbr,
+.md-typeset a.sdd-acr:focus-visible abbr {
+  border-bottom-color: var(--md-accent-fg-color);
+}
+
+/* glossary: the entry an acronym link landed on (acronyms.js) */
+.md-typeset h3.sdd-term {
+  scroll-margin-top: 5rem;
+  transition: background-color 0.6s ease, box-shadow 0.6s ease;
+}
+.md-typeset h3.sdd-term.sdd-hit {
+  background-color: var(--md-accent-fg-color--transparent);
+  box-shadow: -0.6rem 0 0 var(--md-accent-fg-color--transparent),
+    0.6rem 0 0 var(--md-accent-fg-color--transparent);
+  border-radius: 0.2rem;
+}
+
+/* "← Back to …" on the glossary after following an acronym (acronyms.js) */
+.sdd-back {
+  position: fixed;
+  z-index: 3;
+  left: 50%;
+  bottom: 1.2rem;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 2rem);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0.55rem 1.1rem;
+  border-radius: 2rem;
+  font: 600 0.7rem/1.2 "Space Grotesk", "IBM Plex Sans", sans-serif;
+  box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.35);
+}
+/* navy on the light page, cyan on the navy page */
+[data-md-color-scheme="default"] .sdd-back,
+[data-md-color-scheme="default"] .sdd-back:hover { background: #0a0e1c; color: #fff; }
+[data-md-color-scheme="slate"] .sdd-back,
+[data-md-color-scheme="slate"] .sdd-back:hover { background: var(--sdd-cyan); color: #0b1020; }
+.sdd-back:focus-visible {
+  outline: 2px solid var(--md-default-fg-color);
+  outline-offset: 2px;
+}
+
 /* ---- tag chips in violet ---- */
 [data-md-color-scheme="slate"] .md-typeset .md-tag,
 [data-md-color-scheme="slate"] .md-tag {
@@ -232,6 +304,126 @@
 [data-md-color-scheme="default"] .sdd-step .n { color: #a8700f; }
 [data-md-color-scheme="default"] .sdd-step--supp .n { color: #5b3fc0; }
 
+/* phones (< 600px): the whole learning path as a vertical list instead of a
+   sideways strip that showed only 2 of its 9 steps; a tighter hero */
+@media screen and (max-width: 37.4375em) {
+  .sdd-hero { padding: 1.2rem 0 0.8rem; }
+  .sdd-path {
+    flex-direction: column;
+    gap: 0.6rem;
+    overflow-x: visible;
+  }
+  .md-typeset a.sdd-step {
+    min-width: 0;
+    margin-right: 0;
+    display: grid;
+    grid-template-columns: 2.4rem 1fr;
+    column-gap: 0.4rem;
+    align-items: baseline;
+  }
+  .sdd-step .n { grid-row: span 2; }
+  .sdd-step .t { margin-top: 0; }
+  .md-typeset a.sdd-step:not(:last-child)::after {
+    right: auto;
+    left: 1.6rem;
+    top: 100%;
+    width: 2px;
+    height: 0.6rem;
+  }
+}
+
+/* "≈ N min read" under chapter titles (hooks/reading_time.py) */
+.md-typeset .sdd-readtime {
+  margin: -0.8em 0 1.4em;
+  font-size: 0.72rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ================= figures (hooks/inline_svg.py) =================
+   Original SVG diagrams are inlined into the page and coloured by class,
+   never by a fixed hex, so one drawing serves both themes:
+     .f-ink .f-mute      text             .f-line .f-faint   strokes
+     .f-panel            box fill         .f-dash            dashed stroke
+     .f-{cyan,amber,violet,red,green}     tinted shape (fill + stroke)
+     .f-{colour}-t text · -l line · -b faint band                          */
+[data-md-color-scheme="slate"] {
+  --f-ink: rgba(232, 238, 255, 0.92);
+  --f-mute: rgba(232, 238, 255, 0.66);
+  --f-line: rgba(232, 238, 255, 0.5);
+  --f-faint: rgba(232, 238, 255, 0.14);
+  --f-panel: #111832;
+  --f-cyan: #4dd0c4;
+  --f-amber: #f2b13c;
+  --f-violet: #a78bfa;
+  --f-red: #ff7b72;
+  --f-green: #7ee2a8;
+}
+[data-md-color-scheme="default"] {
+  --f-ink: #0a0e1c;
+  --f-mute: rgba(10, 14, 28, 0.68);
+  --f-line: rgba(10, 14, 28, 0.55);
+  --f-faint: rgba(10, 14, 28, 0.12);
+  --f-panel: #f2f4f9;
+  --f-cyan: #0b7f76;
+  --f-amber: #8a5c00;
+  --f-violet: #5b3fc0;
+  --f-red: #c0392b;
+  --f-green: #2e7d32;
+}
+.md-typeset figure:has(svg.sdd-fig) { width: 100%; }
+.md-typeset figure:has(svg.sdd-fig) > p { width: 100%; margin: 0; }
+.md-typeset figure:has(svg.sdd-fig) figcaption {
+  max-width: 32rem;
+  font-style: normal;
+  text-align: left;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset figcaption .caption-prefix {
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+}
+/* portrait figures: 400-unit viewBox, 13-unit labels → ≥ 11 px on a phone,
+   ~17 px at the desktop cap */
+svg.sdd-fig {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 26rem;
+  margin: 0 auto;
+}
+svg.sdd-fig--wide { max-width: 100%; }
+.sdd-fig-scroll { display: block; overflow-x: auto; }
+@media screen and (max-width: 37.4375em) {
+  .sdd-fig-scroll > svg.sdd-fig--wide { min-width: 28rem; }
+}
+svg.sdd-fig text { font-family: "IBM Plex Sans", sans-serif; }
+svg.sdd-fig .f-ink { fill: var(--f-ink); }
+svg.sdd-fig .f-mute { fill: var(--f-mute); }
+svg.sdd-fig .f-line { stroke: var(--f-line); fill: none; }
+svg.sdd-fig .f-faint { stroke: var(--f-faint); fill: none; }
+svg.sdd-fig .f-panel { fill: var(--f-panel); }
+svg.sdd-fig .f-dash { stroke-dasharray: 4 3; }
+svg.sdd-fig .f-cyan { fill: var(--f-cyan); stroke: var(--f-cyan); fill-opacity: 0.22; }
+svg.sdd-fig .f-amber { fill: var(--f-amber); stroke: var(--f-amber); fill-opacity: 0.22; }
+svg.sdd-fig .f-violet { fill: var(--f-violet); stroke: var(--f-violet); fill-opacity: 0.22; }
+svg.sdd-fig .f-red { fill: var(--f-red); stroke: var(--f-red); fill-opacity: 0.22; }
+svg.sdd-fig .f-green { fill: var(--f-green); stroke: var(--f-green); fill-opacity: 0.22; }
+svg.sdd-fig .f-cyan-t { fill: var(--f-cyan); }
+svg.sdd-fig .f-amber-t { fill: var(--f-amber); }
+svg.sdd-fig .f-violet-t { fill: var(--f-violet); }
+svg.sdd-fig .f-red-t { fill: var(--f-red); }
+svg.sdd-fig .f-green-t { fill: var(--f-green); }
+svg.sdd-fig .f-cyan-l { stroke: var(--f-cyan); fill: none; }
+svg.sdd-fig .f-amber-l { stroke: var(--f-amber); fill: none; }
+svg.sdd-fig .f-violet-l { stroke: var(--f-violet); fill: none; }
+svg.sdd-fig .f-red-l { stroke: var(--f-red); fill: none; }
+svg.sdd-fig .f-green-l { stroke: var(--f-green); fill: none; }
+svg.sdd-fig .f-cyan-b { fill: var(--f-cyan); stroke: none; fill-opacity: 0.12; }
+svg.sdd-fig .f-amber-b { fill: var(--f-amber); stroke: none; fill-opacity: 0.14; }
+svg.sdd-fig .f-violet-b { fill: var(--f-violet); stroke: none; fill-opacity: 0.12; }
+svg.sdd-fig .f-red-b { fill: var(--f-red); stroke: none; fill-opacity: 0.12; }
+svg.sdd-fig .f-green-b { fill: var(--f-green); stroke: none; fill-opacity: 0.12; }
+
 /* ============ chapter reading rhythm (design proposal) ============ */
 /* clear section boundaries: a quiet rule above every h2 */
 .md-typeset h2 {
@@ -241,6 +433,17 @@
 }
 /* roomier body text for the long guides */
 .md-typeset { line-height: 1.7; }
+
+/* animation iframes (was an inline style on every embed). The background
+   stays the animations' navy until they gain a light theme (plan Phase 4). */
+.md-typeset iframe.sdd-anim {
+  border: 1px solid var(--sdd-line);
+  border-radius: 12px;
+  background: #0b1020;
+}
+[data-md-color-scheme="default"] .md-typeset iframe.sdd-anim {
+  border-color: rgba(10, 14, 28, 0.16);
+}
 
 /* ============ "🎬 Animate this" embeds as cinema strips ============ */
 .md-typeset details.example {

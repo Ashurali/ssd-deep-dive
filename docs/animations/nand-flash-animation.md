@@ -13,5 +13,5 @@ A guided walk through NAND's physical rules — pages, blocks, program vs erase 
 
 <!-- ../ because directory URLs render this page one level deeper -->
 <iframe src="../files/nand-flash-animation.html" width="100%" height="720"
-        style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
+        class="sdd-anim"
         loading="lazy" title="Why SSDs need an FTL — NAND flash, animated"></iframe>

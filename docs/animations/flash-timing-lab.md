@@ -13,5 +13,5 @@ Gantt-chart timelines of what the flash bus actually does: one shared 8-bit bus 
 
 <!-- ../ because directory URLs render this page one level deeper -->
 <iframe src="../files/flash_timing_lab.html" width="100%" height="720"
-        style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
+        class="sdd-anim"
         loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>

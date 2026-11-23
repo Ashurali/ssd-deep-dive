@@ -83,7 +83,7 @@ Memorize the eight; §6.5 will replay them as raw PCIe packets.
 
     [Animation page](../animations/nvme-ring-machine.md) · [open full-screen ↗](../animations/files/nvme_ring_machine.html)
 
-    <iframe src="../../animations/files/nvme_ring_machine.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The NVMe Ring Machine"></iframe>
+    <iframe src="../../animations/files/nvme_ring_machine.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The NVMe Ring Machine"></iframe>
 
 
 **Pairing.** SQs and CQs come in cause-and-effect pairs — 1:1 or many-SQ:1-CQ. Two tiers:

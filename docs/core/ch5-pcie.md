@@ -33,7 +33,7 @@ Three running analogies carry the chapter, and they're genuinely good: **highway
 
     [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
 
-    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The SSD Calculator Bundle"></iframe>
 
 
 Why PCIe for SSDs? Because SATA's ~560 MB/s ceiling was strangling flash ([Ch 1 §1.3](ch1-overview.md#13-a-short-history-of-solid-state-storage), the 2013 turning point). Let's build the PCIe numbers up properly.
@@ -83,7 +83,7 @@ Real SSDs use at most **×4**: PCIe 3.0 ×4 = 8 GB/s bidirectional, **4 GB/s per
 
     [Animation page](../animations/packet-dresser.md) · [open full-screen ↗](../animations/files/packet_dresser.html)
 
-    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
+    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
 
 
 PCIe is layered — three layers, each serving the one above:
@@ -161,7 +161,7 @@ Every TLP has the same silhouette: **Header** (mandatory — an animal can lack 
 
     [Animation page](../animations/enum-routing.md) · [open full-screen ↗](../animations/files/enum_routing.html)
 
-    <iframe src="../../animations/files/enum_routing.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Enumeration & Routing Explorer"></iframe>
+    <iframe src="../../animations/files/enum_routing.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Enumeration & Routing Explorer"></iframe>
 
 
 **Config space.** Every PCIe Function carries a standardized register file — layout fixed by the spec, so any host can read any vendor's device the same way. PCI allotted 256 B (64 B header + 192 B capabilities); **PCIe extends it to 4 KB**, first 256 B backward-compatible.
@@ -208,7 +208,7 @@ Three ways a TLP finds its destination — **address routing**, **ID routing**, 
 
     [Animation page](../animations/packet-dresser.md) · [open full-screen ↗](../animations/files/packet_dresser.html)
 
-    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
+    <iframe src="../../animations/files/packet_dresser.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>
 
 
 A TLP is born and dies at the Transaction Layer, but every hop in between belongs to the Data Link Layer, whose job is **guaranteed delivery**: add **Sequence Number + LCRC** on the way out; verify, strip, and acknowledge on the way in; reject and demand retransmission on error.
@@ -295,7 +295,7 @@ Two knobs in the **Device Control Register**, and a genuinely practical tuning l
 
     [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
 
-    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The SSD Calculator Bundle"></iframe>
 
 
 Why you never get the theoretical number — six taxes between line rate and real throughput:

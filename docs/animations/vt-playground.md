@@ -13,5 +13,5 @@ The diagram of the entire flash half of the book, made draggable: program a sing
 
 <!-- ../ because directory URLs render this page one level deeper -->
 <iframe src="../files/vt_playground.html" width="100%" height="720"
-        style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
+        class="sdd-anim"
         loading="lazy" title="The Vt Distribution Playground"></iframe>

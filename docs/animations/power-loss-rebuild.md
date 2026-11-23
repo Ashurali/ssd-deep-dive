@@ -13,5 +13,5 @@ Every written page carries its passport (LBA + timestamp). Yank the power mid-ru
 
 <!-- ../ because directory URLs render this page one level deeper -->
 <iframe src="../files/power_loss_rebuild.html" width="100%" height="720"
-        style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
+        class="sdd-anim"
         loading="lazy" title="Power-Loss Rebuild & Snapshots"></iframe>

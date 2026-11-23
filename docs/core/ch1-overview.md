@@ -106,7 +106,7 @@ The details matter less than the arc: *expensive curiosity → niche → tipping
 
     [Animation page](../animations/toy-ssd-sandbox.md) · [open full-screen ↗](../animations/files/toy_ssd_sandbox.html)
 
-    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Toy SSD Sandbox"></iframe>
+    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Toy SSD Sandbox"></iframe>
 
 
 From the host's point of view an SSD *is* a hard disk: the OS sends standardized read/write **commands**, the drive returns **data and status**. All the magic is internal, in three functional blocks:
@@ -198,7 +198,7 @@ One more subtlety: quoted latencies are measured **cache-on** — a write "compl
 
     [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
 
-    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The SSD Calculator Bundle"></iframe>
 
 
 Flash wears out as it's erased and reprogrammed, so drives are rated for a total write volume. Two interchangeable metrics express it:

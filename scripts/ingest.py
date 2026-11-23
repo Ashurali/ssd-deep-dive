@@ -12,11 +12,14 @@ Re-runnable pipeline (SITE_SPECIFICATION.md §6.1, §8):
   therefore never overwritten unless --overwrite-docs is passed (only do
   that to re-bootstrap a chapter from its raw incoming/ study guide, which
   DISCARDS the authored rewrite).
-- Animations: copy each incoming/animations/*.html verbatim to
+- Animations: copy each NEW incoming/animations/*.html to
   docs/animations/files/ and generate a wrapper page if one doesn't already
-  exist. Existing wrappers are left untouched (hand edits survive).
+  exist. Existing wrappers are left untouched (hand edits survive), and so
+  are existing animation files: docs/animations/files/ is where animations
+  are edited (phone layout, light theme), so a file already there is only
+  replaced with --overwrite-animations.
 
-Usage: python scripts/ingest.py [--overwrite-docs]
+Usage: python scripts/ingest.py [--overwrite-docs] [--overwrite-animations]
 """
 from __future__ import annotations
 
@@ -421,7 +424,7 @@ tags: {tags}
 
 <!-- ../ because directory URLs render this page one level deeper -->
 <iframe src="../files/{html_name}" width="100%" height="720"
-        style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
+        class="sdd-anim"
         loading="lazy" title="{title}"></iframe>
 """
 
@@ -433,7 +436,7 @@ EMBED_TEMPLATE = """
 
     [Animation page](../{updir}animations/{wrapper}) · [open full-screen ↗](../{updir}animations/files/{html_name})
 
-    <iframe src="../../animations/files/{html_name}" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="{title}"></iframe>
+    <iframe src="../../animations/files/{html_name}" width="100%" height="640" class="sdd-anim" loading="lazy" title="{title}"></iframe>
 """
 
 
@@ -537,7 +540,7 @@ def ingest_documents(overwrite: bool = False) -> int:
     return count
 
 
-def ingest_animations() -> int:
+def ingest_animations(overwrite: bool = False) -> int:
     src_dir = INCOMING / "animations"
     if not src_dir.is_dir():
         return 0
@@ -545,7 +548,15 @@ def ingest_animations() -> int:
     files_dir.mkdir(parents=True, exist_ok=True)
     count = 0
     for html in sorted(src_dir.glob("*.html")):
-        shutil.copyfile(html, files_dir / html.name)  # verbatim, untouched
+        dest = files_dir / html.name
+        if dest.exists() and not overwrite:
+            # docs/animations/files/ is the source of truth once a file is in:
+            # animations are edited there (phone layout, light theme), and a
+            # blind re-copy from incoming/ would silently undo that work.
+            print(f"  skip {html.name} (already in docs/animations/files/; "
+                  "--overwrite-animations to replace it)")
+            continue
+        shutil.copyfile(html, dest)
         print(f"  anim {html.name} -> docs/animations/files/")
         count += 1
 
@@ -582,8 +593,9 @@ def ingest_animations() -> int:
 
 def main() -> int:
     overwrite = "--overwrite-docs" in sys.argv[1:]
+    overwrite_anims = "--overwrite-animations" in sys.argv[1:]
     print("Ingesting from incoming/ ...")
-    anims = ingest_animations()      # animations first: embeds reference them
+    anims = ingest_animations(overwrite_anims)  # first: embeds reference them
     docs = ingest_documents(overwrite)
     print(f"Done: {docs} document(s), {anims} animation(s).")
     if docs == 0 and anims == 0:

@@ -13,5 +13,5 @@ A TLP gets dressed by three layers and undressed by three layers — then a Jamm
 
 <!-- ../ because directory URLs render this page one level deeper -->
 <iframe src="../files/packet_dresser.html" width="100%" height="720"
-        style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
+        class="sdd-anim"
         loading="lazy" title="The Packet Dresser & ACK/NAK Lab"></iframe>

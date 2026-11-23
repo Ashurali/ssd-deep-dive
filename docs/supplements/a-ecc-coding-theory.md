@@ -79,7 +79,7 @@ A code's **minimum distance d\_min** — the smallest distance between any two v
 
     [Animation page](../animations/ecc-bit-correction.md) · [open full-screen ↗](../animations/files/ecc_bit_correction.html)
 
-    <iframe src="../../animations/files/ecc_bit_correction.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="How ECC finds and fixes a bit — Hamming visualizer"></iframe>
+    <iframe src="../../animations/files/ecc_bit_correction.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="How ECC finds and fixes a bit — Hamming visualizer"></iframe>
 
 
 The simplest code: **one parity bit** — append the bit that makes the total count of 1s even. Data `1011` (three 1s) → codeword `10111`. Any single flip makes the parity odd → detected. But d\_min = 2, so t = ⌊1/2⌋ = 0: you know *a* bit flipped, never *which* — and two flips cancel invisibly.
@@ -173,7 +173,7 @@ Sparse H has a beautiful picture — the **Tanner graph**, bipartite:
 
     [Animation page](../animations/ecc-bch-ldpc.md) · [open full-screen ↗](../animations/files/ecc_bch_ldpc.html)
 
-    <iframe src="../../animations/files/ecc_bch_ldpc.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Stronger ECC in action — BCH & LDPC"></iframe>
+    <iframe src="../../animations/files/ecc_bch_ldpc.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="Stronger ECC in action — BCH & LDPC"></iframe>
 
 
 Decoding runs on the Tanner graph by **message passing** (belief propagation): nodes exchange messages along edges, refining beliefs until every check is satisfied. Two flavors — hard-decision (bit-flipping, cheap) and soft-decision (sum-product, powerful). Both are 🔬 territory: the message-update rules and their approximations are what most LDPC patents optimize.

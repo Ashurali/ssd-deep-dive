@@ -75,7 +75,7 @@ SSD workloads decompose naturally into independent tasks, so when a controller n
 
     [Animation page](../animations/flash-timing-lab.md) · [open full-screen ↗](../animations/files/flash_timing_lab.html)
 
-    <iframe src="../../animations/files/flash_timing_lab.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>
+    <iframe src="../../animations/files/flash_timing_lab.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>
 
 
 Two big blocks: the **ECC module** and the **flash controller**.

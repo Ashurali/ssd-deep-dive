@@ -13,5 +13,5 @@ Four architectures race the same 4 KB random read: DRAM drive (map in DRAM), DRA
 
 <!-- ../ because directory URLs render this page one level deeper -->
 <iframe src="../files/mapping_paths.html" width="100%" height="720"
-        style="border:1px solid #26304d;border-radius:12px;background:#0b1020"
+        class="sdd-anim"
         loading="lazy" title="Mapping Lookup Paths"></iframe>

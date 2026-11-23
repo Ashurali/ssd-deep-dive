@@ -12,12 +12,29 @@ validation:
   links:
     anchors: warn
 
+# rebuild on edits to the acronym list (it lives outside docs/) and the hooks
+watch:
+  - includes
+  - hooks
+  - scripts/build_glossary.py
+
+# Build-time steps that live in this repo (see each file's docstring)
+hooks:
+  - hooks/acronym_links.py # every acronym links to its glossary entry
+  - hooks/inline_svg.py # figures inlined so they follow the light/dark theme
+  - hooks/reading_time.py # "≈ N min read" under each chapter title
+
 theme:
   name: material
   logo: assets/logo.svg
   favicon: assets/logo.svg
-  # Follows the OS theme on first visit; the toggle stores a manual override
+  # Three-state toggle: system (default) → light → dark → system. "System"
+  # keeps following the OS on every visit; light/dark are manual overrides.
   palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: custom
@@ -30,8 +47,8 @@ theme:
       primary: custom
       accent: custom
       toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
+        icon: material/brightness-auto
+        name: Switch to system preference
   font:
     text: IBM Plex Sans
     code: IBM Plex Mono
@@ -46,6 +63,7 @@ theme:
     - search.highlight
     - search.suggest
     - content.code.copy
+    - content.tooltips # styled tooltips for the acronym <abbr>s below
 
 plugins:
   - search:
@@ -62,12 +80,20 @@ plugins:
 
 markdown_extensions:
   - admonition
+  - abbr
+  # Every page gets the site-wide acronym list appended, so each acronym shows
+  # its expansion on hover/tap. The list lives outside docs/ (it is not a page).
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+      check_paths: true
   - attr_list
   - md_in_html
   - tables
   - toc:
       permalink: true
   - pymdownx.details
+  - pymdownx.blocks.caption # "/// figure-caption" → numbered <figure> captions
   - pymdownx.superfences
   - pymdownx.highlight
   - pymdownx.inlinehilite
@@ -85,6 +111,7 @@ extra_css:
 extra_javascript:
   - assets/javascripts/katex.js
   - assets/javascripts/iframe-resize.js
+  - assets/javascripts/acronyms.js
   - https://unpkg.com/katex@0.16.11/dist/katex.min.js
   - https://unpkg.com/katex@0.16.11/dist/contrib/auto-render.min.js
 
@@ -119,10 +146,11 @@ nav:
       - animations/nand-flash-animation.md
       - animations/ecc-bit-correction.md
       - animations/ecc-bch-ldpc.md
-  - Atlas:
-      - atlas/figure-atlas-animation-roadmap.md
   - Reference:
       - reference/glossary.md
       - reference/formulas.md
       - reference/quizzes.md
+      - reference/specs.md
       - reference/tags.md
+      # production notes on how the animations were planned, not a reading page
+      - atlas/figure-atlas-animation-roadmap.md

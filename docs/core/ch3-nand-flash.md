@@ -55,12 +55,17 @@ The floating-gate transistor was invented at Bell Labs in 1967 by **Dawon Kahng 
 
     [Animation page](../animations/vt-playground.md) · [open full-screen ↗](../animations/files/vt_playground.html)
 
-    <iframe src="../../animations/files/vt_playground.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Vt Distribution Playground"></iframe>
+    <iframe src="../../animations/files/vt_playground.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Vt Distribution Playground"></iframe>
 
 
 SLC/MLC/TLC describe **how many bits one cell stores** — which physically means **how finely you subdivide the electron count** in the floating gate.
 
 The one diagram to internalize in this whole chapter is the **threshold-voltage (Vt) distribution**: x-axis = threshold voltage, y-axis = number of cells. Cells programmed to the same value don't sit at exactly one voltage — they form a *bell curve* around a target. Reading a cell means testing which voltage band it falls into.
+
+![Threshold-voltage bell curves for SLC, MLC and TLC cells](../assets/figures/ch3/vt-bells.svg){ .sdd-fig }
+/// figure-caption
+Each bell is the population of cells programmed to one state, spread along the threshold-voltage axis; the dashed lines are the read references a read tests against. Every extra bit per cell doubles the number of bells in the same voltage window, so the shaded margins between neighbours shrink from SLC's wide gap to TLC's slivers.
+///
 
 - **SLC (1 bit)** — two states, one clean divide. Erased reads **1**, programmed reads **0**. (Writing a 1 means "do nothing"; writing a 0 means "inject charge.")
 - **MLC (2 bits)** — four states: four electron-count bands to tell apart (think: <10 electrons = state A, 11–20 = B, 21–30 = C, more = D).
@@ -76,7 +81,7 @@ The one diagram to internalize in this whole chapter is the **threshold-voltage 
 
     [Animation page](../animations/nand-flash-animation.md) · [open full-screen ↗](../animations/files/nand-flash-animation.html)
 
-    <iframe src="../../animations/files/nand-flash-animation.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Why SSDs need an FTL — NAND flash, animated"></iframe>
+    <iframe src="../../animations/files/nand-flash-animation.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="Why SSDs need an FTL — NAND flash, animated"></iframe>
 
 
 A flash chip is millions of cells in a strict nesting — memorize this ladder:
@@ -171,7 +176,7 @@ Two coordinates: the **column address** is the byte offset *within* a page; the 
 
     [Animation page](../animations/flash-timing-lab.md) · [open full-screen ↗](../animations/files/flash_timing_lab.html)
 
-    <iframe src="../../animations/files/flash_timing_lab.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>
+    <iframe src="../../animations/files/flash_timing_lab.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Flash Timing & Parallelism Lab"></iframe>
 
 
 - **Read:** 00h → 2 column bytes + 3 row bytes → 30h; status bit SR[6] goes Busy while the array loads the register, then data streams out.
@@ -273,7 +278,7 @@ Five causes, all visible as Vt-distribution movements (and all reproducible in t
 
     [Animation page](../animations/vt-playground.md) · [open full-screen ↗](../animations/files/vt_playground.html)
 
-    <iframe src="../../animations/files/vt_playground.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Vt Distribution Playground"></iframe>
+    <iframe src="../../animations/files/vt_playground.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Vt Distribution Playground"></iframe>
 
 
 The drift failures (retention, read disturb) share a saving grace: the distributions moved, but they're usually still *separated* — the data is intact, just misread against a stale reference voltage. **Read Retry re-reads with shifted reference voltages** until one lands between the bells. As long as adjacent states haven't overlapped, retry recovers everything. The refinement, **Advanced Read Retry**, first reads the *neighboring* cells, then reads the target twice with different references and picks the result the neighbors vote for.
@@ -286,7 +291,7 @@ The drift failures (retention, read disturb) share a saving grace: the distribut
 
     [Animation page](../animations/ecc-bch-ldpc.md) · [open full-screen ↗](../animations/files/ecc_bch_ldpc.html)
 
-    <iframe src="../../animations/files/ecc_bch_ldpc.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Stronger ECC in action — BCH & LDPC"></iframe>
+    <iframe src="../../animations/files/ecc_bch_ldpc.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="Stronger ECC in action — BCH & LDPC"></iframe>
 
 
 Every controller carries an ECC engine ([Chapter 2](ch2-controllers-afa.md#213-back-end) placed it in the back end). The algorithms: **BCH** (Bose–Ray-Chaudhuri–Hocquenghem) and **LDPC** (Low-Density Parity-Check), with LDPC taking over as flash got denser. Parity lives in each page's **spare area**, so **correction strength is capped by spare-area size** — more spare bytes, stronger code. [Supplement A](../supplements/a-ecc-coding-theory.md) derives both algorithms from first principles.
@@ -301,7 +306,7 @@ Every controller carries an ECC engine ([Chapter 2](ch2-controllers-afa.md#213-b
 
     [Animation page](../animations/stripe-raid.md) · [open full-screen ↗](../animations/files/stripe_raid.html)
 
-    <iframe src="../../animations/files/stripe_raid.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Stripe RAID & the Chained Warships"></iframe>
+    <iframe src="../../animations/files/stripe_raid.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="Stripe RAID & the Chained Warships"></iframe>
 
 
 When flips exceed ECC's power, the last line of defense is **RAID across dies** (typically RAID 5): dies 0–3 hold data, die P holds their **XOR**; when one die's page turns uncorrectable, XOR the survivors to rebuild it. Limits apply — RAID 5 absorbs exactly *one* uncorrectable member per stripe, and parity costs user capacity. No free lunch.

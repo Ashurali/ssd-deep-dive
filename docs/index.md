@@ -34,7 +34,7 @@ hide:
 <h2 class="sdd-h2">Looking for…</h2>
 
 <div class="sdd-tiles">
-  <a class="sdd-tile" href="reference/glossary/"><span class="i">🔤</span><span class="t">Glossary</span><span class="d">322 terms, EN + 中文</span></a>
+  <a class="sdd-tile" href="reference/glossary/"><span class="i">🔤</span><span class="t">Glossary</span><span class="d">every term &amp; acronym, EN + 中文</span></a>
   <a class="sdd-tile" href="reference/formulas/"><span class="i">🧮</span><span class="t">Formulas</span><span class="d">WA · TBW · UCL · dmin</span></a>
   <a class="sdd-tile" href="animations/"><span class="i">🎬</span><span class="t">Animations</span><span class="d">13 interactive builds</span></a>
   <a class="sdd-tile" href="reference/quizzes/"><span class="i">✅</span><span class="t">Quizzes</span><span class="d">check yourself, per chapter</span></a>

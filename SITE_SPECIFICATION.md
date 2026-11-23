@@ -123,11 +123,23 @@ Write `scripts/build_glossary.py` (run manually and in CI before build):
 - Merge into `docs/reference/glossary.md`: one alphabetized table with columns **Term | 中文 (if any) | Meaning | Source page(s)** where source links to the originating guide's vocabulary section. Deduplicate identical terms; when the same term appears in multiple guides with different glosses, keep both meanings and both source links.
 - This page is the site's keyword backbone: every term becomes searchable in one place, in both languages.
 
+> **Amended (textbook v2, Nov 2026):**
+>
+> - Vocabulary tables move to three columns, `| Term | 中文 | Meaning |`, and the generator reads
+>   columns by header name.
+> - The glossary is emitted as one `###` entry per term under A–Z headings (short search
+>   previews). It also folds in every acronym from `includes/abbreviations.md`, and each acronym
+>   on every page links to its entry.
+> - See README → "Authoring rules".
+
 ### 6.4 Formula sheet *(scripted or manual — your call)*
 `docs/reference/formulas.md`: a one-page cheat sheet collecting the recurring formulas with one-line context and a link to the section that derives each — at minimum: WA definition, OP definition, TBW ≈ (capacity × P/E)/WA, DWPD = TBW/(365·years·capacity), map-table ≈ capacity/1000, IOPS ceiling = link BW / block size, UCL sample-size inequalities (Ch7 §7.8), Hamming/parity relations dmin↔t (Supp A). Render math with KaTeX.
 
 ### 6.5 Quiz index
 `docs/reference/quizzes.md`: links to every guide's `## Check yourself` section (they all have one), grouped by chapter/supplement. No answer generation in v1.
+
+> **Amended (textbook v2, Nov 2026):** every question gets a written answer, in a collapsed
+> `??? success "Answer"` block directly under it (README → "Authoring rules").
 
 ## 7. Design *(decided)* — match my animation design system so site and animations feel like one product
 

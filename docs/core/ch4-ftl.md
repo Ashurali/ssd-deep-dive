@@ -59,7 +59,7 @@ This is the longest and most important chapter of the book. Section 4.1 frames t
 
     [Animation page](../animations/mapping-paths.md) · [open full-screen ↗](../animations/files/mapping_paths.html)
 
-    <iframe src="../../animations/files/mapping_paths.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Mapping Lookup Paths"></iframe>
+    <iframe src="../../animations/files/mapping_paths.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="Mapping Lookup Paths"></iframe>
 
 
 ### 4.2.1 Mapping granularity
@@ -102,7 +102,7 @@ The table must reach flash before power-off and reload at power-on — but to su
 
     [Animation page](../animations/toy-ssd-sandbox.md) · [open full-screen ↗](../animations/files/toy_ssd_sandbox.html)
 
-    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The Toy SSD Sandbox"></iframe>
+    <iframe src="../../animations/files/toy_ssd_sandbox.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The Toy SSD Sandbox"></iframe>
 
 
 The single most important section of the book: **GC**, and the two concepts welded to it — **Write Amplification (WA)** and **Over-Provisioning (OP)**.
@@ -135,7 +135,7 @@ The life story:
 
     [Animation page](../animations/ssd-calculators.md) · [open full-screen ↗](../animations/files/ssd_calculators.html)
 
-    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="The SSD Calculator Bundle"></iframe>
+    <iframe src="../../animations/files/ssd_calculators.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="The SSD Calculator Bundle"></iframe>
 
 
 GC writes data the host never asked for, so the flash absorbs more writes than the host sent:
@@ -218,7 +218,7 @@ With 216 pages of flash and garbage spread evenly (worst case):
 
     [Animation page](../animations/power-loss-rebuild.md) · [open full-screen ↗](../animations/files/power_loss_rebuild.html)
 
-    <iframe src="../../animations/files/power_loss_rebuild.html" width="100%" height="640" style="border:1px solid #26304d;border-radius:12px;background:#0b1020" loading="lazy" title="Power-Loss Rebuild & Snapshots"></iframe>
+    <iframe src="../../animations/files/power_loss_rebuild.html" width="100%" height="640" class="sdd-anim" loading="lazy" title="Power-Loss Rebuild & Snapshots"></iframe>
 
 
 **Graceful power-off** is easy: the host warns the drive (SATA *Idle Immediately*), which flushes buffered user data, flushes the map table, saves block state (open blocks, write pointers, used/free lists), then signals ready. Next boot reloads everything and resumes.
