@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The F2FS on-disk layout and its Chapter 4 twins</title>
+<desc>An F2FS volume has six areas, from left to right: SB, the superblock, kept in two copies; CP, the checkpoint, which is the power-loss snapshot; SIT, the segment information table of valid-block counts, the twin of the FTL's valid page counts and bitmaps; NAT, the node address table from node ID to address, the twin of the logical-to-physical map; SSA, the segment summary area recording each block's owning node, the twin of the physical-to-logical table; and the main area, six append-only logs split hot, warm and cold for nodes and for data. The five metadata areas take random writes; the main area takes only sequential writes.</desc>
+<text class="f-mute" x="16" y="16" fill="#a3abc4">an F2FS volume: six areas</text>
+<rect class="f-violet" x="16" y="24" width="38" height="40" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="54" y="24" width="38" height="40" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-amber" x="92" y="24" width="44" height="40" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-amber" x="136" y="24" width="44" height="40" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-amber" x="180" y="24" width="44" height="40" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="224" y="24" width="160" height="40" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle" font-weight="700">
+<text x="35" y="49">SB</text>
+<text x="73" y="49">CP</text>
+<text x="114" y="49">SIT</text>
+<text x="158" y="49">NAT</text>
+<text x="202" y="49">SSA</text>
+<text x="304" y="49">main area</text>
+</g>
+<path class="f-line" d="M16,70 V76 H221 V70 M227,70 V76 H384 V70" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-mute" x="118.5" y="94" text-anchor="middle" fill="#a3abc4">metadata: random writes</text>
+<text class="f-mute" x="305.5" y="94" text-anchor="middle" fill="#a3abc4">logs: sequential writes</text>
+<g class="f-ink" fill="#e8eeff" font-weight="700">
+<text x="16" y="122">SB</text>
+<text x="16" y="140">CP</text>
+<text x="16" y="158">SIT</text>
+<text x="16" y="176">NAT</text>
+<text x="16" y="194">SSA</text>
+<text x="16" y="212">main</text>
+</g>
+<text class="f-ink" x="60" y="122" fill="#e8eeff">superblock, kept in two copies</text>
+<text x="60" y="140"><tspan class="f-ink" fill="#e8eeff">checkpoint </tspan><tspan class="f-green-t" fill="#7ee2a8">≈ the power-loss snapshot</tspan></text>
+<text x="60" y="158"><tspan class="f-ink" fill="#e8eeff">valid-block counts </tspan><tspan class="f-green-t" fill="#7ee2a8">≈ VPC / VPBM</tspan></text>
+<text x="60" y="176"><tspan class="f-ink" fill="#e8eeff">node ID → address </tspan><tspan class="f-green-t" fill="#7ee2a8">≈ the L2P map</tspan></text>
+<text x="60" y="194"><tspan class="f-ink" fill="#e8eeff">block → owning node </tspan><tspan class="f-green-t" fill="#7ee2a8">≈ the P2L table</tspan></text>
+<text class="f-ink" x="60" y="212" fill="#e8eeff">six logs: hot / warm / cold × node / data</text>
+</svg>

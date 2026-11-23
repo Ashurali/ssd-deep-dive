@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 256" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The EXT4 on-disk layout</title>
+<desc>An EXT4 volume is a row of block groups: group 0, group 1, group 2 and so on to group n. One group is enlarged into its six parts, from left to right: SB, a copy of the superblock with the volume-wide metadata; GD, the group descriptors that say where this group's parts are; BB, the block bitmap with one bit per block, free or used; IB, the inode bitmap with one bit per inode; the inode table, a fixed-size record per file holding its attributes and pointers to its data; and the data blocks, which hold the file contents.</desc>
+<text class="f-mute" x="16" y="16" fill="#a3abc4">an EXT4 volume: a row of block groups</text>
+<g class="f-line" fill="none" stroke="#7d86a3" stroke-width="1.2">
+<rect x="16" y="24" width="73" height="28"/>
+<rect x="162" y="24" width="73" height="28"/>
+<rect x="235" y="24" width="73" height="28"/>
+<rect x="308" y="24" width="76" height="28"/>
+</g>
+<rect class="f-cyan" x="89" y="24" width="73" height="28" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle">
+<text x="52.5" y="43">group 0</text>
+<text x="125.5" y="43">group 1</text>
+<text x="198.5" y="43">group 2</text>
+<text x="271.5" y="43">…</text>
+<text x="346" y="43">group n</text>
+</g>
+<line class="f-line f-dash" x1="89" y1="52" x2="16" y2="92" stroke="#7d86a3" stroke-width="1.2" stroke-dasharray="4 3"/>
+<line class="f-line f-dash" x1="162" y1="52" x2="384" y2="92" stroke="#7d86a3" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect class="f-violet" x="16" y="92" width="42" height="40" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="58" y="92" width="42" height="40" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-amber" x="100" y="92" width="38" height="40" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-amber" x="138" y="92" width="38" height="40" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-green" x="176" y="92" width="86" height="40" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<rect class="f-cyan" x="262" y="92" width="122" height="40" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle" font-weight="700">
+<text x="37" y="117">SB</text>
+<text x="79" y="117">GD</text>
+<text x="119" y="117">BB</text>
+<text x="157" y="117">IB</text>
+<text x="219" y="117">inodes</text>
+<text x="323" y="117">data</text>
+</g>
+<g class="f-ink" fill="#e8eeff" font-weight="700">
+<text x="16" y="160">SB</text>
+<text x="16" y="178">GD</text>
+<text x="16" y="196">BB</text>
+<text x="16" y="214">IB</text>
+<text x="16" y="232">inodes</text>
+<text x="16" y="250">data</text>
+</g>
+<g class="f-ink" fill="#e8eeff">
+<text x="68" y="160">superblock copy: volume-wide metadata</text>
+<text x="68" y="178">group descriptors: the group's map</text>
+<text x="68" y="196">block bitmap: one bit per block, free or used</text>
+<text x="68" y="214">inode bitmap: one bit per inode, free or used</text>
+<text x="68" y="232">inode table: per-file records with pointers</text>
+<text x="68" y="250">data blocks: the files' contents</text>
+</g>
+</svg>

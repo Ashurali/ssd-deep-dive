@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 248" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Log-on-log versus a zoned device</title>
+<desc>Two stacks side by side. On a conventional SSD there are two logs: F2FS keeps a log, a map and its own cleaning, and below it the FTL keeps another log, another map and its own garbage collection, above the NAND; total write amplification is F2FS's multiplied by the FTL's. On a zoned device there is one log: F2FS writes its log straight into zones that are append-only and have no device garbage collection, above the NAND; total write amplification is about F2FS's alone.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-ink" x="16" y="18" font-weight="700" fill="#e8eeff">Conventional SSD</text>
+<text class="f-mute" x="16" y="36" fill="#a3abc4">two logs, stacked</text>
+<text class="f-ink" x="208" y="18" font-weight="700" fill="#e8eeff">Zoned device</text>
+<text class="f-mute" x="208" y="36" fill="#a3abc4">one log</text>
+<rect class="f-cyan" x="16" y="46" width="176" height="48" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="66" font-weight="700" fill="#e8eeff">F2FS</text>
+<text class="f-ink" x="28" y="85" fill="#e8eeff">log · map · cleaning</text>
+<line class="f-line" x1="104" y1="96" x2="104" y2="114" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-amber" x="16" y="116" width="176" height="48" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="136" font-weight="700" fill="#e8eeff">FTL</text>
+<text class="f-ink" x="28" y="155" fill="#e8eeff">log · map · GC</text>
+<line class="f-line" x1="104" y1="166" x2="104" y2="184" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-line" x="16" y="186" width="176" height="28" rx="6" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-ink" x="104" y="205" text-anchor="middle" fill="#e8eeff">NAND</text>
+<rect class="f-cyan" x="208" y="46" width="176" height="48" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="220" y="66" font-weight="700" fill="#e8eeff">F2FS</text>
+<text class="f-ink" x="220" y="85" fill="#e8eeff">log · map · cleaning</text>
+<line class="f-line" x1="296" y1="96" x2="296" y2="114" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-green" x="208" y="116" width="176" height="48" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="220" y="136" font-weight="700" fill="#e8eeff">Zones</text>
+<text class="f-ink" x="220" y="155" fill="#e8eeff">append only; no GC</text>
+<line class="f-line" x1="296" y1="166" x2="296" y2="184" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-line" x="208" y="186" width="176" height="28" rx="6" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-ink" x="296" y="205" text-anchor="middle" fill="#e8eeff">NAND</text>
+<text class="f-red-t" x="16" y="238" fill="#ff7b72">WA = WA(F2FS) × WA(FTL)</text>
+<text class="f-green-t" x="208" y="238" fill="#7ee2a8">WA ≈ WA(F2FS) alone</text>
+</svg>

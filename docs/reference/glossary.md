@@ -180,7 +180,7 @@ Basic Input/Output System (PC boot firmware)
 
 ### block / inode bitmap { #term-block-inode-bitmap .sdd-term }
 
-free/used tracking in EXT4  
+**塊位圖 / inode位圖（台：區塊點陣圖 / inode點陣圖）** — One bit per block or inode, marking it free or used. → [§C.1.2](../supplements/c-flash-file-systems.md#c12-on-disk-structure)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### block / page { #term-block-page .sdd-term }
@@ -195,7 +195,7 @@ free/used tracking in EXT4
 
 ### block group { #term-block-group .sdd-term }
 
-EXT4's fixed volume subdivision  
+**塊組（台：區塊群組）** — EXT4's fixed subdivision of a volume, each with its own bitmaps and inode table. → [§C.1.2](../supplements/c-flash-file-systems.md#c12-on-disk-structure)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### BMC { #term-bmc .sdd-term }
@@ -297,7 +297,7 @@ Configuration Write request (PCIe TLP)
 
 ### checkpoint (CP) { #term-checkpoint-cp .sdd-term }
 
-F2FS consistent snapshot (power-loss recovery)  
+**檢查點** — F2FS's consistent on-disk snapshot, the starting point of power-loss recovery. → [§C.2.1](../supplements/c-flash-file-systems.md#c21-disk-layout)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### CLE { #term-cle .sdd-term }
@@ -307,7 +307,7 @@ Command Latch Enable (NAND pin)
 
 ### cleaning { #term-cleaning .sdd-term }
 
-F2FS garbage collection (greedy / cost-benefit victim; ≈ SSD GC, Ch4)  
+**清理** — F2FS's garbage collection, choosing victims greedily or by cost-benefit. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### CLKREQ# { #term-clkreq .sdd-term }
@@ -392,7 +392,7 @@ complementary metal–oxide–semiconductor (standard logic process)
 
 ### copy-and-compaction / threaded logging { #term-copy-and-compaction-threaded-logging .sdd-term }
 
-F2FS's two write schemes  
+**複製壓縮 / 填洞式日誌** — F2FS's two write schemes: clean then append, or write into the holes of dirty segments when space is short. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### correction capability t { #term-correction-capability-t .sdd-term }
@@ -474,7 +474,7 @@ PCIe **device** power states (software-controlled)
 
 ### delayed allocation { #term-delayed-allocation .sdd-term }
 
-allocate blocks at flush time, not write time  
+**延遲分配（台：延遲配置）** — Choosing physical blocks at flush time, when a write's full size is known. → [§C.1.5](../supplements/c-flash-file-systems.md#c15-allocation-strategy)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### descriptor { #term-descriptor .sdd-term }
@@ -676,15 +676,10 @@ fourth extended filesystem (Linux)
 
 ### extent { #term-extent .sdd-term }
 
-contiguous block range (start, start, length) — EXT4 range mapping  
+**區段（extent）** — One record (logical start, physical start, length) mapping a contiguous run of blocks. → [§C.1.4](../supplements/c-flash-file-systems.md#c14-extents)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ## F { #letter-f }
-
-### F2FS { #term-f2fs .sdd-term }
-
-Flash-Friendly File System (flash-native LFS)  
-<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### factory / grown bad block { #term-factory-grown-bad-block .sdd-term }
 
@@ -713,7 +708,7 @@ functional failure requirement (JEDEC endurance metric)
 
 ### filesystem { #term-filesystem .sdd-term }
 
-OS layer mapping files onto a block device  
+**文件系統（台：檔案系統）** — The operating-system layer that maps files and directories onto a block device. → [§C.1](../supplements/c-flash-file-systems.md#c1-ext4-the-hdd-era-filesystem)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### FIO { #term-fio .sdd-term }
@@ -750,6 +745,11 @@ Flexible I/O tester (Linux benchmark tool)
 
 **閃存轉換層（台：快閃記憶體轉換層）** — The drive's firmware that maps logical addresses to flash pages and runs garbage collection, wear leveling and recovery. → [§4.1](../core/ch4-ftl.md#41-ftl-overview)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### Flash-Friendly File System (F2FS) { #term-flash-friendly-file-system-f2fs .sdd-term }
+
+**閃存友好文件系統（台：快閃記憶體友善檔案系統）** — Linux's flash-native log-structured filesystem, the default for Android userdata. → [§C.2](../supplements/c-flash-file-systems.md#c2-f2fs-the-flash-native-filesystem)  
+<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### Flexible Data Placement (FDP) { #term-flexible-data-placement-fdp .sdd-term }
 
@@ -969,7 +969,7 @@ Institute of Electrical and Electronics Engineers
 
 ### indirect blocks { #term-indirect-blocks .sdd-term }
 
-ext2/3 per-block pointer scheme (fine-grained mapping)  
+**間接塊（台：間接區塊）** — ext2/3's scheme of one pointer per block, with pointer blocks for large files. → [§C.1.4](../supplements/c-flash-file-systems.md#c14-extents)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### Inline Hashing { #term-inline-hashing .sdd-term }
@@ -979,7 +979,7 @@ ext2/3 per-block pointer scheme (fine-grained mapping)
 
 ### inode { #term-inode .sdd-term }
 
-fixed-size per-file metadata record (attrs + block pointers)  
+**索引節點** — A fixed-size per-file record of attributes plus pointers to the file's data. → [§C.1.2](../supplements/c-flash-file-systems.md#c12-on-disk-structure)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### interface / connector { #term-interface-connector .sdd-term }
@@ -1021,7 +1021,7 @@ JEDEC Solid State Technology Association (memory standards body)
 
 ### journaling { #term-journaling .sdd-term }
 
-write intentions durably before applying (crash consistency)  
+**日誌** — Writing an intended change durably before applying it, so a crash can be replayed. → [§C.1.6](../supplements/c-flash-file-systems.md#c16-journaling)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### JTAG { #term-jtag .sdd-term }
@@ -1083,11 +1083,6 @@ low / medium / geosynchronous orbit (rising radiation)
 Linear Energy Transfer — particle energy deposition; sets upset threshold  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
-### LFS { #term-lfs .sdd-term }
-
-log-structured file system (append-only writes)  
-<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
-
 ### link { #term-link .sdd-term }
 
 **鏈路 (Link)（台：連結）** — The connection between two PCIe ports, made of one or more lanes. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
@@ -1100,7 +1095,12 @@ log-structured file system (append-only writes)
 
 ### log-on-log { #term-log-on-log .sdd-term }
 
-inefficiency of a log-structured FS atop a log-structured FTL  
+**日誌疊日誌** — A log-structured filesystem on a log-structured FTL: two maps, two collectors, multiplied WA. → [§C.2.5](../supplements/c-flash-file-systems.md#c25-the-log-on-log-problem-and-the-zns-fix)  
+<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### log-structured file system (LFS) { #term-log-structured-file-system-lfs .sdd-term }
+
+**日誌結構文件系統（台：日誌結構檔案系統）** — A filesystem that only appends to a log and cleans stale copies later. → [§C.2](../supplements/c-flash-file-systems.md#c2-f2fs-the-flash-native-filesystem)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### logic analyzer { #term-logic-analyzer .sdd-term }
@@ -1292,7 +1292,7 @@ mean time between failures
 
 ### multi-head logging { #term-multi-head-logging .sdd-term }
 
-6 logs separating hot/warm/cold data (≈ WL hot/cold, Ch4)  
+**多頭日誌** — Up to six open logs splitting hot, warm and cold nodes and data. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### multipath { #term-multipath .sdd-term }
@@ -1317,11 +1317,6 @@ negative acknowledgment
 **命名空間** — An independent logical drive carved out of an NVMe SSD, with its own LBA range and ID. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
-### NAT (Node Address Table) { #term-nat-node-address-table .sdd-term }
-
-node ID → physical address indirection (≈ FTL map, Ch4)  
-<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
-
 ### NCQ { #term-ncq .sdd-term }
 
 Native Command Queuing (SATA)  
@@ -1344,7 +1339,12 @@ network interface card
 
 ### node { #term-node .sdd-term }
 
-F2FS metadata unit: inode / direct node / indirect node  
+**節點** — F2FS's metadata unit: an inode, a direct node or an indirect node. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
+<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### Node Address Table (NAT) { #term-node-address-table-nat .sdd-term }
+
+**節點地址表（台：節點位址表）** — The map from node ID to physical address, the twin of the FTL's mapping table. → [§C.2.1](../supplements/c-flash-file-systems.md#c21-disk-layout)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### non-volatile { #term-non-volatile .sdd-term }
@@ -1436,7 +1436,7 @@ NVMe states that can / cannot process I/O
 
 ### ordered / writeback / journal mode { #term-ordered-writeback-journal-mode .sdd-term }
 
-EXT4 journaling modes  
+**有序 / 回寫 / 日誌模式** — EXT4's journaling modes, from metadata-only with data first, to metadata-only, to everything journaled. → [§C.1.6](../supplements/c-flash-file-systems.md#c16-journaling)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### original flash manufacturer (fab) { #term-original-flash-manufacturer-fab .sdd-term }
@@ -1705,9 +1705,9 @@ random-access memory
 **裸容量 / 用戶容量（台：原始容量 / 使用者容量）** — All the flash on board versus the space the host can use; the difference is over-provisioning. → [§1.5.1](../core/ch1-overview.md#151-basic-information)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
-### raw-flash FS (JFFS2/UBIFS) { #term-raw-flash-fs-jffs2ubifs .sdd-term }
+### raw-flash filesystem (JFFS2 / UBIFS) { #term-raw-flash-filesystem-jffs2-ubifs .sdd-term }
 
-filesystems that replace the FTL, managing bare NAND  
+**原始閃存文件系統（台：原始快閃記憶體檔案系統）** — A filesystem that manages bare NAND itself, replacing the FTL. → [§C.3](../supplements/c-flash-file-systems.md#c3-the-third-category-raw-flash-filesystems)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### RBER / UBER { #term-rber-uber .sdd-term }
@@ -1939,7 +1939,17 @@ Single Event Functional Interrupt — device hangs, needs reset
 
 ### segment / section / zone { #term-segment-section-zone .sdd-term }
 
-F2FS allocation units (2 MB / group / group of sections)  
+**段 / 節 / 區** — F2FS's allocation units: a 2 MB segment, a group of segments, a group of sections. → [§C.2.1](../supplements/c-flash-file-systems.md#c21-disk-layout)  
+<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### Segment Information Table (SIT) { #term-segment-information-table-sit .sdd-term }
+
+**段信息表（台：區段資訊表）** — Per-segment valid-block counts and bitmaps, the twin of the FTL's VPC. → [§C.2.1](../supplements/c-flash-file-systems.md#c21-disk-layout)  
+<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### Segment Summary Area (SSA) { #term-segment-summary-area-ssa .sdd-term }
+
+**段摘要區（台：區段摘要區）** — The record of which node owns each block, the twin of the FTL's P2L table. → [§C.2.1](../supplements/c-flash-file-systems.md#c21-disk-layout)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### SEGR / SEB { #term-segr-seb .sdd-term }
@@ -1984,7 +1994,7 @@ Secure Hash Algorithm
 
 ### shadow copy { #term-shadow-copy .sdd-term }
 
-two-copy scheme; one always valid  
+**影子副本（台：影子複本）** — Keeping two copies and updating them alternately, so one is always valid. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### sideband signal { #term-sideband-signal .sdd-term }
@@ -1996,11 +2006,6 @@ two-copy scheme; one always valid
 
 **仿真 / 模擬** — Modelling a chip in software, versus reproducing its design in hardware that runs at speed. → [§7.3.1](../core/ch7-testing.md#731-emulator-vs-fpga)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
-
-### SIT (Segment Info Table) { #term-sit-segment-info-table .sdd-term }
-
-valid-block counts/bitmaps (≈ SSD VPC/VPBM, Ch4)  
-<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### skip / replace strategy { #term-skip-replace-strategy .sdd-term }
 
@@ -2082,11 +2087,6 @@ single-root I/O virtualization (one PCIe device appears as many)
 static random-access memory  
 <small>From: the site-wide acronym list</small>
 
-### SSA (Segment Summary Area) { #term-ssa-segment-summary-area .sdd-term }
-
-block → owning node (≈ SSD P2L, Ch4)  
-<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
-
 ### SSR / MMU { #term-ssr-mmu .sdd-term }
 
 Solid State Recorder / Mass Memory Unit (spacecraft storage)  
@@ -2129,7 +2129,7 @@ host pins the drive to a power budget
 
 ### superblock (SB) { #term-superblock-sb .sdd-term }
 
-filesystem-wide metadata  
+**超級塊（台：超級區塊）** — Filesystem-wide metadata, kept in more than one copy. → [§C.2.1](../supplements/c-flash-file-systems.md#c21-disk-layout)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### switch { #term-switch .sdd-term }
@@ -2388,9 +2388,9 @@ virtual desktop infrastructure
 **驗證 / 確認** — Testing the design before the chip exists, versus testing the real silicon afterwards. → [§7.2](../core/ch7-testing.md#72-verification-vs-validation)  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
-### VFS { #term-vfs .sdd-term }
+### Virtual File System (VFS) { #term-virtual-file-system-vfs .sdd-term }
 
-Virtual File System (uniform kernel API above all filesystems)  
+**虛擬文件系統（台：虛擬檔案系統）** — The kernel layer that gives applications one interface above every filesystem. → [§C.1.3](../supplements/c-flash-file-systems.md#c13-in-memory-structure)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### VM { #term-vm .sdd-term }
@@ -2407,7 +2407,7 @@ write amplification factor
 
 ### wandering tree { #term-wandering-tree .sdd-term }
 
-LFS cascade of pointer updates; solved by NAT  
+**漫遊樹（雪球效應）** — In a naive LFS, the cascade of pointer rewrites up to the root after every move; the NAT stops it. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
 ### WCTEMP { #term-wctemp .sdd-term }
@@ -2491,6 +2491,11 @@ Yangtze Memory Technologies (China's NAND flash maker)
 **區域 / 寫指針（台：區域 / 寫入指標）** — A ZNS region that must be written sequentially, and the position where its next write must land. → [§6.10.1](../core/ch6-nvme.md#6101-zns-mechanics-zones-states-and-zone-append)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
+### zoned F2FS { #term-zoned-f2fs .sdd-term }
+
+**分區F2FS** — F2FS writing its log straight into the zones of a ZNS or Zoned UFS device, leaving one log. → [§C.2.5](../supplements/c-flash-file-systems.md#c25-the-log-on-log-problem-and-the-zns-fix)  
+<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
 ### Zoned Namespaces (ZNS) { #term-zoned-namespaces-zns .sdd-term }
 
 **分區命名空間** — NVMe zones that must be written sequentially and reset as a whole, moving placement and GC to the host. → [§4.11](../core/ch4-ftl.md#zns-zoned-namespaces-nvme-20)  
@@ -2500,9 +2505,4 @@ Yangtze Memory Technologies (China's NAND flash maker)
 
 **分區UFS** — UFS 4.1's zoned storage, ZNS for mobile: host and device cooperate on data placement. → [§B.9](../supplements/b-ufs.md#b9-modern-developments-ufs-41-and-50)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
-
-### ZUFS / zoned F2FS { #term-zufs-zoned-f2fs .sdd-term }
-
-F2FS on a zoned device (ZNS/ZUFS) — collapses the double log  
-<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
