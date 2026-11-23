@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 292" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Submission and completion queues as rings</title>
+<desc>Two rings of eight slots. Left, the submission queue: slots 2, 3 and 4 hold commands waiting; the head (owned by the SSD, the consumer) points at slot 2 and the tail (owned by the host, the producer) at slot 5. Right, the completion queue: slots 0, 1 and 2 hold new completions written this lap with phase bit 1, while the rest still hold phase bit 0 from the last lap; the host finds the tail at slot 3, where the phase bit stops matching, without reading any register.</desc>
+<text class="f-ink" x="100" y="20" text-anchor="middle" font-weight="700" fill="#e8eeff">Submission Queue</text>
+<text class="f-ink" x="300" y="20" text-anchor="middle" font-weight="700" fill="#e8eeff">Completion Queue</text>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="87" y="47" width="26" height="26" rx="3"/><rect x="130.8" y="65.2" width="26" height="26" rx="3"/><rect x="43.2" y="152.8" width="26" height="26" rx="3"/><rect x="25" y="109" width="26" height="26" rx="3"/><rect x="43.2" y="65.2" width="26" height="26" rx="3"/></g>
+<g class="f-cyan" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"><rect x="149" y="109" width="26" height="26" rx="3"/><rect x="130.8" y="152.8" width="26" height="26" rx="3"/><rect x="87" y="171" width="26" height="26" rx="3"/></g>
+<g class="f-mute" fill="#a3abc4" text-anchor="middle"><text x="100" y="65">0</text><text x="143.8" y="83.2">1</text><text x="162" y="127">2</text><text x="143.8" y="170.8">3</text><text x="100" y="189">4</text><text x="56.2" y="170.8">5</text><text x="38" y="127">6</text><text x="56.2" y="83.2">7</text></g>
+<text class="f-ink" x="100" y="117" text-anchor="middle" fill="#e8eeff">head 2</text>
+<text class="f-ink" x="100" y="135" text-anchor="middle" fill="#e8eeff">tail 5</text>
+<g class="f-cyan" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"><rect x="287" y="47" width="26" height="26" rx="3"/><rect x="330.8" y="65.2" width="26" height="26" rx="3"/><rect x="349" y="109" width="26" height="26" rx="3"/></g>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="330.8" y="152.8" width="26" height="26" rx="3"/><rect x="287" y="171" width="26" height="26" rx="3"/><rect x="243.2" y="152.8" width="26" height="26" rx="3"/><rect x="225" y="109" width="26" height="26" rx="3"/><rect x="243.2" y="65.2" width="26" height="26" rx="3"/></g>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle"><text x="300" y="65">1</text><text x="343.8" y="83.2">1</text><text x="362" y="127">1</text></g>
+<g class="f-mute" fill="#a3abc4" text-anchor="middle"><text x="343.8" y="170.8">0</text><text x="300" y="189">0</text><text x="256.2" y="170.8">0</text><text x="238" y="127">0</text><text x="256.2" y="83.2">0</text></g>
+<text class="f-ink" x="300" y="117" text-anchor="middle" fill="#e8eeff">head 0</text>
+<text class="f-ink" x="300" y="135" text-anchor="middle" fill="#e8eeff">tail 3</text>
+<text class="f-mute" x="100" y="226" text-anchor="middle" fill="#a3abc4">host adds at the tail,</text>
+<text class="f-mute" x="100" y="243" text-anchor="middle" fill="#a3abc4">SSD takes from the head</text>
+<text class="f-mute" x="300" y="226" text-anchor="middle" fill="#a3abc4">SSD adds at the tail;</text>
+<text class="f-mute" x="300" y="243" text-anchor="middle" fill="#a3abc4">digits are phase bits</text>
+<rect class="f-cyan" x="16" y="268" width="14" height="12" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-mute" x="36" y="279" fill="#a3abc4">entries waiting for the consumer</text>
+</svg>

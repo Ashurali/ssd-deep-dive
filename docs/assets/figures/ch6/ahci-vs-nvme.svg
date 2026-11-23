@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 330" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>AHCI's single queue versus NVMe's queue per core</title>
+<desc>Top: with AHCI, four CPU cores all funnel their commands through a lock into one shared queue of 32 slots. Bottom: with NVMe, each core has its own submission and completion queue pair, so no core waits for a lock; a drive can offer up to 65,535 I/O queue pairs, each up to 65,536 entries deep.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">AHCI · one shared queue, 32 deep</text>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="24" y="32" width="72" height="26" rx="4"/><rect x="116" y="32" width="72" height="26" rx="4"/><rect x="208" y="32" width="72" height="26" rx="4"/><rect x="300" y="32" width="72" height="26" rx="4"/></g>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle"><text x="60" y="50">core 0</text><text x="152" y="50">core 1</text><text x="244" y="50">core 2</text><text x="336" y="50">core 3</text></g>
+<path class="f-line" d="M60,58 L176,84 M152,58 L188,84 M244,58 L212,84 M336,58 L224,84" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<rect class="f-red" x="160" y="84" width="80" height="26" rx="4" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="102" text-anchor="middle" fill="#e8eeff">lock</text>
+<line class="f-line" x1="200" y1="110" x2="200" y2="126" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="40" y="128" width="320" height="26" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="146" text-anchor="middle" fill="#e8eeff">1 queue × 32 commands</text>
+<line class="f-faint" x1="16" y1="172" x2="384" y2="172" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="196" font-weight="700" fill="#e8eeff">NVMe · a queue pair per core</text>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="24" y="208" width="72" height="26" rx="4"/><rect x="116" y="208" width="72" height="26" rx="4"/><rect x="208" y="208" width="72" height="26" rx="4"/><rect x="300" y="208" width="72" height="26" rx="4"/></g>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle"><text x="60" y="226">core 0</text><text x="152" y="226">core 1</text><text x="244" y="226">core 2</text><text x="336" y="226">core 3</text></g>
+<g class="f-cyan" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"><rect x="24" y="244" width="72" height="22" rx="4"/><rect x="116" y="244" width="72" height="22" rx="4"/><rect x="208" y="244" width="72" height="22" rx="4"/><rect x="300" y="244" width="72" height="22" rx="4"/></g>
+<g class="f-violet" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"><rect x="24" y="270" width="72" height="22" rx="4"/><rect x="116" y="270" width="72" height="22" rx="4"/><rect x="208" y="270" width="72" height="22" rx="4"/><rect x="300" y="270" width="72" height="22" rx="4"/></g>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle"><text x="60" y="260">SQ</text><text x="152" y="260">SQ</text><text x="244" y="260">SQ</text><text x="336" y="260">SQ</text><text x="60" y="286">CQ</text><text x="152" y="286">CQ</text><text x="244" y="286">CQ</text><text x="336" y="286">CQ</text></g>
+<text class="f-mute" x="200" y="316" text-anchor="middle" fill="#a3abc4">up to 65,535 I/O queue pairs, each up to 64K deep</text>
+</svg>

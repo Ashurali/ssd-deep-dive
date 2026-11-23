@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 483 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 484 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -48,7 +48,7 @@ Active Power (avg over 10-second window)
 
 ### Admin command { #term-admin-command .sdd-term }
 
-**管理命令**  
+**管理命令（台：管理指令）** — A command that manages the drive (creating queues, Identify, features) rather than moving data. → [§6.2](../core/ch6-nvme.md#62-nvme-overview-the-command-model)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### AHCI { #term-ahci .sdd-term }
@@ -108,7 +108,7 @@ AT Attachment (the disk command set behind SATA)
 
 ### atomic operation { #term-atomic-operation .sdd-term }
 
-**原子操作**  
+**原子操作** — An operation that completes entirely or not at all, as shared-namespace access must. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### AXI { #term-axi .sdd-term }
@@ -170,7 +170,7 @@ Basic Input/Output System (PC boot firmware)
 
 ### bit bucket { #term-bit-bucket .sdd-term }
 
-**位桶**  
+**位桶（台：位元桶）** — An SGL descriptor that tells the SSD to discard that much of the read data instead of sending it. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### bit-flipping { #term-bit-flipping .sdd-term }
@@ -315,11 +315,6 @@ F2FS garbage collection (greedy / cost-benefit victim; ≈ SSD GC, Ch4)
 PCIe sideband pin gating deep link states (≈ SATA DEVSLP)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
-### CMB { #term-cmb .sdd-term }
-
-Controller Memory Buffer (NVMe)  
-<small>From: the site-wide acronym list</small>
-
 ### CMOS { #term-cmos .sdd-term }
 
 complementary metal–oxide–semiconductor (standard logic process)  
@@ -342,7 +337,7 @@ data bits ÷ total bits
 
 ### command set { #term-command-set .sdd-term }
 
-**命令集**  
+**命令集（台：指令集）** — A family of NVMe I/O commands for one kind of storage: NVM (block), Zoned, Key-Value. → [§6.9](../core/ch6-nvme.md#69-modern-developments-the-nvme-2x-era)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### compatibility { #term-compatibility .sdd-term }
@@ -350,9 +345,9 @@ data bits ÷ total bits
 **兼容性（台：相容性）** — Working correctly with every host, BIOS, OS and signal condition the drive meets. → [§1.5.6](../core/ch1-overview.md#156-system-compatibility)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
-### Completion Queue { #term-completion-queue .sdd-term }
+### Completion Queue (CQ) { #term-completion-queue-cq .sdd-term }
 
-**完成隊列 (CQ)** — CQ = Completion Queue (NVMe)  
+**完成隊列（台：完成佇列）** — A ring in host memory where the SSD posts 16-byte results. → [§6.2](../core/ch6-nvme.md#62-nvme-overview-the-command-model)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### compression { #term-compression .sdd-term }
@@ -384,6 +379,11 @@ data bits ÷ total bits
 
 **控制極 / 襯底（台：控制閘極 / 基板）** — The gate a read or program voltage is applied to, and the silicon body beneath the cells, which erase acts through. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
+
+### Controller Memory Buffer (CMB) { #term-controller-memory-buffer-cmb .sdd-term }
+
+**控制器內存緩衝區（台：控制器記憶體緩衝區）** — Memory on the SSD exposed through a BAR, where the host can place queues or data. → [§6.10.2](../core/ch6-nvme.md#6102-cmb-the-mirror-image-of-hmb)  
+<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### copy-and-compaction / threaded logging { #term-copy-and-compaction-threaded-logging .sdd-term }
 
@@ -420,9 +420,9 @@ central processing unit
 Catastrophic SEE (the destructive subset)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
-### Cyclic Redundancy Check { #term-cyclic-redundancy-check .sdd-term }
+### cyclic redundancy check (CRC) { #term-cyclic-redundancy-check-crc .sdd-term }
 
-**循環冗餘校驗 (CRC)** — CRC = cyclic redundancy check  
+**循環冗餘校驗（台：循環冗餘檢查）** — A checksum that detects corrupted data; PI's guard field is a 16-bit CRC. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ## D { #letter-d }
@@ -474,7 +474,7 @@ allocate blocks at flush time, not write time
 
 ### descriptor { #term-descriptor .sdd-term }
 
-**描述符**  
+**描述符（台：描述元）** — One 16-byte entry of an SGL: a data block, a pointer to the next segment, or a bit bucket. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### Descriptor / Attribute / Flag { #term-descriptor-attribute-flag .sdd-term }
@@ -504,7 +504,7 @@ SATA deep-sleep pin (Ch1/Ch7)
 
 ### discovery service { #term-discovery-service .sdd-term }
 
-**發現服務**  
+**發現服務（台：探索服務）** — An NVMe-oF service whose log page tells hosts which subsystems and paths exist. → [§6.8](../core/ch6-nvme.md#68-nvme-over-fabrics)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### DMAC { #term-dmac .sdd-term }
@@ -512,9 +512,9 @@ SATA deep-sleep pin (Ch1/Ch7)
 DMA controller  
 <small>From: the site-wide acronym list</small>
 
-### Doorbell Register { #term-doorbell-register .sdd-term }
+### doorbell register (DB) { #term-doorbell-register-db .sdd-term }
 
-**門鈴寄存器 (DB)** — DB = doorbell register (NVMe)  
+**門鈴寄存器（台：門鈴暫存器）** — A register on the SSD that the host writes to announce new commands or consumed completions. → [§6.2](../core/ch6-nvme.md#62-nvme-overview-the-command-model)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### DQS { #term-dqs .sdd-term }
@@ -534,7 +534,7 @@ dynamic random-access memory
 
 ### dual port { #term-dual-port .sdd-term }
 
-**雙端口**  
+**雙端口（台：雙埠）** — Two independent PCIe ports on one drive, so a second path survives the loss of the first. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### dual-simplex / full-duplex / half-duplex { #term-dual-simplex-full-duplex-half-duplex .sdd-term }
@@ -606,7 +606,7 @@ predecessor; parallel, half-duplex, no queuing
 
 ### end-to-end data protection { #term-end-to-end-data-protection .sdd-term }
 
-**端到端數據保護**  
+**端到端數據保護（台：端對端資料保護）** — Checking each block at every hop from host memory to flash and back. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### endpoint { #term-endpoint .sdd-term }
@@ -698,7 +698,7 @@ forward error correction
 
 ### fetch (a command) { #term-fetch-a-command .sdd-term }
 
-**取指**  
+**取指（台：指令擷取）** — The SSD reading a command out of the host's submission queue with a PCIe Memory Read. → [§6.5](../core/ch6-nvme.md#65-trace-analysis-a-real-read-as-pcie-packets)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### FFR { #term-ffr .sdd-term }
@@ -887,7 +887,7 @@ Host Controlled Thermal Management (NVMe)
 
 ### head / tail { #term-head-tail .sdd-term }
 
-**頭部 / 尾部**  
+**頭部 / 尾部** — The slot the consumer reads next, and the slot the producer writes next. → [§6.3](../core/ch6-nvme.md#63-the-three-treasures-in-detail)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### HIBERN8 { #term-hibern8 .sdd-term }
@@ -979,7 +979,7 @@ fixed-size per-file metadata record (attrs + block pointers)
 
 ### interrupt { #term-interrupt .sdd-term }
 
-**中斷**  
+**中斷** — The SSD's signal that completions are waiting; in NVMe it is an MSI-X message, itself a memory write. → [§6.5](../core/ch6-nvme.md#65-trace-analysis-a-real-read-as-pcie-packets)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### IO { #term-io .sdd-term }
@@ -1108,9 +1108,9 @@ inefficiency of a log-structured FS atop a log-structured FTL
 **邏輯地址 / 物理地址（台：邏輯位址 / 實體位址）** — The address the host uses, and the place in flash where the data actually sits. → [§4.1](../core/ch4-ftl.md#41-ftl-overview)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
-### Logical Block Address { #term-logical-block-address .sdd-term }
+### logical block address (LBA) { #term-logical-block-address-lba .sdd-term }
 
-**邏輯塊地址 (LBA)** — LBA = logical block address  
+**邏輯塊地址（台：邏輯區塊位址）** — The address of one logical block within a namespace. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### logical page / physical page { #term-logical-page-physical-page .sdd-term }
@@ -1202,7 +1202,7 @@ Minimum DEVSLP Assertion Time (SATA)
 
 ### metadata { #term-metadata .sdd-term }
 
-**元數據（台：中繼資料）；元數據** — Data about data, such as XtremIO's address-to-hash and hash-to-physical tables. → [§2.6.4](../core/ch2-controllers-afa.md#264-workflow-how-io-actually-flows); Information stored with each flash page, chiefly its LBA and a timestamp, which lets the map be rebuilt. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
+**元數據（台：中繼資料）** — Data about data, such as XtremIO's address-to-hash and hash-to-physical tables. → [§2.6.4](../core/ch2-controllers-afa.md#264-workflow-how-io-actually-flows); Information stored with each flash page, chiefly its LBA and a timestamp, which lets the map be rebuilt. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery); Extra bytes stored with each logical block, which can hold the Protection Information. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) · [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### min-sum { #term-min-sum .sdd-term }
@@ -1277,7 +1277,7 @@ mean time between failures
 
 ### multipath { #term-multipath .sdd-term }
 
-**多路徑**  
+**多路徑** — Reaching the same namespace over more than one path, for redundancy or bandwidth. → [§6.8](../core/ch6-nvme.md#68-nvme-over-fabrics)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### MWr { #term-mwr .sdd-term }
@@ -1292,9 +1292,9 @@ Memory Write request (PCIe TLP)
 negative acknowledgment  
 <small>From: the site-wide acronym list</small>
 
-### Namespace { #term-namespace .sdd-term }
+### namespace (NS) { #term-namespace-ns .sdd-term }
 
-**命名空間 (NS)** — NS = namespace (NVMe)  
+**命名空間** — An independent logical drive carved out of an NVMe SSD, with its own LBA range and ID. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### NAT (Node Address Table) { #term-nat-node-address-table .sdd-term }
@@ -1513,7 +1513,7 @@ PCIe wake signal (PEWAKE#)
 
 ### Phase Tag { #term-phase-tag .sdd-term }
 
-**相位標籤**  
+**相位標籤** — A bit in each completion entry that flips every lap of the CQ, so the host can find new entries without reading a register. → [§6.3](../core/ch6-nvme.md#63-the-three-treasures-in-detail)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### phase-change memory (PCM) { #term-phase-change-memory-pcm .sdd-term }
@@ -1531,9 +1531,9 @@ PCIe wake signal (PEWAKE#)
 **物理層（台：實體層）** — The bottom layer: framing, striping, scrambling, encoding and differential signaling. → [§5.9](../core/ch5-pcie.md#59-physical-layer)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
-### Physical Region Page { #term-physical-region-page .sdd-term }
+### Physical Region Page (PRP) { #term-physical-region-page-prp .sdd-term }
 
-**物理區域頁 (PRP)** — PRP = Physical Region Page (NVMe data pointer)  
+**物理區域頁（台：實體區域頁）** — An NVMe pointer to a host memory page; PRP lists describe longer buffers in whole pages. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### plane { #term-plane .sdd-term }
@@ -1598,7 +1598,7 @@ deeper state = less power but slower wake (the core principle)
 
 ### producer / consumer { #term-producer-consumer .sdd-term }
 
-**生產者 / 消費者**  
+**生產者 / 消費者** — The side that adds entries to a queue (and owns its tail), and the side that removes them (and owns its head). → [§6.3](../core/ch6-nvme.md#63-the-three-treasures-in-detail)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### program disturb { #term-program-disturb .sdd-term }
@@ -1606,9 +1606,9 @@ deeper state = less power but slower wake (the core principle)
 **寫干擾 / 編程干擾（台：寫入干擾）** — Unwanted charge added to cells near the ones being programmed. → [§3.3.1](../core/ch3-nand-flash.md#331-the-five-problems-a-catalog-to-know-cold)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
-### Protection Information { #term-protection-information .sdd-term }
+### Protection Information (PI) { #term-protection-information-pi .sdd-term }
 
-**保護信息 (PI)** — PI = Protection Information (NVMe end-to-end data protection)  
+**保護信息（台：保護資訊）** — Eight bytes per block: a CRC guard, an application tag and a reference tag tied to the LBA. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### protocol analyzer { #term-protocol-analyzer .sdd-term }
@@ -1650,7 +1650,7 @@ quality of service (how consistent latency is)
 
 ### queue depth { #term-queue-depth .sdd-term }
 
-**隊列深度**  
+**隊列深度（台：佇列深度）；隊列深度** — How many commands a queue can hold in flight; NVMe allows up to 64K per queue. → [§6.1](../core/ch6-nvme.md#61-from-ahci-to-nvme)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
 
 ## R { #letter-r }
@@ -1705,11 +1705,6 @@ Read Completion Boundary (PCIe)
 read disturb  
 <small>From: the site-wide acronym list</small>
 
-### RDMA { #term-rdma .sdd-term }
-
-**遠程直接內存訪問** — remote direct memory access  
-<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
-
 ### read disturb { #term-read-disturb .sdd-term }
 
 **讀干擾（台：讀取干擾）** — Bit errors that build up in a block's other pages because every read stresses them with pass voltage. → [§3.3.5](../core/ch3-nand-flash.md#335-read-disturb-in-the-field)  
@@ -1727,7 +1722,7 @@ read disturb
 
 ### redundancy / fault tolerance { #term-redundancy-fault-tolerance .sdd-term }
 
-**冗餘容錯**  
+**冗餘容錯** — Spare paths or copies that keep a system working when one part fails. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### redundancy / parity { #term-redundancy-parity .sdd-term }
@@ -1752,7 +1747,7 @@ extra bits added to enable correction
 
 ### Reference Tag { #term-reference-tag .sdd-term }
 
-**參考標籤**  
+**參考標籤** — The PI field tied to the block's LBA, which catches a valid block delivered for the wrong address. → [§6.6](../core/ch6-nvme.md#66-end-to-end-data-protection)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### regression test { #term-regression-test .sdd-term }
@@ -1774,6 +1769,11 @@ uniform vs varied row/column weights
 
 **重映射表** — The table that redirects each replaced bad block to its spare. → [§4.7](../core/ch4-ftl.md#47-bad-block-management)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+
+### remote direct memory access (RDMA) { #term-remote-direct-memory-access-rdma .sdd-term }
+
+**遠程直接內存訪問（台：遠端直接記憶體存取）** — Moving data straight into another machine's memory without copies or kernel work; NVMe-oF's lowest-latency transport. → [§6.8](../core/ch6-nvme.md#68-nvme-over-fabrics)  
+<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### replay attack { #term-replay-attack .sdd-term }
 
@@ -1797,7 +1797,7 @@ Rad-Hardening By Design / By Process
 
 ### ring / circular queue { #term-ring-circular-queue .sdd-term }
 
-**環形隊列**  
+**環形隊列（台：環狀佇列）** — A fixed array whose end wraps to its start, filled at the tail and emptied at the head. → [§6.3](../core/ch6-nvme.md#63-the-three-treasures-in-detail)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### robustness { #term-robustness .sdd-term }
@@ -1882,9 +1882,9 @@ Serial Attached SCSI
 Serial ATA  
 <small>From: the site-wide acronym list</small>
 
-### Scatter/Gather List { #term-scattergather-list .sdd-term }
+### Scatter/Gather List (SGL) { #term-scattergather-list-sgl .sdd-term }
 
-**分散聚集列表 (SGL)** — SGL = Scatter-Gather List (NVMe data pointer)  
+**分散聚集列表（台：分散/聚集清單）** — An NVMe linked list of descriptors that can name memory regions of any address and length. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### scramble / de-scramble { #term-scramble-de-scramble .sdd-term }
@@ -1914,7 +1914,7 @@ Single Event Functional Interrupt — device hangs, needs reset
 
 ### segment { #term-segment .sdd-term }
 
-**段**  
+**段（台：區段）** — A group of SGL descriptors stored together; segments chain to form the list. → [§6.4](../core/ch6-nvme.md#64-the-addressing-duo-prp-and-sgl)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### segment / section / zone { #term-segment-section-zone .sdd-term }
@@ -2102,9 +2102,9 @@ host pins the drive to a power budget
 **存儲單元（台：儲存單元）** — One transistor that holds one or more bits as trapped charge. → [§3.1.1](../core/ch3-nand-flash.md#311-how-a-flash-cell-works)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
-### Submission Queue { #term-submission-queue .sdd-term }
+### Submission Queue (SQ) { #term-submission-queue-sq .sdd-term }
 
-**提交隊列 (SQ)** — SQ = Submission Queue (NVMe)  
+**提交隊列（台：提交佇列）** — A ring in host memory where the host places 64-byte commands for the SSD to fetch. → [§6.2](../core/ch6-nvme.md#62-nvme-overview-the-command-model)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### superblock (SB) { #term-superblock-sb .sdd-term }
@@ -2465,6 +2465,11 @@ Yangtze Memory Technologies (China's NAND flash maker)
 <small>From: the site-wide acronym list</small>
 
 ## Z { #letter-z }
+
+### zone / write pointer { #term-zone-write-pointer .sdd-term }
+
+**區域 / 寫指針（台：區域 / 寫入指標）** — A ZNS region that must be written sequentially, and the position where its next write must land. → [§6.10.1](../core/ch6-nvme.md#6101-zns-mechanics-zones-states-and-zone-append)  
+<small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### Zoned Namespaces (ZNS) { #term-zoned-namespaces-zns .sdd-term }
 

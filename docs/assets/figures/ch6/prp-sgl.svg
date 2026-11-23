@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 344" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>PRP and SGL: two ways to describe host memory</title>
+<desc>Top: PRP. The command's PRP1 points straight at the first 4 KB page; PRP2 points at a PRP list whose entries each point at one more whole, aligned 4 KB page. Bottom: SGL. A chain of descriptors describes regions of any address and length: a 3 KB data block, a 4 KB data block, a 2 KB bit bucket whose data is read but thrown away, and a final 4 KB data block. That is how a 13 KB read can keep only 11 KB, scattered into buffers of 3, 4 and 4 KB.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">PRP · whole, aligned 4 KB pages</text>
+<rect class="f-cyan" x="16" y="32" width="88" height="28" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="60" y="51" text-anchor="middle" fill="#e8eeff">PRP1</text>
+<rect class="f-cyan" x="16" y="68" width="88" height="28" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="60" y="87" text-anchor="middle" fill="#e8eeff">PRP2</text>
+<rect class="f-amber" x="132" y="68" width="88" height="96" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="176" y="86" text-anchor="middle" fill="#e8eeff">PRP list</text>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle"><text x="176" y="110">entry 1</text><text x="176" y="132">entry 2</text><text x="176" y="154">entry 3</text></g>
+<g class="f-line f-panel" fill="#111832" stroke="#7d86a3"><rect x="264" y="32" width="120" height="26" rx="3"/><rect x="264" y="76" width="120" height="26" rx="3"/><rect x="264" y="110" width="120" height="26" rx="3"/><rect x="264" y="144" width="120" height="26" rx="3"/></g>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle"><text x="324" y="50">page · 4 KB</text><text x="324" y="94">page · 4 KB</text><text x="324" y="128">page · 4 KB</text><text x="324" y="162">page · 4 KB</text></g>
+<path class="f-line" d="M104,46 H261 M104,82 H129 M220,106 L261,89 M220,128 L261,123 M220,150 L261,157" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<line class="f-faint" x1="16" y1="188" x2="384" y2="188" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="212" font-weight="700" fill="#e8eeff">SGL · any address, any length</text>
+<g class="f-violet" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"><rect x="16" y="224" width="84" height="40" rx="4"/><rect x="108" y="224" width="84" height="40" rx="4"/><rect x="292" y="224" width="92" height="40" rx="4"/></g>
+<rect class="f-line f-panel f-dash" x="200" y="224" width="84" height="40" rx="4" fill="#111832" stroke="#7d86a3" stroke-dasharray="4 3"/>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle"><text x="58" y="241">data</text><text x="58" y="258">3 KB</text><text x="150" y="241">data</text><text x="150" y="258">4 KB</text><text x="338" y="241">data</text><text x="338" y="258">4 KB</text></g>
+<g class="f-mute" fill="#a3abc4" text-anchor="middle"><text x="242" y="241">bit bucket</text><text x="242" y="258">2 KB</text></g>
+<g class="f-cyan" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"><rect x="16" y="294" width="60" height="22" rx="3"/><rect x="108" y="294" width="80" height="22" rx="3"/><rect x="304" y="294" width="80" height="22" rx="3"/></g>
+<path class="f-line" d="M46,264 V291 M148,264 V291 M344,264 V291" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="242" y="310" text-anchor="middle" fill="#a3abc4">discarded</text>
+<text class="f-mute" x="16" y="338" fill="#a3abc4">13 KB read, 11 KB kept in 3 + 4 + 4 KB buffers</text>
+</svg>
