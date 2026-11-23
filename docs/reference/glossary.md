@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 15 chapters and supplements, plus every acronym the site uses: 567 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 16 chapters and supplements, plus every acronym the site uses: 586 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -218,6 +218,11 @@ Basic Input/Output System (PC boot firmware)
 **比特翻轉（台：位元翻轉）** — A hard-decision iterative decoder that flips the bits sitting in the most failed checks. → [§A.5.1](../supplements/a-ecc-coding-theory.md#a51-bit-flipping-hard-decision)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
+### blktrace { #term-blktrace .sdd-term }
+
+**blktrace跟蹤工具（台：blktrace追蹤工具）** — A tool that records each request's events inside the block layer. → [§H.6](../supplements/h-host-stack.md#h6-watching-io-sysfs-iostat-and-blktrace)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
 ### block / inode bitmap { #term-block-inode-bitmap .sdd-term }
 
 **塊位圖 / inode位圖（台：區塊點陣圖 / inode點陣圖）** — One bit per block or inode, marking it free or used. → [§C.1.2](../supplements/c-flash-file-systems.md#c12-on-disk-structure)  
@@ -242,6 +247,11 @@ Basic Input/Output System (PC boot firmware)
 
 **塊組（台：區塊群組）** — EXT4's fixed subdivision of a volume, each with its own bitmaps and inode table. → [§C.1.2](../supplements/c-flash-file-systems.md#c12-on-disk-structure)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### block layer (blk-mq) { #term-block-layer-blk-mq .sdd-term }
+
+**塊層（台：區塊層）** — The kernel layer that queues, merges and dispatches block requests, one software queue per core. → [§H.2](../supplements/h-host-stack.md#h2-queues-per-core)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### BMC { #term-bmc .sdd-term }
 
@@ -556,6 +566,11 @@ Completion with Data (PCIe TLP)
 
 **數據保存期（台：資料保存期）；數據保持（台：資料保存）** — How long written data stays readable before leakage creates more errors than ECC can fix. → [§3.3.6](../core/ch3-nand-flash.md#336-data-retention-how-long-does-data-survive); Keeping data readable while unpowered; JESD218 checks it after the endurance writes. → [§7.8](../core/ch7-testing.md#78-endurance-testing)  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
+
+### data unit { #term-data-unit .sdd-term }
+
+**數據單元（台：資料單位）** — SMART's counting unit for data read and written: 1,000 × 512 bytes. → [§H.4](../supplements/h-host-stack.md#h4-looking-at-a-drive-nvme-cli-and-smartctl)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### data verification { #term-data-verification .sdd-term }
 
@@ -1060,6 +1075,11 @@ hash-to-physical table (XtremIO metadata)
 **硬件加速模塊（台：硬體加速模組）** — Logic that runs a hot firmware path, such as map lookups, in hardware so the processor is free for other work. → [§2.3](../core/ch2-controllers-afa.md#23-case-study-silicongo-sg9081-anatomy-of-a-fast-sata-controller)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
+### hardware queue { #term-hardware-queue .sdd-term }
+
+**硬件隊列（台：硬體佇列）** — A block-layer queue mapped onto one of the device's own queues. → [§H.2](../supplements/h-host-stack.md#h2-queues-per-core)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
 ### HBA { #term-hba .sdd-term }
 
 host bus adapter  
@@ -1127,6 +1147,21 @@ Host Controlled Thermal Management (NVMe)
 
 ## I { #letter-i }
 
+### I/O queue pair (SQ / CQ) { #term-io-queue-pair-sq-cq .sdd-term }
+
+**I/O隊列對（台：I/O佇列對）** — An NVMe submission queue and its completion queue, ideally one pair per core. → [§H.2](../supplements/h-host-stack.md#h2-queues-per-core)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
+### I/O scheduler { #term-io-scheduler .sdd-term }
+
+**I/O調度器（台：I/O排程器）** — Kernel code that reorders requests; NVMe drives use "none". → [§H.2](../supplements/h-host-stack.md#h2-queues-per-core)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
+### Identify Controller { #term-identify-controller .sdd-term }
+
+**識別控制器數據（台：識別控制器資料）** — The data block describing a drive's model, firmware and capabilities. → [§H.4](../supplements/h-host-stack.md#h4-looking-at-a-drive-nvme-cli-and-smartctl)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
 ### IEEE { #term-ieee .sdd-term }
 
 Institute of Electrical and Electronics Engineers  
@@ -1182,6 +1217,11 @@ Institute of Electrical and Electronics Engineers
 **中斷 / 輪詢** — The device signalling the CPU, versus the CPU checking repeatedly. → [§0.9](../core/ch0-foundations.md#09-interrupts-polling-and-dma)  
 <small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
 
+### interrupt affinity { #term-interrupt-affinity .sdd-term }
+
+**中斷親和性** — Steering a queue's interrupt to the core that owns the queue. → [§H.2](../supplements/h-host-stack.md#h2-queues-per-core)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
 ### IO { #term-io .sdd-term }
 
 input/output  
@@ -1191,6 +1231,16 @@ input/output
 
 **每秒讀寫次數** — Input/output operations completed per second. → [§0.5](../core/ch0-foundations.md#05-latency-throughput-and-iops)  
 <small>From: [Ch 0 — Foundations](../core/ch0-foundations.md#key-vocabulary)</small>
+
+### iostat { #term-iostat .sdd-term }
+
+**iostat統計工具** — A tool that prints per-device I/O rates, latencies and queue lengths. → [§H.6](../supplements/h-host-stack.md#h6-watching-io-sysfs-iostat-and-blktrace)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
+### io_uring { #term-iouring .sdd-term }
+
+**io_uring異步接口（台：io_uring非同步介面）** — Linux's asynchronous I/O interface built on submission and completion rings shared with the kernel. → [§H.3](../supplements/h-host-stack.md#h3-interrupts-polling-io_uring-and-spdk)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### iSCSI { #term-iscsi .sdd-term }
 
@@ -1292,6 +1342,11 @@ low-dropout regulator (a small linear voltage regulator)
 
 **鏈路 (Link)（台：連結）** — The connection between two PCIe ports, made of one or more lanes. → [§5.1](../core/ch5-pcie.md#51-starting-with-speed)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### LnkCap / LnkSta { #term-lnkcap-lnksta .sdd-term }
+
+**鏈路能力 / 鏈路狀態（台：鏈結能力 / 鏈結狀態）** — What a PCIe link can do versus what it actually trained to. → [§H.5](../supplements/h-host-stack.md#h5-looking-at-the-link-lspci)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### locking range { #term-locking-range .sdd-term }
 
@@ -1414,6 +1469,11 @@ microcontroller unit
 
 Minimum DEVSLP Assertion Time (SATA)  
 <small>From: the site-wide acronym list</small>
+
+### MDTS { #term-mdts .sdd-term }
+
+**最大數據傳輸大小（台：最大資料傳輸量）** — Maximum data transfer size: the largest transfer one command may carry. → [§H.4](../supplements/h-host-stack.md#h4-looking-at-a-drive-nvme-cli-and-smartctl)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### media encryption key (MEK) { #term-media-encryption-key-mek .sdd-term }
 
@@ -1637,6 +1697,11 @@ NVM Express (the SSD command protocol that runs over PCIe)
 **NVMe電源狀態** — Up to 32 controller power states, described in the Identify data. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
+### nvme-cli { #term-nvme-cli .sdd-term }
+
+**nvme命令行工具（台：nvme命令列工具）** — The standard Linux tool for sending NVMe administrative commands and reading logs. → [§H.4](../supplements/h-host-stack.md#h4-looking-at-a-drive-nvme-cli-and-smartctl)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
 ### NVMe-MI { #term-nvme-mi .sdd-term }
 
 NVMe Management Interface (out-of-band drive management)  
@@ -1730,6 +1795,11 @@ physical-to-logical (reverse map)
 
 **數據包（台：封包）** — A unit of data with its own header and checks, as sent across a link. → [§5.3](../core/ch5-pcie.md#53-the-three-layer-stack)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### page cache { #term-page-cache .sdd-term }
+
+**頁緩存（台：頁面快取）** — The kernel's copy of recently used file data in DRAM, which can answer a read without the drive. → [§H.1](../supplements/h-host-stack.md#h1-one-read-traced)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### PAM4 { #term-pam4 .sdd-term }
 
@@ -1845,6 +1915,11 @@ phase-locked loop (clock generator)
 
 **點到點（台：點對點）** — Each link connects exactly two devices and its bandwidth is theirs alone. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+
+### polled I/O { #term-polled-io .sdd-term }
+
+**輪詢式I/O** — Finding completions by checking the completion queue instead of waiting for an interrupt. → [§H.3](../supplements/h-host-stack.md#h3-interrupts-polling-io_uring-and-spdk)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### post-quantum cryptography (PQC) { #term-post-quantum-cryptography-pqc .sdd-term }
 
@@ -2362,6 +2437,11 @@ Secure Hash Algorithm
 **SMART健康信息（台：SMART健康資訊）** — The summary log: warnings, temperature, spare, endurance used, data written, errors. → [§G.4](../supplements/g-firmware.md#g4-what-the-drive-tells-you-health-and-logs)  
 <small>From: [Supp G — Firmware: Boot, Update & Debug](../supplements/g-firmware.md#key-vocabulary)</small>
 
+### smartctl { #term-smartctl .sdd-term }
+
+**smartctl工具** — The smartmontools program that reads health data from NVMe, SATA and SAS drives. → [§H.4](../supplements/h-host-stack.md#h4-looking-at-a-drive-nvme-cli-and-smartctl)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
 ### SMP / AMP { #term-smp-amp .sdd-term }
 
 **對稱/非對稱多處理** — Cores sharing one code image and one memory (symmetric) versus each core running its own code from its own memory (asymmetric). → [§2.1.2](../core/ch2-controllers-afa.md#212-controller-cpu-cpu)  
@@ -2409,8 +2489,8 @@ Storage Networking Industry Association
 
 ### SPDK { #term-spdk .sdd-term }
 
-Storage Performance Development Kit (user-space NVMe driver)  
-<small>From: the site-wide acronym list</small>
+**SPDK存儲開發套件（台：SPDK儲存開發套件）** — The Storage Performance Development Kit, which drives NVMe from user space by polling. → [§H.3](../supplements/h-host-stack.md#h3-interrupts-polling-io_uring-and-spdk)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### SPI { #term-spi .sdd-term }
 
@@ -2496,6 +2576,16 @@ Security Subsystem Class (a TCG storage profile, such as Opal)
 
 **伴隨式（台：症狀）** — The parity-check results for a received word; it depends only on the error and is zero when no error is detected. → [§A.3.3](../supplements/a-ecc-coding-theory.md#a33-the-generator-matrix-g-and-parity-check-matrix-h)  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
+
+### sysfs { #term-sysfs .sdd-term }
+
+**sysfs文件系統（台：sysfs檔案系統）** — The kernel's file-based view of devices and their settings, under /sys. → [§H.6](../supplements/h-host-stack.md#h6-watching-io-sysfs-iostat-and-blktrace)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
+### system call { #term-system-call .sdd-term }
+
+**系統調用（台：系統呼叫）** — A request from an application to the operating-system kernel, such as read(). → [§H.1](../supplements/h-host-stack.md#h1-one-read-traced)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### System Management Bus (SMBus) { #term-system-management-bus-smbus .sdd-term }
 
@@ -2731,6 +2821,11 @@ Universal Serial Bus
 **用戶態 / 內核態（台：使用者空間 / 核心空間）** — Where ordinary programs run versus where the operating-system kernel runs; XtremIO runs in user space. → [§2.6.3](../core/ch2-controllers-afa.md#263-software-architecture-the-real-value)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
+### %util { #term-util .sdd-term }
+
+**設備利用率（台：裝置使用率）** — The share of time a device had at least one request in flight; misleading for SSDs. → [§H.6](../supplements/h-host-stack.md#h6-watching-io-sysfs-iostat-and-blktrace)  
+<small>From: [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
+
 ## V { #letter-v }
 
 ### VAAI { #term-vaai .sdd-term }
@@ -2770,8 +2865,8 @@ virtual desktop infrastructure
 
 ### Virtual File System (VFS) { #term-virtual-file-system-vfs .sdd-term }
 
-**虛擬文件系統（台：虛擬檔案系統）** — The kernel layer that gives applications one interface above every filesystem. → [§C.1.3](../supplements/c-flash-file-systems.md#c13-in-memory-structure)  
-<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+**虛擬文件系統（台：虛擬檔案系統）** — The kernel layer that gives applications one interface above every filesystem. → [§C.1.3](../supplements/c-flash-file-systems.md#c13-in-memory-structure); The kernel layer that routes file operations to the right filesystem. → [§H.1](../supplements/h-host-stack.md#h1-one-read-traced)  
+<small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary) · [Supp H — The Host Side: OS Stack & Tools](../supplements/h-host-stack.md#key-vocabulary)</small>
 
 ### VM { #term-vm .sdd-term }
 

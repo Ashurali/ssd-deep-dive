@@ -269,4 +269,4 @@ The loop only turns if step 2 has something to work with, which is why the logs,
     - The Persistent Event Log (log page 0Dh, NVMe 1.4) — [nvme-persistent-event-log manual](https://man.archlinux.org/man/nvme-persistent-event-log.1.en)
     - The host- and controller-initiated telemetry logs — [Microsoft NVMe documentation](https://learn.microsoft.com/windows/win32/api/nvme/ne-nvme-nvme_log_pages)
 
-*Next: Supplement H — The host side: one read traced through the operating system, and the tools that show what a drive is doing.*
+*Next: [Supplement H — The host side](h-host-stack.md): one read traced through the operating system, and the tools that show what a drive is doing.*

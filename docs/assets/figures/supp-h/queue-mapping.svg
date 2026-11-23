@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 214" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>One NVMe queue pair per CPU core</title>
+<desc>Four CPU cores in a row, each with its own submission queue and completion queue below it. Each core writes commands into its own submission queue, which the SSD fetches from; the SSD posts completions into each core's own completion queue and interrupts that same core. Because each core has its own queue pair, cores never wait on each other's locks.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<g class="f-violet" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5">
+<rect x="16" y="8" width="84" height="32" rx="6"/>
+<rect x="110" y="8" width="84" height="32" rx="6"/>
+<rect x="206" y="8" width="84" height="32" rx="6"/>
+<rect x="300" y="8" width="84" height="32" rx="6"/>
+</g>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle" font-weight="700">
+<text x="58" y="29">core 0</text>
+<text x="152" y="29">core 1</text>
+<text x="248" y="29">core 2</text>
+<text x="342" y="29">core 3</text>
+</g>
+<g class="f-cyan" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5">
+<rect x="16" y="64" width="40" height="28"/>
+<rect x="110" y="64" width="40" height="28"/>
+<rect x="206" y="64" width="40" height="28"/>
+<rect x="300" y="64" width="40" height="28"/>
+</g>
+<g class="f-green" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5">
+<rect x="60" y="64" width="40" height="28"/>
+<rect x="154" y="64" width="40" height="28"/>
+<rect x="250" y="64" width="40" height="28"/>
+<rect x="344" y="64" width="40" height="28"/>
+</g>
+<g class="f-ink" fill="#e8eeff" text-anchor="middle">
+<text x="36" y="83">SQ</text>
+<text x="80" y="83">CQ</text>
+<text x="130" y="83">SQ</text>
+<text x="174" y="83">CQ</text>
+<text x="226" y="83">SQ</text>
+<text x="270" y="83">CQ</text>
+<text x="320" y="83">SQ</text>
+<text x="364" y="83">CQ</text>
+</g>
+<g class="f-line" stroke="#7d86a3" stroke-width="1.5">
+<line x1="36" y1="40" x2="36" y2="62" marker-end="url(#arrow)"/>
+<line x1="80" y1="64" x2="80" y2="42" marker-end="url(#arrow)"/>
+<line x1="130" y1="40" x2="130" y2="62" marker-end="url(#arrow)"/>
+<line x1="174" y1="64" x2="174" y2="42" marker-end="url(#arrow)"/>
+<line x1="226" y1="40" x2="226" y2="62" marker-end="url(#arrow)"/>
+<line x1="270" y1="64" x2="270" y2="42" marker-end="url(#arrow)"/>
+<line x1="320" y1="40" x2="320" y2="62" marker-end="url(#arrow)"/>
+<line x1="364" y1="64" x2="364" y2="42" marker-end="url(#arrow)"/>
+<line x1="36" y1="92" x2="36" y2="120" marker-end="url(#arrow)"/>
+<line x1="80" y1="122" x2="80" y2="94" marker-end="url(#arrow)"/>
+<line x1="130" y1="92" x2="130" y2="120" marker-end="url(#arrow)"/>
+<line x1="174" y1="122" x2="174" y2="94" marker-end="url(#arrow)"/>
+<line x1="226" y1="92" x2="226" y2="120" marker-end="url(#arrow)"/>
+<line x1="270" y1="122" x2="270" y2="94" marker-end="url(#arrow)"/>
+<line x1="320" y1="92" x2="320" y2="120" marker-end="url(#arrow)"/>
+<line x1="364" y1="122" x2="364" y2="94" marker-end="url(#arrow)"/>
+</g>
+<rect class="f-amber" x="16" y="122" width="368" height="40" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text x="28" y="147"><tspan class="f-ink" font-weight="700" fill="#e8eeff">SSD</tspan><tspan class="f-ink" fill="#e8eeff"> · serves every queue pair</tspan></text>
+<text class="f-mute" x="16" y="188" fill="#a3abc4">each core has its own queue pair, so cores</text>
+<text class="f-mute" x="16" y="206" fill="#a3abc4">never wait on each other's locks</text>
+</svg>

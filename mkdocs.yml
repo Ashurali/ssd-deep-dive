@@ -133,6 +133,7 @@ nav:
       - supplements/e-aerospace-storage.md
       - supplements/f-security.md
       - supplements/g-firmware.md
+      - supplements/h-host-stack.md
   - Animations:
       - animations/index.md
       - animations/vt-playground.md

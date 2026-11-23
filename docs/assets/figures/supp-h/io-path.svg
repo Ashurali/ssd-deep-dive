@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 352" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>One read through the Linux storage stack</title>
+<desc>Six layers from top to bottom. The application, in user space, calls read() or submits an io_uring request. In the kernel, the virtual file system and the filesystem turn the file offset into logical block addresses; the block layer, blk-mq, puts the request on the current core's queue, merging and tagging it; the NVMe driver writes a submission queue entry and rings the drive's doorbell. The SSD fetches the command and moves the data by DMA. Completion comes back from the device to the kernel as a completion queue entry plus an MSI-X interrupt, or is found by polling; the driver completes the request and the application wakes.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-violet" x="16" y="8" width="368" height="44" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="27" font-weight="700" fill="#e8eeff">Application</text>
+<text class="f-mute" x="372" y="27" text-anchor="end" fill="#a3abc4">user space</text>
+<text class="f-ink" x="28" y="45" fill="#e8eeff">read() or an io_uring request</text>
+<line class="f-line" x1="40" y1="54" x2="40" y2="62" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="16" y="64" width="368" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="83" font-weight="700" fill="#e8eeff">VFS and filesystem</text>
+<text class="f-mute" x="372" y="83" text-anchor="end" fill="#a3abc4">kernel</text>
+<text class="f-ink" x="28" y="101" fill="#e8eeff">file offset → logical block addresses</text>
+<line class="f-line" x1="40" y1="110" x2="40" y2="118" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="16" y="120" width="368" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="139" font-weight="700" fill="#e8eeff">Block layer (blk-mq)</text>
+<text class="f-mute" x="372" y="139" text-anchor="end" fill="#a3abc4">kernel</text>
+<text class="f-ink" x="28" y="157" fill="#e8eeff">this core's queue; merges and tags it</text>
+<line class="f-line" x1="40" y1="166" x2="40" y2="174" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="16" y="176" width="368" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="195" font-weight="700" fill="#e8eeff">NVMe driver</text>
+<text class="f-mute" x="372" y="195" text-anchor="end" fill="#a3abc4">kernel</text>
+<text class="f-ink" x="28" y="213" fill="#e8eeff">writes a queue entry, rings the doorbell</text>
+<line class="f-line" x1="40" y1="222" x2="40" y2="230" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-amber" x="16" y="232" width="368" height="44" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="251" font-weight="700" fill="#e8eeff">SSD</text>
+<text class="f-mute" x="372" y="251" text-anchor="end" fill="#a3abc4">device</text>
+<text class="f-ink" x="28" y="269" fill="#e8eeff">fetches the command, moves data by DMA</text>
+<line class="f-line" x1="40" y1="278" x2="40" y2="286" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-green" x="16" y="288" width="368" height="44" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="307" font-weight="700" fill="#e8eeff">Completion</text>
+<text class="f-mute" x="372" y="307" text-anchor="end" fill="#a3abc4">device → kernel</text>
+<text class="f-ink" x="28" y="325" fill="#e8eeff">completion entry + interrupt, or a poll</text>
+<text class="f-mute" x="16" y="348" fill="#a3abc4">then the driver completes it and the application wakes</text>
+</svg>
