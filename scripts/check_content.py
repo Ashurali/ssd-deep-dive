@@ -36,7 +36,7 @@ PAGE_DIRS = ["core", "supplements"]
 
 PHONE_PX, WIDE_PX, MIN_PX = 343, 560, 11
 SVG_NS = "{http://www.w3.org/2000/svg}"
-ABBR_RE = re.compile(r"^\*\[(?P<abbr>[^\]]+)\]:\s*\S")
+ABBR_RE = re.compile(r"^\*\[(?P<abbr>[^\]]+)\]:\s*(?P<title>\S.*)$")
 FIG_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+\.svg)\)(\{[^}]*\})?")
 FENCE_RE = re.compile(r"^(\s*)(```|~~~).*?^\1\2", re.S | re.M)
 
@@ -56,8 +56,9 @@ def section(body: str, heading: str) -> str:
 
 
 # ---------------------------------------------------------------- global
-def check_abbreviations(errors: list[str]) -> dict[str, None]:
-    seen: dict[str, None] = {}
+def check_abbreviations(errors: list[str]) -> dict[str, str]:
+    """{acronym: expansion}; malformed or duplicate lines become errors."""
+    seen: dict[str, str] = {}
     for n, line in enumerate(ABBR_FILE.read_text(encoding="utf-8")
                              .splitlines(), 1):
         if not line.strip():
@@ -70,7 +71,7 @@ def check_abbreviations(errors: list[str]) -> dict[str, None]:
             errors.append(f"includes/abbreviations.md:{n}: duplicate "
                           f"{m['abbr']}")
         else:
-            seen[m["abbr"]] = None
+            seen[m["abbr"]] = m["title"]
     return seen
 
 
@@ -155,12 +156,27 @@ def check_answers(body: str) -> tuple[int, int]:
     return len(items), answered
 
 
-def unexpanded_acronyms(body: str, abbrs: dict[str, None]) -> list[str]:
+def _norm(s: str) -> str:
+    return re.sub(r"[\s\-–—/]+", " ", s.casefold())
+
+
+def unexpanded_acronyms(body: str, abbrs: dict[str, str]) -> list[str]:
+    """Acronyms whose first use in the prose isn't spelled out.
+
+    Headings and the "In this chapter" preview are skipped (the prose that
+    follows explains). An acronym counts as spelled out when it sits in
+    parentheses after its expansion, is followed by a parenthesised
+    expansion, or has its expansion within a sentence's reach.
+    """
     text = FENCE_RE.sub("", body)
+    text = re.sub(r"^!!! abstract[^\n]*\n(?:[ \t][^\n]*\n|\n)*", "", text,
+                  flags=re.M)
+    text = re.sub(r"^#{1,6} .*$", "", text, flags=re.M)
+    text = re.sub(r"^\s*\|.*$", "", text, flags=re.M)  # tables
+    text = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", text)  # images (alt text)
     text = re.sub(r"<[^>]+>|\]\([^)]*\)|[*`]", " ", text)
-    text = re.sub(r"^\|.*$", "", text, flags=re.M)  # tables
     missing = []
-    for acr in abbrs:
+    for acr, title in abbrs.items():
         if acr.endswith("s") and acr[:-1] in abbrs:
             continue
         m = re.search(r"(?<![\w-])" + re.escape(acr) + r"(?![\w-])", text)
@@ -169,6 +185,10 @@ def unexpanded_acronyms(body: str, abbrs: dict[str, None]) -> list[str]:
         before = text[max(0, m.start() - 1):m.start()]
         after = text[m.end():m.end() + 3]
         if before == "(" or re.match(r" \([A-Za-z]", after):
+            continue
+        expansion = _norm(title.split(" (")[0])
+        window = _norm(text[max(0, m.start() - 160):m.end() + 160])
+        if len(expansion) > 3 and expansion in window:
             continue
         missing.append(acr)
     return missing

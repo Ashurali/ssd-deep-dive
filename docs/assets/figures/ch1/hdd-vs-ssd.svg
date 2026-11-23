@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 352" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>An HDD and an SSD side by side</title>
+<desc>Top: a hard disk drive. Inside its case a magnetic platter spins on a spindle motor while an arm swings a read/write head across it, so reaching data takes milliseconds. Bottom: a solid-state drive. A circuit board carries a controller chip, four NAND flash packages, a DRAM chip and an edge connector; nothing moves, and data is reached in microseconds.</desc>
+<text x="12" y="20" font-size="14"><tspan class="f-ink" fill="#e8eeff" font-weight="700">HDD</tspan><tspan class="f-mute" fill="#a3abc4"> · a precision machine</tspan></text>
+<rect class="f-line f-panel" x="16" y="32" width="196" height="132" rx="10" fill="#111832" stroke="#7d86a3"/>
+<circle class="f-violet" cx="98" cy="98" r="56" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<circle class="f-faint" cx="98" cy="98" r="38" fill="none" stroke="#3a4260"/>
+<circle class="f-faint" cx="98" cy="98" r="22" fill="none" stroke="#3a4260"/>
+<circle class="f-ink" cx="98" cy="98" r="6" fill="#e8eeff"/>
+<line class="f-amber-l" x1="184" y1="148" x2="128" y2="80" stroke="#f2b13c" stroke-width="6" stroke-linecap="round"/>
+<circle class="f-amber" cx="184" cy="148" r="10" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<circle class="f-amber" cx="126" cy="78" r="5" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-violet" x="228" y="48" width="10" height="10" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="246" y="58" fill="#e8eeff">platters (the data)</text>
+<rect class="f-amber" x="228" y="74" width="10" height="10" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="246" y="84" fill="#e8eeff">arm + head</text>
+<circle class="f-ink" cx="233" cy="105" r="5" fill="#e8eeff"/>
+<text class="f-ink" x="246" y="110" fill="#e8eeff">spindle motor</text>
+<text class="f-mute" x="228" y="150" fill="#a3abc4">access ≈ milliseconds</text>
+<text x="12" y="196" font-size="14"><tspan class="f-ink" fill="#e8eeff" font-weight="700">SSD</tspan><tspan class="f-mute" fill="#a3abc4"> · nothing moves</tspan></text>
+<rect class="f-green" x="16" y="208" width="196" height="124" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<rect class="f-line" x="9" y="222" width="8" height="10" fill="none" stroke="#7d86a3"/>
+<rect class="f-line" x="9" y="239" width="8" height="10" fill="none" stroke="#7d86a3"/>
+<rect class="f-line" x="9" y="256" width="8" height="10" fill="none" stroke="#7d86a3"/>
+<rect class="f-line" x="9" y="273" width="8" height="10" fill="none" stroke="#7d86a3"/>
+<rect class="f-line" x="9" y="290" width="8" height="10" fill="none" stroke="#7d86a3"/>
+<rect class="f-line" x="9" y="307" width="8" height="10" fill="none" stroke="#7d86a3"/>
+<rect class="f-cyan" x="34" y="226" width="50" height="50" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="34" y="292" width="50" height="22" rx="3" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-violet" x="100" y="222" width="44" height="42" rx="3" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="154" y="222" width="44" height="42" rx="3" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="100" y="274" width="44" height="42" rx="3" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-violet" x="154" y="274" width="44" height="42" rx="3" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<rect class="f-cyan" x="228" y="230" width="10" height="10" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="246" y="240" fill="#e8eeff">controller (the brain)</text>
+<rect class="f-violet" x="228" y="256" width="10" height="10" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="246" y="266" fill="#e8eeff">NAND flash (the data)</text>
+<rect class="f-amber" x="228" y="282" width="10" height="10" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="246" y="292" fill="#e8eeff">DRAM cache</text>
+<rect class="f-line" x="228" y="308" width="10" height="10" fill="none" stroke="#7d86a3"/>
+<text class="f-ink" x="246" y="318" fill="#e8eeff">connector</text>
+<text class="f-mute" x="228" y="346" fill="#a3abc4">access ≈ microseconds</text>
+</svg>

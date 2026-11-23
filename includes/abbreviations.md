@@ -142,6 +142,7 @@
 *[NAT]: Node Address Table (F2FS)
 *[NCQ]: Native Command Queuing (SATA)
 *[NEPP]: NASA Electronic Parts and Packaging program
+*[NGFF]: Next Generation Form Factor (M.2's original name)
 *[NIC]: network interface card
 *[NICs]: network interface cards
 *[NQN]: NVMe Qualified Name
@@ -182,6 +183,7 @@
 *[RHBD]: radiation hardening by design
 *[RHBP]: radiation hardening by process
 *[RPMB]: Replay Protected Memory Block
+*[RRAM]: resistive RAM
 *[RTD3]: Runtime D3 (the device is powered off while the system keeps running)
 *[RTL]: register-transfer level (hardware design description)
 *[SAN]: storage area network
@@ -248,6 +250,7 @@
 *[XDP]: XtremIO Data Protection (its flash-optimized RAID)
 *[XOR]: exclusive OR
 *[YAFFS]: Yet Another Flash File System
+*[YMTC]: Yangtze Memory Technologies (China's NAND flash maker)
 *[ZNS]: Zoned Namespaces (NVMe)
 *[ZUFS]: Zoned UFS
 *[eMMC]: embedded MultiMediaCard

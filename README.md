@@ -69,7 +69,9 @@ What the figure shows, in a sentence or two.
 - The Meaning is one sentence that ends with a link to the section that
   explains the term: `→ [§4.3.2](#432-write-amplification)`.
 - The 中文 cell gives the book's term, plus the Taiwan industry term where
-  they differ, e.g. `閃存 / 快閃記憶體`.
+  they differ, as `閃存（台：快閃記憶體）`. The format uses full-width
+  parentheses and 台：, because the book's own cells already put "/" between
+  items (`隨機 / 順序`).
 - Spell a term the same way on every page, so the glossary merges it.
 
 **Check yourself.** Indent the answer under its question:

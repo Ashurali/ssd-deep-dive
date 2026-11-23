@@ -26,7 +26,7 @@ You asked for real fixes rather than workarounds. These decisions are made:
 |---|---|
 | Quiz answers | A hidden answer under every question (reverses the "no answer key" backlog rule) |
 | New topics | All four, as Supplements F, G, H, I |
-| 中文 terms | The book's term plus the Taiwan industry term where it differs (閃存 / 快閃記憶體) |
+| 中文 terms | The book's term plus the Taiwan industry term where it differs, written 閃存（台：快閃記憶體） |
 | Animations | Edited for phone layout and light mode. This relaxes the CLAUDE.md rule "never modify an animation", replacing the wrapper-only workaround. |
 
 **Outcome:**

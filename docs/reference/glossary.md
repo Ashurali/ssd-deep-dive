@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 457 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 459 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -130,7 +130,7 @@ Advanced eXtensible Interface (Arm on-chip high-speed bus)
 
 ### bad block management { #term-bad-block-management .sdd-term }
 
-**壞塊管理**  
+**壞塊管理（台：壞區塊管理）** — Finding flash blocks that have failed and retiring them in favour of spares. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### bandwidth { #term-bandwidth .sdd-term }
@@ -222,7 +222,7 @@ EXT4's fixed volume subdivision
 
 ### cache / buffer { #term-cache-buffer .sdd-term }
 
-**緩存**  
+**緩存（台：快取）** — Fast memory on the drive (DRAM or SRAM) that holds the map table and stages data in flight. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### cache register / page register { #term-cache-register-page-register .sdd-term }
@@ -232,7 +232,7 @@ EXT4's fixed volume subdivision
 
 ### capacity { #term-capacity .sdd-term }
 
-**容量**  
+**容量** — The user-visible size of the drive, quoted in decimal units (1 GB = 10⁹ bytes). → [§1.5.1](../core/ch1-overview.md#151-basic-information)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### cascade / scale-out { #term-cascade-scale-out .sdd-term }
@@ -332,7 +332,7 @@ data bits ÷ total bits
 
 ### compatibility { #term-compatibility .sdd-term }
 
-**兼容性**  
+**兼容性（台：相容性）** — Working correctly with every host, BIOS, OS and signal condition the drive meets. → [§1.5.6](../core/ch1-overview.md#156-system-compatibility)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### Completion Queue { #term-completion-queue .sdd-term }
@@ -357,7 +357,7 @@ data bits ÷ total bits
 
 ### consumer-grade / enterprise-grade { #term-consumer-grade-enterprise-grade .sdd-term }
 
-**消費級 / 企業級**  
+**消費級 / 企業級** — Drive classes that differ in endurance, QoS and power-loss protection, and in how their specs are quoted. → [§1.5.2](../core/ch1-overview.md#152-performance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### control gate / substrate { #term-control-gate-substrate .sdd-term }
@@ -571,7 +571,7 @@ predecessor; parallel, half-duplex, no queuing
 
 ### empty (fresh) drive / full drive { #term-empty-fresh-drive-full-drive .sdd-term }
 
-**空盤 / 滿盤**  
+**空盤 / 滿盤（台：空碟 / 滿碟）** — Performance measured fresh out of the box versus at steady state, after the drive has been filled. → [§1.5.2](../core/ch1-overview.md#152-performance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### enable signal / select signal { #term-enable-signal-select-signal .sdd-term }
@@ -596,7 +596,7 @@ predecessor; parallel, half-duplex, no queuing
 
 ### endurance / lifespan { #term-endurance-lifespan .sdd-term }
 
-**壽命**  
+**壽命** — How much data a drive can write before it wears out, stated as TBW or DWPD. → [§1.5.3](../core/ch1-overview.md#153-endurance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### endurance test { #term-endurance-test .sdd-term }
@@ -616,7 +616,7 @@ endpoint (a PCIe device at a leaf of the tree)
 
 ### erase / write (program) / read { #term-erase-write-program-read .sdd-term }
 
-**擦除 / 寫入(編程) / 讀取**  
+**擦除 / 寫入(編程) / 讀取（台：抹除 / 寫入 / 讀取）** — The three flash operations: erase works on whole blocks, program and read on pages. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### erase count (EC) { #term-erase-count-ec .sdd-term }
@@ -703,7 +703,7 @@ Flexible I/O tester (Linux benchmark tool)
 
 ### firmware { #term-firmware .sdd-term }
 
-**固件**  
+**固件（台：韌體）** — The code running on the controller: command handling, the FTL and error recovery. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### FIS (Frame Information Structure) { #term-fis-frame-information-structure .sdd-term }
@@ -713,7 +713,7 @@ Flexible I/O tester (Linux benchmark tool)
 
 ### flash chips (colloquial: "grains") { #term-flash-chips-colloquial-grains .sdd-term }
 
-**顆粒**  
+**顆粒** — Packaged NAND dies; 顆粒 is the industry's everyday word for them. → [§1.7](../core/ch1-overview.md#17-the-solid-state-storage-market)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### flash controller { #term-flash-controller .sdd-term }
@@ -723,7 +723,7 @@ Flexible I/O tester (Linux benchmark tool)
 
 ### flash memory (NAND) { #term-flash-memory-nand .sdd-term }
 
-**閃存** — NAND = NAND flash (cells strung in series, like a NOT-AND gate)  
+**閃存（台：快閃記憶體）；閃存** — Non-volatile semiconductor memory that stores bits as trapped charge and must be erased before it is rewritten. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### Flash Translation Layer (FTL) { #term-flash-translation-layer-ftl .sdd-term }
@@ -783,15 +783,10 @@ Force Unit Access (the write must reach non-volatile media before it completes)
 
 ## G { #letter-g }
 
-### garbage collection { #term-garbage-collection .sdd-term }
-
-**垃圾回收**  
-<small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
-
 ### garbage collection (GC) { #term-garbage-collection-gc .sdd-term }
 
-**垃圾回收** — GC = garbage collection  
-<small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
+**垃圾回收** — Copying the still-valid pages out of mostly-invalid blocks so those blocks can be erased and reused. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
+<small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### GCR { #term-gcr .sdd-term }
 
@@ -845,6 +840,11 @@ hash-to-physical table (XtremIO metadata)
 single read vs multiple-strobe read for LLRs  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
 
+### hard disk drive (HDD) { #term-hard-disk-drive-hdd .sdd-term }
+
+**機械硬盤（台：傳統硬碟）** — A drive that stores data magnetically on spinning platters, read by a moving head. → [§1.2](../core/ch1-overview.md#12-ssd-vs-hdd)  
+<small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
+
 ### hardware acceleration module { #term-hardware-acceleration-module .sdd-term }
 
 **硬件加速模塊**  
@@ -882,7 +882,7 @@ Host Memory Buffer (NVMe: the drive borrows host DRAM)
 
 ### hot / warm / cold data { #term-hot-warm-cold-data .sdd-term }
 
-**熱/溫/冷數據**  
+**熱/溫/冷數據（台：熱/溫/冷資料）** — Data classified by how often it is accessed, so it can be placed on the right storage tier. → [§1.7](../core/ch1-overview.md#17-the-solid-state-storage-market)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### hot-plug { #term-hot-plug .sdd-term }
@@ -934,7 +934,7 @@ fixed-size per-file metadata record (attrs + block pointers)
 
 ### interface / connector { #term-interface-connector .sdd-term }
 
-**接口**  
+**接口（台：介面）** — The physical and electrical link to the host: SATA, SAS or PCIe. → [§1.6](../core/ch1-overview.md#16-form-factors)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### interoperability test { #term-interoperability-test .sdd-term }
@@ -1005,7 +1005,7 @@ logical-to-physical mapping table (Ch4)
 
 ### latency / response time { #term-latency-response-time .sdd-term }
 
-**時延 / 響應時間**  
+**時延 / 響應時間（台：延遲 / 回應時間）** — The time from a command's arrival to its completion status. → [§1.5.2](../core/ch1-overview.md#152-performance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### layered structure { #term-layered-structure .sdd-term }
@@ -1102,7 +1102,7 @@ message authentication code (signs RPMB access)
 
 ### (main) controller { #term-main-controller .sdd-term }
 
-**主控**  
+**主控（台：主控晶片）；主控** — The processor chip that runs the firmware and manages the host interface, the flash and the data path. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### managed NAND { #term-managed-nand .sdd-term }
@@ -1117,7 +1117,7 @@ controller + flash + firmware in one package
 
 ### mapping table { #term-mapping-table .sdd-term }
 
-**映射表**  
+**映射表** — The FTL's table from each logical block address to the flash location holding its current data. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### MBR { #term-mbr .sdd-term }
@@ -1144,11 +1144,6 @@ microcontroller unit
 
 Minimum DEVSLP Assertion Time (SATA)  
 <small>From: the site-wide acronym list</small>
-
-### mechanical hard drive (HDD) { #term-mechanical-hard-drive-hdd .sdd-term }
-
-**機械硬盤** — HDD = hard disk drive  
-<small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### memory mapping { #term-memory-mapping .sdd-term }
 
@@ -1272,6 +1267,11 @@ Native Command Queuing (SATA)
 NASA Electronic Parts and Packaging program  
 <small>From: the site-wide acronym list</small>
 
+### NGFF { #term-ngff .sdd-term }
+
+Next Generation Form Factor (M.2's original name)  
+<small>From: the site-wide acronym list</small>
+
 ### NIC { #term-nic .sdd-term }
 
 network interface card  
@@ -1366,7 +1366,7 @@ EXT4 journaling modes
 
 ### original flash manufacturer (fab) { #term-original-flash-manufacturer-fab .sdd-term }
 
-**原廠**  
+**原廠** — A company that makes its own NAND flash, such as Samsung, SK hynix or Kioxia. → [§1.7](../core/ch1-overview.md#17-the-solid-state-storage-market)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### OS { #term-os .sdd-term }
@@ -1381,7 +1381,7 @@ operating system
 
 ### overwrite-in-place { #term-overwrite-in-place .sdd-term }
 
-**覆蓋寫**  
+**覆蓋寫（台：覆寫）** — Writing new data over old data at the same address, which flash cannot do. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ## P { #letter-p }
@@ -1498,12 +1498,12 @@ Power Management Event (device-initiated wake signal)
 
 ### power consumption { #term-power-consumption .sdd-term }
 
-**功耗**  
+**功耗** — The power a drive draws in each state, from active down to DevSleep. → [§1.5.5](../core/ch1-overview.md#155-power-thermals)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### power loss / power on { #term-power-loss-power-on .sdd-term }
 
-**掉電 / 上電**  
+**掉電 / 上電（台：斷電 / 通電）** — Losing or restoring supply power; an SSD must survive a sudden loss without corrupting its data. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### power-loss protection { #term-power-loss-protection .sdd-term }
@@ -1602,12 +1602,12 @@ random-access memory
 
 ### random / sequential { #term-random-sequential .sdd-term }
 
-**隨機 / 順序(連續)**  
+**隨機 / 順序(連續)（台：隨機 / 循序）** — Whether consecutive commands target scattered or contiguous logical addresses. → [§1.5.2](../core/ch1-overview.md#152-performance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### raw capacity / user capacity { #term-raw-capacity-user-capacity .sdd-term }
 
-**裸容量 / 用戶容量**  
+**裸容量 / 用戶容量（台：原始容量 / 使用者容量）** — All the flash on board versus the space the host can use; the difference is over-provisioning. → [§1.5.1](../core/ch1-overview.md#151-basic-information)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### raw-flash FS (JFFS2/UBIFS) { #term-raw-flash-fs-jffs2ubifs .sdd-term }
@@ -1687,7 +1687,7 @@ uniform vs varied row/column weights
 
 ### reliability { #term-reliability .sdd-term }
 
-**可靠性**  
+**可靠性（台：可靠度）** — How rarely a drive returns wrong data or fails, stated as UBER and MTBF. → [§1.5.4](../core/ch1-overview.md#154-data-reliability)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### remap table { #term-remap-table .sdd-term }
@@ -1749,6 +1749,11 @@ Rad-Hardening By Design / By Process
 
 Replay-Protected Memory Block (authenticated secure region)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
+### RRAM { #term-rram .sdd-term }
+
+resistive RAM  
+<small>From: the site-wide acronym list</small>
 
 ### RTD3 { #term-rtd3 .sdd-term }
 
@@ -1929,7 +1934,7 @@ Silicon-On-Insulator (latchup-resistant substrate)
 
 ### solid-state drive (SSD) { #term-solid-state-drive-ssd .sdd-term }
 
-**固態硬盤** — SSD = solid-state drive  
+**固態硬盤（台：固態硬碟）** — A storage device that keeps data as charge in flash chips, run by a controller, with no moving parts. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### source block / destination block { #term-source-block-destination-block .sdd-term }
@@ -1989,7 +1994,7 @@ host pins the drive to a power budget
 
 ### storage medium { #term-storage-medium .sdd-term }
 
-**介質**  
+**介質（台：儲存媒體）** — The physical material that holds the bits: magnetic platters, optical discs or flash cells. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### (storage) cell { #term-storage-cell .sdd-term }
@@ -2066,7 +2071,7 @@ Transmission Control Protocol
 
 ### throughput / bandwidth { #term-throughput-bandwidth .sdd-term }
 
-**吞吐量 / 帶寬**  
+**吞吐量 / 帶寬（台：吞吐量 / 頻寬）** — Data moved per second (MB/s), the measure of sequential transfers. → [§1.5.2](../core/ch1-overview.md#152-performance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
 ### TID { #term-tid .sdd-term }
@@ -2262,7 +2267,7 @@ workload-dependent preconditioning (SNIA)
 
 ### wear leveling { #term-wear-leveling .sdd-term }
 
-**磨損平衡**  
+**磨損平衡（台：平均抹寫）；磨損平衡** — Spreading erases evenly over all blocks so that none wears out early. → [§1.4](../core/ch1-overview.md#14-how-an-ssd-actually-works)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### Well-Known LU { #term-well-known-lu .sdd-term }
@@ -2297,7 +2302,7 @@ wear leveling
 
 ### write amplification (WA) { #term-write-amplification-wa .sdd-term }
 
-**寫放大** — WA = write amplification (flash writes ÷ host writes)  
+**寫放大（台：寫入放大）；寫放大** — Bytes the drive writes to flash divided by bytes the host asked it to write; garbage collection pushes it above 1. → [§1.5.3](../core/ch1-overview.md#153-endurance)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
 ### write buffer / buffer { #term-write-buffer-buffer .sdd-term }
@@ -2332,6 +2337,11 @@ XtremIO Data Protection (its flash-optimized RAID)
 ### YAFFS { #term-yaffs .sdd-term }
 
 Yet Another Flash File System  
+<small>From: the site-wide acronym list</small>
+
+### YMTC { #term-ymtc .sdd-term }
+
+Yangtze Memory Technologies (China's NAND flash maker)  
 <small>From: the site-wide acronym list</small>
 
 ## Z { #letter-z }
