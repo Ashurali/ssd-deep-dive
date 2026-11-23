@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 432" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>XtremIO's write path</title>
+<desc>An 8 KB host write at block address 1000 passes through XtremIO's three data modules. R, the routing module, splits it into two 4 KB blocks and hashes each one with SHA-1: block 1000 hashes to a3f and block 1001 to 77c. C, the control module, records each address and its hash in its A2H table. D, the data module, looks each hash up in its H2P table, which maps a hash to a place on an SSD and a reference count. Hash a3f is new, so D writes the block to SSD 3 with reference count 1. Hash 77c is already stored on SSD 7, so D only raises its reference count from 1 to 2 and writes nothing.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-line f-panel" x="16" y="8" width="368" height="32" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="200" y="29" text-anchor="middle" fill="#e8eeff">host writes 8 KB at block address 1000</text>
+<line class="f-line" x1="200" y1="40" x2="200" y2="59" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="16" y="62" width="368" height="76" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="83" font-weight="700" fill="#e8eeff">R · routing</text>
+<text class="f-ink" x="28" y="103" fill="#e8eeff">splits into 4 KB blocks</text>
+<text class="f-ink" x="28" y="122" fill="#e8eeff">and hashes each (SHA-1)</text>
+<rect class="f-line f-panel" x="228" y="72" width="144" height="26" rx="4" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="300" y="90" text-anchor="middle" fill="#e8eeff">1000 → a3f…</text>
+<rect class="f-line f-panel" x="228" y="104" width="144" height="26" rx="4" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="300" y="122" text-anchor="middle" fill="#e8eeff">1001 → 77c…</text>
+<line class="f-line" x1="200" y1="138" x2="200" y2="157" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-green" x="16" y="160" width="368" height="76" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="181" font-weight="700" fill="#e8eeff">C · control</text>
+<text class="f-ink" x="28" y="201" fill="#e8eeff">A2H table:</text>
+<text class="f-ink" x="28" y="220" fill="#e8eeff">address → hash</text>
+<rect class="f-line f-panel" x="228" y="170" width="144" height="56" rx="4" fill="#111832" stroke="#7d86a3"/>
+<line class="f-line" x1="228" y1="198" x2="372" y2="198" stroke="#7d86a3"/>
+<text class="f-ink" x="300" y="189" text-anchor="middle" fill="#e8eeff">1000 → a3f</text>
+<text class="f-ink" x="300" y="217" text-anchor="middle" fill="#e8eeff">1001 → 77c</text>
+<line class="f-line" x1="200" y1="236" x2="200" y2="255" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-violet" x="16" y="258" width="368" height="90" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="279" font-weight="700" fill="#e8eeff">D · data</text>
+<text class="f-ink" x="28" y="299" fill="#e8eeff">H2P table:</text>
+<text class="f-ink" x="28" y="318" fill="#e8eeff">hash → SSD place</text>
+<text class="f-ink" x="28" y="337" fill="#e8eeff">+ reference count</text>
+<rect class="f-line f-panel" x="200" y="268" width="172" height="70" rx="4" fill="#111832" stroke="#7d86a3"/>
+<line class="f-line" x1="200" y1="303" x2="372" y2="303" stroke="#7d86a3"/>
+<text class="f-ink" x="286" y="291" text-anchor="middle" fill="#e8eeff">a3f → SSD 3 · ref 1</text>
+<text class="f-ink" x="286" y="326" text-anchor="middle" fill="#e8eeff">77c → SSD 7 · ref 1→2</text>
+<line class="f-line" x1="108" y1="348" x2="108" y2="369" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="f-line" x1="296" y1="348" x2="296" y2="369" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect class="f-cyan" x="16" y="372" width="184" height="52" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="393" font-weight="700" fill="#e8eeff">a3f is new</text>
+<text class="f-ink" x="28" y="413" fill="#e8eeff">write 4 KB to SSD 3</text>
+<rect class="f-line f-panel f-dash" x="208" y="372" width="176" height="52" rx="8" fill="#111832" stroke="#7d86a3" stroke-dasharray="4 3"/>
+<text class="f-ink" x="220" y="393" font-weight="700" fill="#e8eeff">77c is a duplicate</text>
+<text class="f-ink" x="220" y="413" fill="#e8eeff">ref count +1, no write</text>
+</svg>

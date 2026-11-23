@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 390" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The board around the controller</title>
+<desc>A block diagram of an SSD's circuit board. The host connector (M.2, U.2 or EDSFF) brings supply power (3.3 V on M.2, 12 V on U.2 and EDSFF), four PCIe lanes with their reference clock, and the sideband signals PERST#, CLKREQ#, PEWAKE# and SMBus. Supply power goes to the PMIC, which makes the drive's power rails; on enterprise drives a bank of power-loss-protection capacitors holds the PMIC up when the supply fails. The rails feed every chip. The PCIe lanes and the sideband signals go to the controller, which reaches a boot NOR flash over SPI, a temperature sensor over I2C, DRAM over a DDR bus, and the NAND flash over four to eight channels.</desc>
+<defs><marker id="arrow-amber" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-amber-t" d="M0,0 L8,4 L0,8 z" fill="#f2b13c"/></marker></defs>
+<rect class="f-line f-panel" x="16" y="8" width="368" height="32" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="200" y="29" text-anchor="middle" fill="#e8eeff">host connector · M.2, U.2 or EDSFF</text>
+<line class="f-amber-l" x1="60" y1="40" x2="60" y2="81" stroke="#f2b13c" stroke-width="2.5" marker-end="url(#arrow-amber)"/>
+<text class="f-amber-t" x="68" y="66" fill="#f2b13c">3.3 V or 12 V</text>
+<rect class="f-amber" x="16" y="84" width="112" height="52" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="72" y="106" text-anchor="middle" font-weight="700" fill="#e8eeff">PMIC</text>
+<text class="f-ink" x="72" y="125" text-anchor="middle" fill="#e8eeff">makes the rails</text>
+<line class="f-amber-l" x1="72" y1="136" x2="72" y2="168" stroke="#f2b13c" stroke-width="2.5"/>
+<text class="f-amber-t" x="80" y="157" fill="#f2b13c">hold-up</text>
+<rect class="f-amber f-dash" x="16" y="168" width="112" height="52" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text class="f-ink" x="72" y="190" text-anchor="middle" font-weight="700" fill="#e8eeff">PLP capacitors</text>
+<text class="f-mute" x="72" y="209" text-anchor="middle" fill="#a3abc4">enterprise only</text>
+<path class="f-amber-l" d="M128,110 H146 V356 H358 V268 M146,182 H160 M146,312 H160" fill="none" stroke="#f2b13c" stroke-width="2.5"/>
+<text class="f-amber-t" x="252" y="378" text-anchor="middle" fill="#f2b13c">power rails feed every chip</text>
+<line class="f-cyan-l" x1="196" y1="40" x2="196" y2="118" stroke="#4dd0c4" stroke-width="4"/>
+<text class="f-cyan-t" x="206" y="63" fill="#4dd0c4">PCIe ×4</text>
+<text class="f-cyan-t" x="206" y="80" fill="#4dd0c4">+ REFCLK</text>
+<line class="f-violet-l f-dash" x1="280" y1="40" x2="280" y2="118" stroke="#a78bfa" stroke-width="2" stroke-dasharray="4 3"/>
+<text class="f-violet-t" x="290" y="54" fill="#a78bfa">PERST#</text>
+<text class="f-violet-t" x="290" y="71" fill="#a78bfa">CLKREQ#</text>
+<text class="f-violet-t" x="290" y="88" fill="#a78bfa">PEWAKE#</text>
+<text class="f-violet-t" x="290" y="105" fill="#a78bfa">SMBus</text>
+<rect class="f-cyan" x="160" y="118" width="140" height="132" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="230" y="176" text-anchor="middle" font-weight="700" fill="#e8eeff">controller</text>
+<text class="f-ink" x="230" y="195" text-anchor="middle" fill="#e8eeff">SoC</text>
+<text class="f-mute" x="230" y="214" text-anchor="middle" fill="#a3abc4">(§2.1)</text>
+<rect class="f-line f-panel" x="332" y="124" width="52" height="40" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="358" y="140" text-anchor="middle" fill="#e8eeff">boot</text>
+<text class="f-ink" x="358" y="157" text-anchor="middle" fill="#e8eeff">NOR</text>
+<line class="f-line" x1="300" y1="144" x2="332" y2="144" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="316" y="138" text-anchor="middle" fill="#a3abc4">SPI</text>
+<rect class="f-line f-panel" x="332" y="176" width="52" height="40" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="358" y="192" text-anchor="middle" fill="#e8eeff">temp</text>
+<text class="f-ink" x="358" y="209" text-anchor="middle" fill="#e8eeff">sensor</text>
+<line class="f-line" x1="300" y1="196" x2="332" y2="196" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="316" y="190" text-anchor="middle" fill="#a3abc4">I²C</text>
+<rect class="f-amber" x="332" y="228" width="52" height="40" rx="6" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="358" y="253" text-anchor="middle" font-weight="700" fill="#e8eeff">DRAM</text>
+<line class="f-line" x1="300" y1="242" x2="332" y2="242" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="316" y="236" text-anchor="middle" fill="#a3abc4">DDR</text>
+<path class="f-line" d="M184,250 V288 M212,250 V288 M248,250 V288 M276,250 V288" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<rect class="f-violet" x="160" y="288" width="140" height="48" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="230" y="308" text-anchor="middle" font-weight="700" fill="#e8eeff">NAND flash</text>
+<text class="f-ink" x="230" y="327" text-anchor="middle" fill="#e8eeff">4–8 channels</text>
+</svg>

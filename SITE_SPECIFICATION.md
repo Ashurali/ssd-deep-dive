@@ -103,7 +103,7 @@ Assignments:
 | Page | Tags |
 |---|---|
 | ch1 | ssd-basics, endurance, reliability, ssd form-factor topics as you see fit |
-| ch2 | controllers, all-flash-array, queues, ecc |
+| ch2 | controllers, all-flash-array, queues, ecc, pcie, power-management, power-loss-recovery |
 | ch3 | flash-physics, 3d-nand, charge-trap, threshold-voltage, reliability, read-disturb, data-retention, endurance, ecc, bics8 |
 | ch4 | ftl, mapping, garbage-collection, write-amplification, over-provisioning, trim, wear-leveling, power-loss-recovery, bad-blocks, slc-cache, zns, fdp |
 | ch5 | pcie, tlp, link-layer |

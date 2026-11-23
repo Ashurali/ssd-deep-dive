@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 456" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Inside a controller SoC</title>
+<desc>A block diagram of an SSD controller chip. The host link (PCIe, SATA or SAS) enters the front end, which holds the host PHY, command decoding, DMA engines and a crypto engine. A fast AXI bus joins the front end, the CPU cluster (Arm cores running the FTL firmware, with I-RAM for code and D-RAM for data), SRAM buffers, the DRAM controller and the back end. Slow peripherals, namely a PLL clock generator, a UART serial port, a JTAG debug port and a temperature sensor, sit on a separate APB bus bridged to the CPU cluster. The back end holds the ECC engine and the flash controller, which drives four channels to the NAND flash outside the chip. The DRAM controller drives an external DRAM chip that holds the map table.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<rect class="f-line f-panel" x="16" y="8" width="176" height="46" rx="6" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="104" y="27" text-anchor="middle" font-weight="700" fill="#e8eeff">Host</text>
+<text class="f-mute" x="104" y="45" text-anchor="middle" fill="#a3abc4">PCIe · SATA · SAS</text>
+<line class="f-line" x1="104" y1="57" x2="104" y2="101" stroke="#7d86a3" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<rect class="f-line" x="8" y="72" width="384" height="290" rx="12" fill="none" stroke="#7d86a3"/>
+<text class="f-mute" x="380" y="91" text-anchor="end" fill="#a3abc4">controller SoC (one chip)</text>
+<rect class="f-cyan" x="20" y="104" width="172" height="118" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="32" y="125" font-weight="700" fill="#e8eeff">Front end</text>
+<text class="f-ink" x="32" y="147" fill="#e8eeff">host PHY</text>
+<text class="f-ink" x="32" y="166" fill="#e8eeff">command decode</text>
+<text class="f-ink" x="32" y="185" fill="#e8eeff">DMA engines</text>
+<text class="f-ink" x="32" y="204" fill="#e8eeff">crypto engine</text>
+<rect class="f-line f-panel" x="206" y="100" width="40" height="24" rx="4" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-line f-panel" x="252" y="100" width="40" height="24" rx="4" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-line f-panel" x="298" y="100" width="40" height="24" rx="4" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-line f-panel" x="344" y="100" width="40" height="24" rx="4" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="226" y="117" text-anchor="middle" fill="#e8eeff">PLL</text>
+<text class="f-ink" x="272" y="117" text-anchor="middle" fill="#e8eeff">UART</text>
+<text class="f-ink" x="318" y="117" text-anchor="middle" fill="#e8eeff">JTAG</text>
+<text class="f-ink" x="364" y="117" text-anchor="middle" fill="#e8eeff">temp</text>
+<path class="f-line" d="M226,124 V138 M272,124 V138 M318,124 V138 M364,124 V138" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<line class="f-line" x1="226" y1="138" x2="364" y2="138" stroke="#7d86a3" stroke-width="3"/>
+<line class="f-line" x1="295" y1="138" x2="295" y2="158" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="287" y="154" text-anchor="end" fill="#a3abc4">APB · slow bus</text>
+<rect class="f-green" x="206" y="158" width="178" height="64" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="218" y="178" font-weight="700" fill="#e8eeff">CPU cluster</text>
+<text class="f-ink" x="218" y="197" fill="#e8eeff">Arm cores run the FTL</text>
+<text class="f-ink" x="218" y="215" fill="#e8eeff">I-RAM · D-RAM</text>
+<path class="f-line" d="M104,222 V247 M295,222 V247" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<line class="f-line" x1="20" y1="250" x2="384" y2="250" stroke="#7d86a3" stroke-width="6" stroke-linecap="round"/>
+<text class="f-mute" x="200" y="240" text-anchor="middle" fill="#a3abc4">AXI · fast data bus</text>
+<path class="f-line" d="M104,253 V278 M246,253 V278 M341,253 V278" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<rect class="f-cyan" x="20" y="278" width="172" height="68" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="32" y="298" font-weight="700" fill="#e8eeff">Back end</text>
+<text class="f-ink" x="32" y="317" fill="#e8eeff">ECC engine (LDPC)</text>
+<text class="f-ink" x="32" y="336" fill="#e8eeff">flash controller</text>
+<rect class="f-line f-panel" x="206" y="278" width="80" height="68" rx="8" fill="#111832" stroke="#7d86a3"/>
+<text class="f-ink" x="246" y="306" text-anchor="middle" font-weight="700" fill="#e8eeff">SRAM</text>
+<text class="f-ink" x="246" y="325" text-anchor="middle" fill="#e8eeff">buffers</text>
+<rect class="f-amber" x="298" y="278" width="86" height="68" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="341" y="306" text-anchor="middle" font-weight="700" fill="#e8eeff">DRAM</text>
+<text class="f-ink" x="341" y="325" text-anchor="middle" fill="#e8eeff">controller</text>
+<path class="f-line" d="M58,346 V398 M90,346 V398 M122,346 V398 M154,346 V398" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="164" y="382" fill="#a3abc4">channels</text>
+<rect class="f-violet" x="20" y="398" width="172" height="48" rx="6" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="106" y="418" text-anchor="middle" font-weight="700" fill="#e8eeff">NAND flash</text>
+<text class="f-ink" x="106" y="437" text-anchor="middle" fill="#e8eeff">many dies</text>
+<line class="f-line" x1="341" y1="346" x2="341" y2="398" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="349" y="380" fill="#a3abc4">DDR</text>
+<rect class="f-amber" x="298" y="398" width="86" height="48" rx="6" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="341" y="418" text-anchor="middle" font-weight="700" fill="#e8eeff">DRAM</text>
+<text class="f-ink" x="341" y="437" text-anchor="middle" fill="#e8eeff">map table</text>
+</svg>

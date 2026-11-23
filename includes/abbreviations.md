@@ -22,9 +22,11 @@
 *[BDF]: Bus/Device/Function number (a PCIe function's address)
 *[BGA]: ball grid array (a chip package soldered by balls underneath)
 *[BIOS]: Basic Input/Output System (PC boot firmware)
+*[BMC]: baseboard management controller (a server's management chip)
 *[BiCS]: Bit Cost Scalable (Kioxia / Western Digital 3D NAND architecture)
 *[BiCS8]: BiCS generation 8 (218-layer 3D NAND)
 *[CBA]: CMOS directly Bonded to Array (logic wafer bonded onto the cell-array wafer)
+*[CCTEMP]: Critical Composite Temperature Threshold (NVMe)
 *[CE]: Chip Enable (NAND pin that selects one die on a shared channel)
 *[CLE]: Command Latch Enable (NAND pin)
 *[CLKREQ]: clock request (PCIe sideband signal CLKREQ#)
@@ -86,11 +88,13 @@
 *[GEO]: geostationary orbit
 *[GF]: Galois field (finite field)
 *[GMR]: giant magnetoresistance (HDD read heads)
+*[GPIO]: general-purpose input/output (pins)
 *[GPU]: graphics processing unit
 *[GT]: gigatransfers (GT/s = billions of transfers per second)
 *[GUI]: graphical user interface
 *[H2P]: hash-to-physical table (XtremIO metadata)
 *[HBA]: host bus adapter
+*[HCTM]: Host Controlled Thermal Management (NVMe)
 *[HDD]: hard disk drive
 *[HDDs]: hard disk drives
 *[HIBERN8]: hibernate (UFS / UniPro deepest link low-power state)
@@ -102,11 +106,13 @@
 *[IPR]: independent plane read
 *[JEDEC]: JEDEC Solid State Technology Association (memory standards body)
 *[JFFS2]: Journalling Flash File System, version 2
+*[JTAG]: Joint Test Action Group (the standard chip debug and test port)
 *[KV]: key-value
 *[L2P]: logical-to-physical (address map)
 *[LBA]: logical block address
 *[LBAs]: logical block addresses
 *[LCRC]: link CRC (PCIe Data Link Layer checksum)
+*[LDO]: low-dropout regulator (a small linear voltage regulator)
 *[LDPC]: low-density parity-check code
 *[LEO]: low Earth orbit
 *[LET]: linear energy transfer (energy a particle deposits per unit of path)
@@ -150,8 +156,10 @@
 *[NS]: namespace (NVMe)
 *[NSID]: namespace identifier (NVMe)
 *[NSREC]: Nuclear and Space Radiation Effects Conference
+*[NUMA]: non-uniform memory access (each CPU has its own nearby memory)
 *[NVM]: non-volatile memory
 *[NVMe]: NVM Express (the SSD command protocol that runs over PCIe)
+*[NVMe-MI]: NVMe Management Interface (out-of-band drive management)
 *[NVMe-oF]: NVMe over Fabrics
 *[OLTP]: online transaction processing
 *[ONFI]: Open NAND Flash Interface
@@ -165,12 +173,16 @@
 *[PCIe]: PCI Express (Peripheral Component Interconnect Express)
 *[PCM]: phase-change memory
 *[PERST]: PCIe reset signal (PERST#)
+*[PEWAKE]: PCIe wake signal (PEWAKE#)
 *[PHY]: physical layer
 *[PI]: Protection Information (NVMe end-to-end data protection)
 *[PLC]: penta-level cell (5 bits per cell)
 *[PLL]: phase-locked loop (clock generator)
+*[PLP]: power-loss protection
 *[PME]: Power Management Event (PCIe)
+*[PMIC]: power management integrated circuit
 *[PRP]: Physical Region Page (NVMe data pointer)
+*[PWRDIS]: power disable (EDSFF sideband signal)
 *[QLC]: quad-level cell (4 bits per cell)
 *[QoS]: quality of service (how consistent latency is)
 *[RAID]: redundant array of independent disks
@@ -180,8 +192,10 @@
 *[RCB]: Read Completion Boundary (PCIe)
 *[RD]: read disturb
 *[RDMA]: remote direct memory access
+*[REFCLK]: reference clock (PCIe's 100 MHz clock)
 *[RHBD]: radiation hardening by design
 *[RHBP]: radiation hardening by process
+*[RPC]: remote procedure call
 *[RPMB]: Replay Protected Memory Block
 *[RRAM]: resistive RAM
 *[RTD3]: Runtime D3 (the device is powered off while the system keeps running)
@@ -191,6 +205,7 @@
 *[SATA]: Serial ATA
 *[SCSI]: Small Computer System Interface
 *[SDF]: Software-Defined Flash (Baidu)
+*[SDK]: software development kit
 *[SEB]: single-event burnout
 *[SEE]: single-event effect
 *[SEEs]: single-event effects
@@ -199,15 +214,19 @@
 *[SEL]: single-event latch-up
 *[SEU]: single-event upset
 *[SGL]: Scatter-Gather List (NVMe data pointer)
+*[SHA]: Secure Hash Algorithm
 *[SIT]: Segment Information Table (F2FS)
 *[SLC]: single-level cell (1 bit per cell)
 *[SMART]: Self-Monitoring, Analysis and Reporting Technology (drive health data)
+*[SMBus]: System Management Bus
 *[SMP]: symmetric multiprocessing (cores share the work)
 *[SNIA]: Storage Networking Industry Association
 *[SOI]: silicon on insulator
 *[SPDK]: Storage Performance Development Kit (user-space NVMe driver)
+*[SPI]: Serial Peripheral Interface
 *[SQ]: Submission Queue (NVMe)
 *[SQs]: Submission Queues (NVMe)
+*[SR-IOV]: single-root I/O virtualization (one PCIe device appears as many)
 *[SRAM]: static random-access memory
 *[SSA]: Segment Summary Area (F2FS)
 *[SSD]: solid-state drive
@@ -223,6 +242,7 @@
 *[TLPs]: Transaction Layer Packets (PCIe)
 *[TMR]: triple modular redundancy
 *[UAP]: UFS Application Layer
+*[UART]: universal asynchronous receiver-transmitter (serial port)
 *[UBER]: uncorrectable bit error rate (after ECC)
 *[UBIFS]: UBI File System (UBI = Unsorted Block Images)
 *[UCL]: upper confidence limit
@@ -232,6 +252,7 @@
 *[UNMAP]: the SCSI / UFS equivalent of Trim
 *[UPIU]: UFS Protocol Information Unit (UFS packet)
 *[UPIUs]: UFS Protocol Information Units (UFS packets)
+*[UPS]: uninterruptible power supply
 *[USB]: Universal Serial Bus
 *[UTP]: UFS Transport Protocol layer
 *[UniPro]: MIPI Unified Protocol (UFS link and transport layer)
@@ -244,6 +265,7 @@
 *[VPC]: valid page count
 *[WA]: write amplification (flash writes ÷ host writes)
 *[WAF]: write amplification factor
+*[WCTEMP]: Warning Composite Temperature Threshold (NVMe)
 *[WDPC]: workload-dependent preconditioning (SNIA)
 *[WIPC]: workload-independent preconditioning (SNIA)
 *[WL]: wear leveling
@@ -254,3 +276,4 @@
 *[ZNS]: Zoned Namespaces (NVMe)
 *[ZUFS]: Zoned UFS
 *[eMMC]: embedded MultiMediaCard
+*[iSCSI]: Internet SCSI (SCSI carried over IP networks)

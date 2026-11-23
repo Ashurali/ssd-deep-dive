@@ -1,8 +1,8 @@
 # Textbook v2 — the big fix (plan)
 
-> Status: **Phases 0–1 done (23 Nov 2026).** Each phase is committed and pushed on the
-> `textbook-v2` branch; merging that branch into `main` publishes the live site. Next: Phases 2–4,
-> which can run in parallel.
+> Status: **Phases 0–1 done; Phase 2 under way, with Ch 1 and Ch 2 done (23 Nov 2026).** Work is
+> committed and pushed on the `textbook-v2` branch; fast-forwarding `main` to it publishes the live
+> site (last published after the Ch 1 pilot). Next: the rest of Phase 2, then Phases 3 and 4.
 
 ## Context
 
@@ -163,7 +163,9 @@ What was planned:
 
 ## Phase 2 — Page passes (12 pages, one commit per page)
 
-Each page pass touches only that page and its figures folder. For every page:
+Each page pass touches only that page and its figures folder, plus the page's new acronyms in
+`includes/abbreviations.md`. The passes run one at a time, so the shared-file rule in "Order of
+work" matters only for parallel sessions. Done: Ch 1, Ch 2. For every page:
 
 1. Add figures from the table below, replacing every ASCII diagram.
 2. Expand acronyms at first use, and fix forward references (DMA in Ch 2, "interrupt", SMART and
@@ -282,8 +284,10 @@ Figs…" line moves into a provenance note.
 - **Animation gallery in search**: today the gallery page's cards form one section, so a search such
   as "doorbell" previews it at about 1,600 px. Give each card its own heading so each hit previews
   one card.
-- **Acronym list**: add the new pages' acronyms (OCP, CXL, PLP, PMIC, SPDM, …) to
-  `includes/abbreviations.md`.
+- **Acronym list**: add the new pages' acronyms (OCP, CXL, SPDM, …) to
+  `includes/abbreviations.md`. Ch 2's pass already added the board-level ones (PLP, PMIC, SMBus,
+  NVMe-MI and others).
+- **Formula sheet**: add the power-loss-protection energy rule from Ch 2 §2.8.3.
 
 ## Verification (at the end of every phase, and in full at the end)
 

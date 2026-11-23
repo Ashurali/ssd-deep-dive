@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 404" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>Channels and dies working in parallel</title>
+<desc>Two panels. Top: a flash controller drives four channels. Each channel is one shared bus with four dies attached. On every channel one die is on the bus, selected by its chip-enable line, two dies are busy programming and one is idle, so twelve operations are under way across the drive at once. Bottom: one channel over time. The bus sends a page to die 0, then to die 1, die 2 and die 3, back to back. Each die then programs for five times as long as its transfer took, while the bus serves the others. After the fourth transfer the bus sits idle until die 0 finishes, and then the second round begins.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-ink" d="M0,0 L8,4 L0,8 z" fill="#e8eeff"/></marker></defs>
+<text class="f-ink" x="16" y="20" font-weight="700" fill="#e8eeff">Four channels, four dies each</text>
+<rect class="f-cyan" x="16" y="30" width="368" height="34" rx="6" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="200" y="52" text-anchor="middle" fill="#e8eeff">flash controller (back end)</text>
+<path class="f-line" d="M30,64 V170 M122,64 V170 M214,64 V170 M306,64 V170 M30,98 H40 M30,122 H40 M30,146 H40 M30,170 H40 M122,98 H132 M122,122 H132 M122,146 H132 M122,170 H132 M214,98 H224 M214,122 H224 M214,146 H224 M214,170 H224 M306,98 H316 M306,122 H316 M306,146 H316 M306,170 H316" fill="none" stroke="#7d86a3" stroke-width="1.5"/>
+<text class="f-mute" x="36" y="80" fill="#a3abc4">ch 0</text>
+<text class="f-mute" x="128" y="80" fill="#a3abc4">ch 1</text>
+<text class="f-mute" x="220" y="80" fill="#a3abc4">ch 2</text>
+<text class="f-mute" x="312" y="80" fill="#a3abc4">ch 3</text>
+<rect class="f-amber" x="40" y="88" width="60" height="20" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="40" y="112" width="60" height="20" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="40" y="136" width="60" height="20" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-line f-panel" x="40" y="160" width="60" height="20" rx="4" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-cyan" x="132" y="88" width="60" height="20" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="132" y="112" width="60" height="20" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-line f-panel" x="132" y="136" width="60" height="20" rx="4" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-amber" x="132" y="160" width="60" height="20" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-amber" x="224" y="88" width="60" height="20" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-line f-panel" x="224" y="112" width="60" height="20" rx="4" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-cyan" x="224" y="136" width="60" height="20" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="224" y="160" width="60" height="20" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-line f-panel" x="316" y="88" width="60" height="20" rx="4" fill="#111832" stroke="#7d86a3"/>
+<rect class="f-amber" x="316" y="112" width="60" height="20" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-amber" x="316" y="136" width="60" height="20" rx="4" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="316" y="160" width="60" height="20" rx="4" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="70" y="103" text-anchor="middle" fill="#e8eeff">die 0</text>
+<text class="f-ink" x="70" y="127" text-anchor="middle" fill="#e8eeff">die 1</text>
+<text class="f-ink" x="70" y="151" text-anchor="middle" fill="#e8eeff">die 2</text>
+<text class="f-ink" x="70" y="175" text-anchor="middle" fill="#e8eeff">die 3</text>
+<text class="f-ink" x="162" y="103" text-anchor="middle" fill="#e8eeff">die 0</text>
+<text class="f-ink" x="162" y="127" text-anchor="middle" fill="#e8eeff">die 1</text>
+<text class="f-ink" x="162" y="151" text-anchor="middle" fill="#e8eeff">die 2</text>
+<text class="f-ink" x="162" y="175" text-anchor="middle" fill="#e8eeff">die 3</text>
+<text class="f-ink" x="254" y="103" text-anchor="middle" fill="#e8eeff">die 0</text>
+<text class="f-ink" x="254" y="127" text-anchor="middle" fill="#e8eeff">die 1</text>
+<text class="f-ink" x="254" y="151" text-anchor="middle" fill="#e8eeff">die 2</text>
+<text class="f-ink" x="254" y="175" text-anchor="middle" fill="#e8eeff">die 3</text>
+<text class="f-ink" x="346" y="103" text-anchor="middle" fill="#e8eeff">die 0</text>
+<text class="f-ink" x="346" y="127" text-anchor="middle" fill="#e8eeff">die 1</text>
+<text class="f-ink" x="346" y="151" text-anchor="middle" fill="#e8eeff">die 2</text>
+<text class="f-ink" x="346" y="175" text-anchor="middle" fill="#e8eeff">die 3</text>
+<rect class="f-cyan" x="16" y="196" width="14" height="14" rx="3" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-mute" x="36" y="208" fill="#a3abc4">on the bus (CE#)</text>
+<rect class="f-amber" x="150" y="196" width="14" height="14" rx="3" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-mute" x="170" y="208" fill="#a3abc4">programming</text>
+<rect class="f-line f-panel" x="262" y="196" width="14" height="14" rx="3" fill="#111832" stroke="#7d86a3"/>
+<text class="f-mute" x="282" y="208" fill="#a3abc4">idle</text>
+<line class="f-faint" x1="16" y1="224" x2="384" y2="224" stroke="#2a3150"/>
+<text class="f-ink" x="16" y="246" font-weight="700" fill="#e8eeff">One channel over time</text>
+<text class="f-mute" x="16" y="269" fill="#a3abc4">bus</text>
+<text class="f-mute" x="16" y="293" fill="#a3abc4">die 0</text>
+<text class="f-mute" x="16" y="317" fill="#a3abc4">die 1</text>
+<text class="f-mute" x="16" y="341" fill="#a3abc4">die 2</text>
+<text class="f-mute" x="16" y="365" fill="#a3abc4">die 3</text>
+<rect class="f-cyan" x="70" y="256" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-cyan" x="98" y="256" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-cyan" x="126" y="256" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-cyan" x="154" y="256" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-line f-dash" x="182" y="256" width="55" height="16" fill="none" stroke="#7d86a3" stroke-dasharray="4 3"/>
+<rect class="f-cyan" x="238" y="256" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-cyan" x="266" y="256" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-cyan" x="294" y="256" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-cyan" x="322" y="256" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="83.5" y="269" text-anchor="middle" fill="#e8eeff">0</text>
+<text class="f-ink" x="111.5" y="269" text-anchor="middle" fill="#e8eeff">1</text>
+<text class="f-ink" x="139.5" y="269" text-anchor="middle" fill="#e8eeff">2</text>
+<text class="f-ink" x="167.5" y="269" text-anchor="middle" fill="#e8eeff">3</text>
+<text class="f-mute" x="209.5" y="269" text-anchor="middle" fill="#a3abc4">idle</text>
+<text class="f-ink" x="251.5" y="269" text-anchor="middle" fill="#e8eeff">0</text>
+<text class="f-ink" x="279.5" y="269" text-anchor="middle" fill="#e8eeff">1</text>
+<text class="f-ink" x="307.5" y="269" text-anchor="middle" fill="#e8eeff">2</text>
+<text class="f-ink" x="335.5" y="269" text-anchor="middle" fill="#e8eeff">3</text>
+<rect class="f-cyan" x="70" y="280" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="98" y="280" width="139" height="16" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="238" y="280" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="266" y="280" width="118" height="16" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="167.5" y="293" text-anchor="middle" fill="#e8eeff">programming</text>
+<rect class="f-cyan" x="98" y="304" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="126" y="304" width="139" height="16" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="266" y="304" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="294" y="304" width="90" height="16" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="126" y="328" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="154" y="328" width="139" height="16" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="294" y="328" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="322" y="328" width="62" height="16" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="154" y="352" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="182" y="352" width="139" height="16" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<rect class="f-cyan" x="322" y="352" width="27" height="16" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<rect class="f-amber" x="350" y="352" width="34" height="16" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<line class="f-line" x1="70" y1="380" x2="377" y2="380" stroke="#7d86a3" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="f-mute" x="384" y="397" text-anchor="end" fill="#a3abc4">time</text>
+</svg>

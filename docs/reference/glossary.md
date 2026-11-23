@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 459 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 483 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -68,7 +68,7 @@ Address Latch Enable (NAND pin)
 
 ### all-flash array (AFA) { #term-all-flash-array-afa .sdd-term }
 
-**全閃存陣列** — AFA = all-flash array  
+**全閃存陣列（台：全快閃陣列）** — An enterprise storage system built only from SSDs, with software designed around flash. → [§2.6](../core/ch2-controllers-afa.md#26-all-flash-arrays-afa)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### ALPM { #term-alpm .sdd-term }
@@ -208,6 +208,16 @@ free/used tracking in EXT4
 EXT4's fixed volume subdivision  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
+### BMC { #term-bmc .sdd-term }
+
+baseboard management controller (a server's management chip)  
+<small>From: the site-wide acronym list</small>
+
+### boot ROM / bootloader { #term-boot-rom-bootloader .sdd-term }
+
+**啟動ROM / 引導程序（台：開機ROM / 開機載入程式）** — The fixed first code in the controller's silicon, and the next stage it loads from flash. → [§2.8.4](../core/ch2-controllers-afa.md#284-boot-rom-first-then-flash)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
 ### boundary-value test { #term-boundary-value-test .sdd-term }
 
 **邊界值測試**  
@@ -237,12 +247,17 @@ EXT4's fixed volume subdivision
 
 ### cascade / scale-out { #term-cascade-scale-out .sdd-term }
 
-**級聯**  
+**級聯（台：串接）** — Growing one system by adding units (X-Bricks), so capacity and performance rise together. → [§2.6.2](../core/ch2-controllers-afa.md#262-hardware-architecture)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### CBA { #term-cba .sdd-term }
 
 CMOS directly Bonded to Array (logic wafer bonded onto the cell-array wafer)  
+<small>From: the site-wide acronym list</small>
+
+### CCTEMP { #term-cctemp .sdd-term }
+
+Critical Composite Temperature Threshold (NVMe)  
 <small>From: the site-wide acronym list</small>
 
 ### CE { #term-ce .sdd-term }
@@ -262,7 +277,7 @@ Configuration Write request (PCIe TLP)
 
 ### channel { #term-channel .sdd-term }
 
-**通道；溝道**  
+**通道；溝道** — One shared bus from the flash controller to a group of dies; separate channels work in parallel. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### charge leakage { #term-charge-leakage .sdd-term }
@@ -322,7 +337,7 @@ data bits ÷ total bits
 
 ### command decode/parsing { #term-command-decodeparsing .sdd-term }
 
-**命令解析**  
+**命令解析（台：指令解析）** — Turning a host command into what the FTL needs: read or write, start address, length and flags. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### command set { #term-command-set .sdd-term }
@@ -342,7 +357,12 @@ data bits ÷ total bits
 
 ### compression { #term-compression .sdd-term }
 
-**壓縮**  
+**壓縮** — Encoding data in fewer bytes before it is stored. → [§2.6.3](../core/ch2-controllers-afa.md#263-software-architecture-the-real-value)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
+### computational storage { #term-computational-storage .sdd-term }
+
+**帶計算功能的存儲（台：運算型儲存）** — Putting processing, such as an FPGA, inside the drive so that only results travel to the host. → [§2.7](../core/ch2-controllers-afa.md#27-computational-storage-ssds-that-compute)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### configuration space { #term-configuration-space .sdd-term }
@@ -414,7 +434,7 @@ PCIe **device** power states (software-controlled)
 
 ### DAE (disk array enclosure) { #term-dae-disk-array-enclosure .sdd-term }
 
-**磁盤陣列存儲柜** — DAE = disk array enclosure  
+**磁盤陣列存儲櫃（台：磁碟陣列機箱）** — The shelf of drives in an array, cabled to both storage controllers. → [§2.6.1](../core/ch2-controllers-afa.md#261-the-anatomy)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### Data Link Layer { #term-data-link-layer .sdd-term }
@@ -439,7 +459,7 @@ PCIe **device** power states (software-controlled)
 
 ### deduplication { #term-deduplication .sdd-term }
 
-**去重**  
+**去重（台：重複資料刪除）** — Storing identical blocks once and pointing every copy at the single stored block. → [§2.6.3](../core/ch2-controllers-afa.md#263-software-architecture-the-real-value)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### delayed allocation { #term-delayed-allocation .sdd-term }
@@ -472,6 +492,11 @@ SATA deep-sleep pin (Ch1/Ch7)
 **差分信號**  
 <small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
+### direct memory access (DMA) { #term-direct-memory-access-dma .sdd-term }
+
+**直接內存訪問（台：直接記憶體存取）** — Hardware that copies data between memory and a device without a processor moving each byte. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
 ### discovery service { #term-discovery-service .sdd-term }
 
 **發現服務**  
@@ -480,11 +505,6 @@ SATA deep-sleep pin (Ch1/Ch7)
 ### DLLP { #term-dllp .sdd-term }
 
 Data Link Layer Packet (PCIe)  
-<small>From: the site-wide acronym list</small>
-
-### DMA { #term-dma .sdd-term }
-
-direct memory access (a device copies data to or from memory without the CPU)  
 <small>From: the site-wide acronym list</small>
 
 ### DMAC { #term-dmac .sdd-term }
@@ -576,12 +596,12 @@ predecessor; parallel, half-duplex, no queuing
 
 ### enable signal / select signal { #term-enable-signal-select-signal .sdd-term }
 
-**使能信號 / 選通信號**  
+**使能信號 / 選通信號（台：致能訊號 / 選通訊號）** — Control pins such as chip enable (CE#), which picks the die that listens on a shared channel. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### encode / decode { #term-encode-decode .sdd-term }
 
-**編碼 / 解碼**  
+**編碼 / 解碼** — Adding ECC parity to data on its way into flash, and using it to find and fix errors on the way out. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### end-to-end data protection { #term-end-to-end-data-protection .sdd-term }
@@ -624,11 +644,6 @@ endpoint (a PCIe device at a leaf of the tree)
 **擦除次數** — EC = erase count  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
-### error correction (ECC) { #term-error-correction-ecc .sdd-term }
-
-**糾錯** — ECC = error-correcting code  
-<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
-
 ### error handling { #term-error-handling .sdd-term }
 
 **錯誤處理**  
@@ -636,8 +651,8 @@ endpoint (a PCIe device at a leaf of the tree)
 
 ### error-correcting code (ECC) { #term-error-correcting-code-ecc .sdd-term }
 
-**糾錯碼**  
-<small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
+**糾錯碼（台：錯誤更正碼）；糾錯碼** — Redundant bits stored with the data that let the controller detect and correct bit errors; SSDs use the BCH and LDPC families. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
 ### error-locator polynomial { #term-error-locator-polynomial .sdd-term }
 
@@ -708,7 +723,7 @@ Flexible I/O tester (Linux benchmark tool)
 
 ### FIS (Frame Information Structure) { #term-fis-frame-information-structure .sdd-term }
 
-**幀信息結構** — FIS = Frame Information Structure (SATA packet)  
+**幀信息結構（台：訊框資訊結構）** — SATA's packet: commands, DMA setup, data and status all travel as FISes. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### flash chips (colloquial: "grains") { #term-flash-chips-colloquial-grains .sdd-term }
@@ -718,7 +733,7 @@ Flexible I/O tester (Linux benchmark tool)
 
 ### flash controller { #term-flash-controller .sdd-term }
 
-**閃存控制器**  
+**閃存控制器（台：快閃記憶體控制器）** — The back-end block that issues ONFI or Toggle commands to the NAND and moves data over the channels. → [§2.1.3](../core/ch2-controllers-afa.md#213-back-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### flash memory (NAND) { #term-flash-memory-nand .sdd-term }
@@ -743,7 +758,7 @@ flow control unit (PCIe 6.0's fixed-size transfer unit)
 
 ### flow control { #term-flow-control .sdd-term }
 
-**流控；流量控制 / 流控**  
+**流控（台：流量控制）；流量控制 / 流控** — A receiver holding off a sender until it has room, as an SSD does by withholding SATA's DMA Setup FIS. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### FLR { #term-flr .sdd-term }
@@ -773,7 +788,7 @@ field-programmable gate array
 
 ### front end / back end { #term-front-end-back-end .sdd-term }
 
-**前端 / 后端**  
+**前端 / 後端** — The controller's host-facing half (protocol, command decode, DMA) and its flash-facing half (ECC, flash interface). → [§2.1](../core/ch2-controllers-afa.md#21-ssd-system-architecture)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### FUA { #term-fua .sdd-term }
@@ -806,6 +821,11 @@ binary field; `+` is XOR
 ### GMR { #term-gmr .sdd-term }
 
 giant magnetoresistance (HDD read heads)  
+<small>From: the site-wide acronym list</small>
+
+### GPIO { #term-gpio .sdd-term }
+
+general-purpose input/output (pins)  
 <small>From: the site-wide acronym list</small>
 
 ### GPU { #term-gpu .sdd-term }
@@ -847,12 +867,17 @@ single read vs multiple-strobe read for LLRs
 
 ### hardware acceleration module { #term-hardware-acceleration-module .sdd-term }
 
-**硬件加速模塊**  
+**硬件加速模塊（台：硬體加速模組）** — Logic that runs a hot firmware path, such as map lookups, in hardware so the processor is free for other work. → [§2.3](../core/ch2-controllers-afa.md#23-case-study-silicongo-sg9081-anatomy-of-a-fast-sata-controller)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### HBA { #term-hba .sdd-term }
 
 host bus adapter  
+<small>From: the site-wide acronym list</small>
+
+### HCTM { #term-hctm .sdd-term }
+
+Host Controlled Thermal Management (NVMe)  
 <small>From: the site-wide acronym list</small>
 
 ### head / tail { #term-head-tail .sdd-term }
@@ -872,7 +897,7 @@ Host Memory Buffer (NVMe: the drive borrows host DRAM)
 
 ### host interface { #term-host-interface .sdd-term }
 
-**主機接口**  
+**主機接口（台：主機介面）** — The link to the computer and the protocol spoken over it: SATA, SAS, or PCIe with NVMe. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### host-based / device-based { #term-host-based-device-based .sdd-term }
@@ -962,6 +987,11 @@ input/output operations per second
 independent plane read  
 <small>From: the site-wide acronym list</small>
 
+### iSCSI { #term-iscsi .sdd-term }
+
+Internet SCSI (SCSI carried over IP networks)  
+<small>From: the site-wide acronym list</small>
+
 ## J { #letter-j }
 
 ### JEDEC { #term-jedec .sdd-term }
@@ -973,6 +1003,11 @@ JEDEC Solid State Technology Association (memory standards body)
 
 write intentions durably before applying (crash consistency)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
+
+### JTAG { #term-jtag .sdd-term }
+
+Joint Test Action Group (the standard chip debug and test port)  
+<small>From: the site-wide acronym list</small>
 
 ## K { #letter-k }
 
@@ -1016,6 +1051,11 @@ logical-to-physical mapping table (Ch4)
 ### LCRC { #term-lcrc .sdd-term }
 
 link CRC (PCIe Data Link Layer checksum)  
+<small>From: the site-wide acronym list</small>
+
+### LDO { #term-ldo .sdd-term }
+
+low-dropout regulator (a small linear voltage regulator)  
 <small>From: the site-wide acronym list</small>
 
 ### LDPC { #term-ldpc .sdd-term }
@@ -1102,7 +1142,7 @@ message authentication code (signs RPMB access)
 
 ### (main) controller { #term-main-controller .sdd-term }
 
-**主控（台：主控晶片）；主控** — The processor chip that runs the firmware and manages the host interface, the flash and the data path. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is)  
+**主控（台：主控晶片）** — The processor chip that runs the firmware and manages the host interface, the flash and the data path. → [§1.1](../core/ch1-overview.md#11-the-hook-what-an-ssd-is); The SoC that runs the firmware and moves data between the host interface and the flash. → [§2.1](../core/ch2-controllers-afa.md#21-ssd-system-architecture)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary) · [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### managed NAND { #term-managed-nand .sdd-term }
@@ -1152,7 +1192,7 @@ Minimum DEVSLP Assertion Time (SATA)
 
 ### metadata { #term-metadata .sdd-term }
 
-**元數據**  
+**元數據（台：中繼資料）；元數據** — Data about data, such as XtremIO's address-to-hash and hash-to-physical tables. → [§2.6.4](../core/ch2-controllers-afa.md#264-workflow-how-io-actually-flows)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary) · [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
 
 ### min-sum { #term-min-sum .sdd-term }
@@ -1172,7 +1212,7 @@ consortium behind mobile interface specs
 
 ### mirroring { #term-mirroring .sdd-term }
 
-**鏡像**  
+**鏡像** — Keeping two copies of the data, so either can serve it if the other fails. → [§2.6.3](../core/ch2-controllers-afa.md#263-software-architecture-the-real-value)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### MLC { #term-mlc .sdd-term }
@@ -1317,6 +1357,11 @@ namespace identifier (NVMe)
 Nuclear and Space Radiation Effects Conference  
 <small>From: the site-wide acronym list</small>
 
+### NUMA { #term-numa .sdd-term }
+
+non-uniform memory access (each CPU has its own nearby memory)  
+<small>From: the site-wide acronym list</small>
+
 ### NVM { #term-nvm .sdd-term }
 
 non-volatile memory  
@@ -1331,6 +1376,11 @@ NVM Express (the SSD command protocol that runs over PCIe)
 
 up to 32 controller power states in Identify data  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
+
+### NVMe-MI { #term-nvme-mi .sdd-term }
+
+NVMe Management Interface (out-of-band drive management)  
+<small>From: the site-wide acronym list</small>
 
 ### NVMe-oF { #term-nvme-of .sdd-term }
 
@@ -1373,6 +1423,11 @@ EXT4 journaling modes
 
 operating system  
 <small>From: the site-wide acronym list</small>
+
+### out-of-band management { #term-out-of-band-management .sdd-term }
+
+**帶外管理（台：頻外管理）** — Monitoring and controlling a device over a separate path, such as SMBus, that works without the host operating system. → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### over-provisioning (OP) { #term-over-provisioning-op .sdd-term }
 
@@ -1446,6 +1501,11 @@ PCI Express (Peripheral Component Interconnect Express)
 PCIe reset signal (PERST#)  
 <small>From: the site-wide acronym list</small>
 
+### PEWAKE { #term-pewake .sdd-term }
+
+PCIe wake signal (PEWAKE#)  
+<small>From: the site-wide acronym list</small>
+
 ### Phase Tag { #term-phase-tag .sdd-term }
 
 **相位標籤**  
@@ -1458,7 +1518,7 @@ PCIe reset signal (PERST#)
 
 ### PHY / physical layer { #term-phy-physical-layer .sdd-term }
 
-**物理層** — PHY = physical layer  
+**物理層（台：實體層）** — The circuitry that sends and receives the raw serial bit stream on the link. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### Physical Layer { #term-physical-layer .sdd-term }
@@ -1506,9 +1566,14 @@ Power Management Event (device-initiated wake signal)
 **掉電 / 上電（台：斷電 / 通電）** — Losing or restoring supply power; an SSD must survive a sudden loss without corrupting its data. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
 
-### power-loss protection { #term-power-loss-protection .sdd-term }
+### power management IC (PMIC) { #term-power-management-ic-pmic .sdd-term }
 
-**掉電保護**  
+**電源管理芯片（台：電源管理晶片）** — The chip that turns the supply voltage into the board's rails and brings them up in the right order. → [§2.8.1](../core/ch2-controllers-afa.md#281-power-the-pmic-and-its-rails)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
+### power-loss protection (PLP) { #term-power-loss-protection-plp .sdd-term }
+
+**掉電保護（台：斷電保護）** — Capacitors and firmware that keep a drive running long enough to save its buffered data when power fails. → [§2.8.3](../core/ch2-controllers-afa.md#283-power-loss-protection-capacitors-that-buy-milliseconds)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### power-loss recovery { #term-power-loss-recovery .sdd-term }
@@ -1550,6 +1615,11 @@ deeper state = less power but slower wake (the core principle)
 
 **擦除 (預處理)**  
 <small>From: [Ch 7 — SSD Testing](../core/ch7-testing.md#key-vocabulary)</small>
+
+### PWRDIS { #term-pwrdis .sdd-term }
+
+power disable (EDSFF sideband signal)  
+<small>From: the site-wide acronym list</small>
 
 ## Q { #letter-q }
 
@@ -1662,12 +1732,17 @@ extra bits added to enable correction
 
 ### redundancy / parity check { #term-redundancy-parity-check .sdd-term }
 
-**冗余校驗**  
+**冗餘校驗（台：冗餘檢查）** — Extra data, such as parity across dies or a CRC on a data path, that lets the controller detect or rebuild damaged data. → [§2.5](../core/ch2-controllers-afa.md#25-case-study-dera-tai-an-enterprise-nvme-asic)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
+### reference clock (REFCLK) { #term-reference-clock-refclk .sdd-term }
+
+**參考時鐘（台：參考時脈）** — The 100 MHz clock the host sends alongside the PCIe lanes. → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### reference count { #term-reference-count .sdd-term }
 
-**引用數**  
+**引用數（台：參照計數）** — How many logical addresses point at one stored block; a duplicate write raises it instead of writing data. → [§2.6.4](../core/ch2-controllers-afa.md#264-workflow-how-io-actually-flows)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### Reference Tag { #term-reference-tag .sdd-term }
@@ -1737,13 +1812,18 @@ Rad-Hardening By Design / By Process
 
 ### routing module { #term-routing-module .sdd-term }
 
-**路由模塊**  
+**路由模塊（台：路由模組）** — XtremIO's R module: it owns the host ports, splits IO into 4 KB blocks and hashes each one. → [§2.6.4](../core/ch2-controllers-afa.md#264-workflow-how-io-actually-flows)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### row address / column address { #term-row-address-column-address .sdd-term }
 
 **行地址 / 列地址**  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
+
+### RPC { #term-rpc .sdd-term }
+
+remote procedure call  
+<small>From: the site-wide acronym list</small>
 
 ### RPMB { #term-rpmb .sdd-term }
 
@@ -1812,6 +1892,11 @@ Serial ATA
 Small Computer System Interface  
 <small>From: the site-wide acronym list</small>
 
+### SDK { #term-sdk .sdd-term }
+
+software development kit  
+<small>From: the site-wide acronym list</small>
+
 ### SEE { #term-see .sdd-term }
 
 Single Event Effect — single-particle-strike disruption  
@@ -1867,6 +1952,11 @@ Single Event Transient — voltage glitch
 Single Event Upset — soft bit flip (≈ Ch3 bit error)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
+### SHA { #term-sha .sdd-term }
+
+Secure Hash Algorithm  
+<small>From: the site-wide acronym list</small>
+
 ### shadow copy { #term-shadow-copy .sdd-term }
 
 two-copy scheme; one always valid  
@@ -1874,8 +1964,8 @@ two-copy scheme; one always valid
 
 ### sideband signal { #term-sideband-signal .sdd-term }
 
-**邊帶信號**  
-<small>From: [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
+**邊帶信號（台：邊帶訊號）；邊帶信號** — A slow single-purpose wire beside the data lanes, such as PERST# (reset) or CLKREQ# (clock request). → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary) · [Ch 5 — PCIe](../core/ch5-pcie.md#key-vocabulary)</small>
 
 ### simulation / emulation { #term-simulation-emulation .sdd-term }
 
@@ -1904,7 +1994,7 @@ Self-Monitoring, Analysis and Reporting Technology (drive health data)
 
 ### SMP / AMP { #term-smp-amp .sdd-term }
 
-**對稱/非對稱多處理** — AMP = asymmetric multiprocessing (each CPU core has a fixed role); SMP = symmetric multiprocessing (cores share the work)  
+**對稱/非對稱多處理** — Cores sharing one code image and one memory (symmetric) versus each core running its own code from its own memory (asymmetric). → [§2.1.2](../core/ch2-controllers-afa.md#212-controller-cpu-cpu)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### snapshot / checkpoint { #term-snapshot-checkpoint .sdd-term }
@@ -1915,11 +2005,6 @@ Self-Monitoring, Analysis and Reporting Technology (drive health data)
 ### SNIA { #term-snia .sdd-term }
 
 Storage Networking Industry Association  
-<small>From: the site-wide acronym list</small>
-
-### SoC { #term-soc .sdd-term }
-
-system on chip  
 <small>From: the site-wide acronym list</small>
 
 ### software-defined flash (SDF) { #term-software-defined-flash-sdf .sdd-term }
@@ -1957,6 +2042,16 @@ Storage Performance Development Kit (user-space NVMe driver)
 Solar Particle Event (flare/CME particle burst)  
 <small>From: [Supp E — Aerospace Storage](../supplements/e-aerospace-storage.md#key-vocabulary)</small>
 
+### SPI { #term-spi .sdd-term }
+
+Serial Peripheral Interface  
+<small>From: the site-wide acronym list</small>
+
+### SR-IOV { #term-sr-iov .sdd-term }
+
+single-root I/O virtualization (one PCIe device appears as many)  
+<small>From: the site-wide acronym list</small>
+
 ### SRAM { #term-sram .sdd-term }
 
 static random-access memory  
@@ -1989,7 +2084,7 @@ host pins the drive to a power budget
 
 ### storage controller { #term-storage-controller .sdd-term }
 
-**存儲控制器**  
+**存儲控制器（台：儲存控制器）** — In an array, the server that runs the storage software and connects the hosts to the drives. → [§2.6.1](../core/ch2-controllers-afa.md#261-the-anatomy)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### storage medium { #term-storage-medium .sdd-term }
@@ -2026,6 +2121,16 @@ filesystem-wide metadata
 
 depends only on the error; = 0 if no error  
 <small>From: [Supp A — ECC Coding Theory](../supplements/a-ecc-coding-theory.md#key-vocabulary)</small>
+
+### System Management Bus (SMBus) { #term-system-management-bus-smbus .sdd-term }
+
+**系統管理總線（台：系統管理匯流排）** — A two-wire management bus on the connector, used to monitor drives through NVMe-MI. → [§2.8.6](../core/ch2-controllers-afa.md#286-sideband-signals-reset-clock-wake-and-management)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
+### system on chip (SoC) { #term-system-on-chip-soc .sdd-term }
+
+**片上系統（台：系統單晶片）** — One chip holding processor cores, memory, buses and hardware engines: a complete small computer. → [§2.1](../core/ch2-controllers-afa.md#21-ssd-system-architecture)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### systematic form { #term-systematic-form .sdd-term }
 
@@ -2124,6 +2229,11 @@ Triple Modular Redundancy (triplicate + vote)
 **隧道氧化層**  
 <small>From: [Ch 3 — NAND Flash](../core/ch3-nand-flash.md#key-vocabulary)</small>
 
+### turnkey solution { #term-turnkey-solution .sdd-term }
+
+**交鑰匙方案（台：統包方案）** — A controller sold with firmware, a reference board and flash pairing, so a small brand can ship a drive quickly. → [§2.2.3](../core/ch2-controllers-afa.md#223-taiwanese-mainland-chinese-controllers)  
+<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
+
 ### two-level mapping (L2P) { #term-two-level-mapping-l2p .sdd-term }
 
 **二級映射**  
@@ -2134,6 +2244,11 @@ Triple Modular Redundancy (triplicate + vote)
 ### UAP { #term-uap .sdd-term }
 
 UFS Application Layer  
+<small>From: the site-wide acronym list</small>
+
+### UART { #term-uart .sdd-term }
+
+universal asynchronous receiver-transmitter (serial port)  
 <small>From: the site-wide acronym list</small>
 
 ### UCL { #term-ucl .sdd-term }
@@ -2158,7 +2273,7 @@ UFS Interconnect (UniPro + M-PHY)
 
 ### unified / normalized (design) { #term-unified-normalized-design .sdd-term }
 
-**歸一化**  
+**歸一化** — One controller design serving both enterprise and consumer drives, with the firmware making the difference. → [§2.4](../core/ch2-controllers-afa.md#24-case-study-one-controller-for-enterprise-and-consumer)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### UniPro { #term-unipro .sdd-term }
@@ -2175,6 +2290,11 @@ the SCSI / UFS equivalent of Trim
 
 UFS Protocol Information Unit (the packet)  
 <small>From: [Supp B — UFS](../supplements/b-ufs.md#key-vocabulary)</small>
+
+### UPS { #term-ups .sdd-term }
+
+uninterruptible power supply  
+<small>From: the site-wide acronym list</small>
 
 ### upscreening { #term-upscreening .sdd-term }
 
@@ -2193,7 +2313,7 @@ Universal Serial Bus
 
 ### user space / kernel space { #term-user-space-kernel-space .sdd-term }
 
-**用戶態 / 內核態**  
+**用戶態 / 內核態（台：使用者空間 / 核心空間）** — Where ordinary programs run versus where the operating-system kernel runs; XtremIO runs in user space. → [§2.6.3](../core/ch2-controllers-afa.md#263-software-architecture-the-real-value)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### UTP { #term-utp .sdd-term }
@@ -2260,6 +2380,11 @@ write amplification factor
 LFS cascade of pointer updates; solved by NAT  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
+### WCTEMP { #term-wctemp .sdd-term }
+
+Warning Composite Temperature Threshold (NVMe)  
+<small>From: the site-wide acronym list</small>
+
 ### WDPC { #term-wdpc .sdd-term }
 
 workload-dependent preconditioning (SNIA)  
@@ -2279,11 +2404,6 @@ special LUs: Boot, RPMB, Device, Report
 
 workload-independent preconditioning (SNIA)  
 <small>From: the site-wide acronym list</small>
-
-### with computation capability { #term-with-computation-capability .sdd-term }
-
-**帶計算功能**  
-<small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### WL { #term-wl .sdd-term }
 
@@ -2307,7 +2427,7 @@ wear leveling
 
 ### write buffer / buffer { #term-write-buffer-buffer .sdd-term }
 
-**寫緩存 / 緩沖**  
+**寫緩存 / 緩衝（台：寫入快取 / 緩衝區）** — RAM where incoming write data waits before it is programmed into flash. → [§2.1.1](../core/ch2-controllers-afa.md#211-front-end)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
 ### write saturation test { #term-write-saturation-test .sdd-term }
