@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 268" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>The five layers of SSD power management</title>
+<desc>Five stacked layers, each with its own states and its own driver. Host system power: S0 working, S3 sleep, S4 hibernate, S5 off, driven by the operating system through ACPI. Device power: D0 on, D3hot, and D3cold with main power off, driven by software. Link power: L0, L0s, L1, L1.1, L1.2 and L2 or L3, entered autonomously by hardware through ASPM. NVMe power: PS0 to PS31, operational states and then sleep states, entered by the controller's firmware through APST. Sideband pins: CLKREQ# on PCIe and DEVSLP on SATA, which trigger the deepest states.</desc>
+<rect class="f-violet" x="16" y="8" width="368" height="44" rx="8" fill="#a78bfa" fill-opacity=".22" stroke="#a78bfa" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="27" font-weight="700" fill="#e8eeff">Host system</text>
+<text class="f-mute" x="372" y="27" text-anchor="end" fill="#a3abc4">the OS, via ACPI</text>
+<text class="f-ink" x="28" y="45" fill="#e8eeff">S0 working → S3 sleep → S4 hibernate → S5 off</text>
+<rect class="f-cyan" x="16" y="60" width="368" height="44" rx="8" fill="#4dd0c4" fill-opacity=".22" stroke="#4dd0c4" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="79" font-weight="700" fill="#e8eeff">Device</text>
+<text class="f-mute" x="372" y="79" text-anchor="end" fill="#a3abc4">software</text>
+<text class="f-ink" x="28" y="97" fill="#e8eeff">D0 on → D3hot → D3cold (main power off)</text>
+<rect class="f-amber" x="16" y="112" width="368" height="44" rx="8" fill="#f2b13c" fill-opacity=".22" stroke="#f2b13c" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="131" font-weight="700" fill="#e8eeff">Link · ASPM</text>
+<text class="f-mute" x="372" y="131" text-anchor="end" fill="#a3abc4">hardware, on its own</text>
+<text class="f-ink" x="28" y="149" fill="#e8eeff">L0 → L0s → L1 → L1.1 → L1.2 → L2 / L3</text>
+<rect class="f-green" x="16" y="164" width="368" height="44" rx="8" fill="#7ee2a8" fill-opacity=".22" stroke="#7ee2a8" stroke-width="1.5"/>
+<text class="f-ink" x="28" y="183" font-weight="700" fill="#e8eeff">NVMe controller · APST</text>
+<text class="f-mute" x="372" y="183" text-anchor="end" fill="#a3abc4">firmware</text>
+<text class="f-ink" x="28" y="201" fill="#e8eeff">PS0 … PS31: working states, then sleep states</text>
+<rect class="f-red f-dash" x="16" y="216" width="368" height="44" rx="8" fill="#ff7b72" fill-opacity=".22" stroke="#ff7b72" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text class="f-ink" x="28" y="235" font-weight="700" fill="#e8eeff">Sideband pins</text>
+<text class="f-mute" x="372" y="235" text-anchor="end" fill="#a3abc4">deepest-state trigger</text>
+<text class="f-ink" x="28" y="253" fill="#e8eeff">CLKREQ# on PCIe · DEVSLP on SATA</text>
+</svg>

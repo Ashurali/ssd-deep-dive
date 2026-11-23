@@ -8,7 +8,7 @@ hide:
 
 # Master glossary
 
-Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 488 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
+Every term from the Key-vocabulary tables of all 12 chapters and supplements, plus every acronym the site uses: 489 entries, merged and alphabetized. Each entry gives the 中文 term, a short meaning where one exists, and a link to the page it comes from. Tap any acronym on any page to jump here.
 
 **Jump to:** [0–9](#letter-digits) · [A](#letter-a) · [B](#letter-b) · [C](#letter-c) · [D](#letter-d) · [E](#letter-e) · [F](#letter-f) · [G](#letter-g) · [H](#letter-h) · [I](#letter-i) · [J](#letter-j) · [K](#letter-k) · [L](#letter-l) · [M](#letter-m) · [N](#letter-n) · [O](#letter-o) · [P](#letter-p) · [Q](#letter-q) · [R](#letter-r) · [S](#letter-s) · [T](#letter-t) · [U](#letter-u) · [V](#letter-v) · [W](#letter-w) · [X](#letter-x) · [Y](#letter-y) · [Z](#letter-z)
 
@@ -36,9 +36,14 @@ acknowledgment
 Advanced Configuration and Power Interface (OS power-management standard)  
 <small>From: the site-wide acronym list</small>
 
-### ACTP { #term-actp .sdd-term }
+### Active Power (ACTP) { #term-active-power-actp .sdd-term }
 
-Active Power (avg over 10-second window)  
+**活動功耗（台：作用中功率）** — NVMe's largest average power over a 10-second window. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
+<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
+
+### Active State Power Management (ASPM) { #term-active-state-power-management-aspm .sdd-term }
+
+**活動狀態電源管理（台：主動狀態電源管理）** — Hardware that drops an idle link into L0s or L1 by itself, with no driver involved. → [§D.1](../supplements/d-power-management.md#d1-pcie-link-power-states-aspm)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### addressing { #term-addressing .sdd-term }
@@ -50,6 +55,11 @@ Active Power (avg over 10-second window)
 
 **管理命令（台：管理指令）** — A command that manages the drive (creating queues, Identify, features) rather than moving data. → [§6.2](../core/ch6-nvme.md#62-nvme-overview-the-command-model)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
+
+### Aggressive Link Power Management (ALPM) { #term-aggressive-link-power-management-alpm .sdd-term }
+
+**積極鏈路電源管理（台：積極鏈結電源管理）** — SATA's ladder of link power states. → [§D.4](../supplements/d-power-management.md#d4-sata-power-management-consolidated)  
+<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### AHCI { #term-ahci .sdd-term }
 
@@ -66,11 +76,6 @@ Address Latch Enable (NAND pin)
 **全閃存陣列（台：全快閃陣列）** — An enterprise storage system built only from SSDs, with software designed around flash. → [§2.6](../core/ch2-controllers-afa.md#26-all-flash-arrays-afa)  
 <small>From: [Ch 2 — Controllers & AFA](../core/ch2-controllers-afa.md#key-vocabulary)</small>
 
-### ALPM { #term-alpm .sdd-term }
-
-Aggressive Link Power Management (SATA)  
-<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
-
 ### amorphous / crystalline state { #term-amorphous-crystalline-state .sdd-term }
 
 **無定形態 / 晶體態（台：非晶態 / 結晶態）** — PCM's high-resistance (disordered) and low-resistance (ordered) states. → [§3.1.7](../core/ch3-nand-flash.md#317-3d-xpoint-and-the-emerging-memory-zoo)  
@@ -86,20 +91,10 @@ Advanced Peripheral Bus (Arm on-chip bus for slow peripherals)
 application programming interface  
 <small>From: the site-wide acronym list</small>
 
-### APST { #term-apst .sdd-term }
-
-Autonomous Power State Transition (controller self-idles at NVMe layer)  
-<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
-
 ### ASIC { #term-asic .sdd-term }
 
 application-specific integrated circuit  
 <small>From: the site-wide acronym list</small>
-
-### ASPM { #term-aspm .sdd-term }
-
-Active State Power Management (hardware-autonomous link idling)  
-<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### ATA { #term-ata .sdd-term }
 
@@ -110,6 +105,11 @@ AT Attachment (the disk command set behind SATA)
 
 **原子操作** — An operation that completes entirely or not at all, as shared-namespace access must. → [§6.7](../core/ch6-nvme.md#67-namespaces)  
 <small>From: [Ch 6 — NVMe](../core/ch6-nvme.md#key-vocabulary)</small>
+
+### Autonomous Power State Transition (APST) { #term-autonomous-power-state-transition-apst .sdd-term }
+
+**自主電源狀態轉換（台：自動電源狀態轉換）** — The NVMe controller descending into sleep states by itself after idle times the host set. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
+<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### AXI { #term-axi .sdd-term }
 
@@ -310,9 +310,9 @@ Command Latch Enable (NAND pin)
 **清理** — F2FS's garbage collection, choosing victims greedily or by cost-benefit. → [§C.2.2](../supplements/c-flash-file-systems.md#c22-the-four-algorithms)  
 <small>From: [Supp C — Flash File Systems](../supplements/c-flash-file-systems.md#key-vocabulary)</small>
 
-### CLKREQ# { #term-clkreq .sdd-term }
+### clock request (CLKREQ#) { #term-clock-request-clkreq .sdd-term }
 
-PCIe sideband pin gating deep link states (≈ SATA DEVSLP)  
+**時鐘請求信號（台：時脈請求訊號）** — The PCIe sideband pin that gates the deep link states, like SATA's DEVSLP. → [§D.1](../supplements/d-power-management.md#d1-pcie-link-power-states-aspm)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### CMOS { #term-cmos .sdd-term }
@@ -434,7 +434,7 @@ Catastrophic SEE (the destructive subset)
 
 ### D0 / D1 / D2 / D3hot / D3cold { #term-d0-d1-d2-d3hot-d3cold .sdd-term }
 
-PCIe **device** power states (software-controlled)  
+**設備電源狀態（台：裝置電源狀態）** — The PCIe device power states, set by software. → [§D.2](../supplements/d-power-management.md#d2-pcie-device-power-states)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### DAE (disk array enclosure) { #term-dae-disk-array-enclosure .sdd-term }
@@ -492,9 +492,9 @@ PCIe **device** power states (software-controlled)
 DevSleep Exit Timeout (SATA)  
 <small>From: the site-wide acronym list</small>
 
-### DEVSLP { #term-devslp .sdd-term }
+### Device Sleep signal (DEVSLP) { #term-device-sleep-signal-devslp .sdd-term }
 
-SATA deep-sleep pin (Ch1/Ch7)  
+**設備睡眠信號（台：裝置睡眠訊號）** — The SATA pin that puts the drive into DevSleep. → [§D.4](../supplements/d-power-management.md#d4-sata-power-management-consolidated)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### differential signaling { #term-differential-signaling .sdd-term }
@@ -564,7 +564,7 @@ drive writes per day (endurance rating)
 
 ### dynamic power management { #term-dynamic-power-management .sdd-term }
 
-host changes power state on the fly  
+**動態電源管理** — The host changes the power state on the fly to follow the workload. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ## E { #letter-e }
@@ -1040,12 +1040,17 @@ key-value
 
 ### L0 / L0s / L1 / L2 / L3 { #term-l0-l0s-l1-l2-l3 .sdd-term }
 
-PCIe **link** power states (active → off)  
+**鏈路電源狀態（台：鏈結電源狀態）** — The PCIe link power states, from fully active to off. → [§D.1](../supplements/d-power-management.md#d1-pcie-link-power-states-aspm)  
+<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
+
+### L0p { #term-l0p .sdd-term }
+
+**L0p部分通道狀態** — PCIe 6.0's Flit-mode state that switches some lanes off while traffic keeps flowing. → [§D.1](../supplements/d-power-management.md#d1-pcie-link-power-states-aspm)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### L1.1 / L1.2 { #term-l11-l12 .sdd-term }
 
-L1 substates (partial / full link shutdown)  
+**L1子狀態** — The L1 substates: partial and near-complete link shutdown. → [§D.1](../supplements/d-power-management.md#d1-pcie-link-power-states-aspm)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### lane { #term-lane .sdd-term }
@@ -1247,7 +1252,7 @@ multi-level cell (2 bits per cell)
 
 ### Modern Standby { #term-modern-standby .sdd-term }
 
-instant-on always-connected standby (needs RTD3)  
+**新式待機（台：新式待命）** — Windows' instant-on, always-connected standby, which relies on RTD3. → [§D.6](../supplements/d-power-management.md#d6-practical-realities)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### MOSFET { #term-mosfet .sdd-term }
@@ -1257,7 +1262,7 @@ metal–oxide–semiconductor field-effect transistor
 
 ### MP / ENLAT / EXLAT { #term-mp-enlat-exlat .sdd-term }
 
-Max Power / entry latency / exit latency (state descriptor)  
+**最大功耗 / 進入延遲 / 退出延遲（台：最大功率 / 進入延遲 / 離開延遲）** — A power-state descriptor's maximum power, entry latency and exit latency. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### MRAM { #term-mram .sdd-term }
@@ -1399,7 +1404,7 @@ NVM Express (the SSD command protocol that runs over PCIe)
 
 ### NVMe power state (PS0–PS31) { #term-nvme-power-state-ps0ps31 .sdd-term }
 
-up to 32 controller power states in Identify data  
+**NVMe電源狀態** — Up to 32 controller power states, described in the Identify data. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### NVMe-MI { #term-nvme-mi .sdd-term }
@@ -1429,9 +1434,9 @@ Open NAND Flash Interface
 out-of-band (SATA link signaling)  
 <small>From: the site-wide acronym list</small>
 
-### operational / non-operational { #term-operational-non-operational .sdd-term }
+### operational / non-operational state { #term-operational-non-operational-state .sdd-term }
 
-NVMe states that can / cannot process I/O  
+**可操作 / 不可操作狀態（台：運作 / 非運作狀態）** — NVMe states that can process I/O, versus pure sleep states that can't. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### ordered / writeback / journal mode { #term-ordered-writeback-journal-mode .sdd-term }
@@ -1488,7 +1493,7 @@ physical-to-logical (reverse map)
 
 ### Partial / Slumber / DevSleep { #term-partial-slumber-devsleep .sdd-term }
 
-SATA link low-power states (≈ L0s / L1 / L1.2+RTD3)  
+**部分 / 休眠 / 設備睡眠（台：部分 / 休眠 / 裝置睡眠）** — SATA's low-power states, roughly L0s, L1, and L1.2 plus RTD3. → [§D.4](../supplements/d-power-management.md#d4-sata-power-management-consolidated)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### payload { #term-payload .sdd-term }
@@ -1571,11 +1576,6 @@ penta-level cell (5 bits per cell)
 phase-locked loop (clock generator)  
 <small>From: the site-wide acronym list</small>
 
-### PME { #term-pme .sdd-term }
-
-Power Management Event (device-initiated wake signal)  
-<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
-
 ### point-to-point { #term-point-to-point .sdd-term }
 
 **點到點（台：點對點）** — Each link connects exactly two devices and its bandwidth is theirs alone. → [§5.2](../core/ch5-pcie.md#52-topology-the-tree)  
@@ -1590,6 +1590,11 @@ Power Management Event (device-initiated wake signal)
 
 **掉電 / 上電（台：斷電 / 通電）** — Losing or restoring supply power; an SSD must survive a sudden loss without corrupting its data. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 1 — SSD Overview](../core/ch1-overview.md#key-vocabulary)</small>
+
+### Power Management Event (PME) { #term-power-management-event-pme .sdd-term }
+
+**電源管理事件** — A wake request that the device sends to the host. → [§D.2](../supplements/d-power-management.md#d2-pcie-device-power-states)  
+<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### power management IC (PMIC) { #term-power-management-ic-pmic .sdd-term }
 
@@ -1606,9 +1611,9 @@ Power Management Event (device-initiated wake signal)
 **掉電恢復（台：斷電復原）** — Rebuilding a consistent map and drive state after the power is cut without warning. → [§4.6](../core/ch4-ftl.md#46-power-loss-recovery)  
 <small>From: [Ch 4 — FTL](../core/ch4-ftl.md#key-vocabulary)</small>
 
-### power-vs-latency tradeoff { #term-power-vs-latency-tradeoff .sdd-term }
+### power-vs-latency trade-off { #term-power-vs-latency-trade-off .sdd-term }
 
-deeper state = less power but slower wake (the core principle)  
+**功耗與延遲的權衡（台：功耗與延遲的取捨）** — Deeper states draw less power but take longer to wake: the principle behind every state. → [§D.1](../supplements/d-power-management.md#d1-pcie-link-power-states-aspm)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### preconditioning { #term-preconditioning .sdd-term }
@@ -1860,14 +1865,9 @@ remote procedure call
 resistive RAM  
 <small>From: the site-wide acronym list</small>
 
-### RTD3 { #term-rtd3 .sdd-term }
+### RTD3 resume latency (RTD3R) { #term-rtd3-resume-latency-rtd3r .sdd-term }
 
-Runtime D3 — remove main power at runtime for near-zero idle  
-<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
-
-### RTD3R { #term-rtd3r .sdd-term }
-
-RTD3 resume latency (≤100 ms target for Modern Standby)  
+**RTD3恢復延遲（台：RTD3回復延遲）** — How long the drive takes to come back from RTD3; Modern Standby wants 100 ms or less. → [§D.2](../supplements/d-power-management.md#d2-pcie-device-power-states)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### RTL { #term-rtl .sdd-term }
@@ -1875,11 +1875,16 @@ RTD3 resume latency (≤100 ms target for Modern Standby)
 register-transfer level (hardware design description)  
 <small>From: the site-wide acronym list</small>
 
+### Runtime D3 (RTD3) { #term-runtime-d3-rtd3 .sdd-term }
+
+**運行時D3（台：執行階段D3）** — Putting the device into D3cold while the system keeps running, for near-zero idle power. → [§D.2](../supplements/d-power-management.md#d2-pcie-device-power-states)  
+<small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
+
 ## S { #letter-s }
 
 ### S0–S5 { #term-s0s5 .sdd-term }
 
-host ACPI system power states (working → off)  
+**系統電源狀態** — The host's ACPI system power states, from working to soft-off. → [§D.5](../supplements/d-power-management.md#d5-host-system-power-states)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### sample size { #term-sample-size .sdd-term }
@@ -2099,7 +2104,7 @@ Solid State Recorder / Mass Memory Unit (spacecraft storage)
 
 ### static power management { #term-static-power-management .sdd-term }
 
-host pins the drive to a power budget  
+**靜態電源管理** — The host pins the drive to one state that fits a power budget. → [§D.3](../supplements/d-power-management.md#d3-nvme-power-states-apst)  
 <small>From: [Supp D — Power Management](../supplements/d-power-management.md#key-vocabulary)</small>
 
 ### steady state { #term-steady-state .sdd-term }

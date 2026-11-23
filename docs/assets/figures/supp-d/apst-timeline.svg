@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 236" font-family="IBM Plex Sans, sans-serif" font-size="13">
+<title>An idle period under APST and ASPM</title>
+<desc>Two timelines over the same idle period, not to scale. Controller, under APST: busy while I/O runs; when I/O stops it idles in PS0, and after idle time T1 it drops to the non-operational state PS3, then after T2 to the deeper PS4; when I/O arrives it pays an exit latency to climb back to busy. Link, under ASPM: it drops from L0 to L1.2 soon after I/O stops, well before the controller descends, and returns to L0 quickly when I/O arrives.</desc>
+<line class="f-line f-dash" x1="110" y1="28" x2="110" y2="212" stroke="#7d86a3" stroke-width="1.2" stroke-dasharray="4 3"/>
+<line class="f-line f-dash" x1="300" y1="28" x2="300" y2="212" stroke="#7d86a3" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text class="f-ink" x="16" y="16" font-weight="700" fill="#e8eeff">Controller · APST</text>
+<g class="f-mute" fill="#a3abc4">
+<text x="16" y="44">busy</text>
+<text x="16" y="74">idle</text>
+<text x="16" y="109">PS3</text>
+<text x="16" y="126">PS4</text>
+</g>
+<path class="f-green-l" d="M60,40 H110 V70 H170 V105 H230 V122 H300 L316,40 H388" fill="none" stroke="#7ee2a8" stroke-width="2"/>
+<path class="f-line" d="M110,136 V142 H170 V136 M170,136 V142 H230 V136" fill="none" stroke="#7d86a3" stroke-width="1.2"/>
+<text class="f-mute" x="140" y="158" text-anchor="middle" fill="#a3abc4">T1</text>
+<text class="f-mute" x="200" y="158" text-anchor="middle" fill="#a3abc4">T2</text>
+<text class="f-amber-t" x="296" y="96" text-anchor="end" fill="#f2b13c">exit latency</text>
+<text class="f-ink" x="16" y="172" font-weight="700" fill="#e8eeff">Link · ASPM</text>
+<g class="f-mute" fill="#a3abc4">
+<text x="16" y="190">L0</text>
+<text x="16" y="208">L1.2</text>
+</g>
+<path class="f-cyan-l" d="M60,186 H124 V204 H300 L306,186 H388" fill="none" stroke="#4dd0c4" stroke-width="2"/>
+<text class="f-mute" x="110" y="230" text-anchor="middle" fill="#a3abc4">I/O stops</text>
+<text class="f-mute" x="300" y="230" text-anchor="middle" fill="#a3abc4">I/O arrives</text>
+</svg>
