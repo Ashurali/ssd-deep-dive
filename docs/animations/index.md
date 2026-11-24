@@ -15,7 +15,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
 <div class="grid cards" markdown>
 
--   **A · The Vt Distribution Playground**
+-   ### A · The Vt Distribution Playground
 
     ---
 
@@ -27,7 +27,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](vt-playground.md)
 
--   **B · The Toy SSD Sandbox**
+-   ### B · The Toy SSD Sandbox
 
     ---
 
@@ -39,7 +39,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](toy-ssd-sandbox.md)
 
--   **C · The NVMe Ring Machine**
+-   ### C · The NVMe Ring Machine
 
     ---
 
@@ -51,7 +51,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](nvme-ring-machine.md)
 
--   **D · The Packet Dresser & ACK/NAK Lab**
+-   ### D · The Packet Dresser & ACK/NAK Lab
 
     ---
 
@@ -62,7 +62,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](packet-dresser.md)
 
--   **E · The Flash Timing & Parallelism Lab**
+-   ### E · The Flash Timing & Parallelism Lab
 
     ---
 
@@ -73,7 +73,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](flash-timing-lab.md)
 
--   **F · Mapping Lookup Paths**
+-   ### F · Mapping Lookup Paths
 
     ---
 
@@ -84,7 +84,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](mapping-paths.md)
 
--   **G · Power-Loss Rebuild & Snapshots**
+-   ### G · Power-Loss Rebuild & Snapshots
 
     ---
 
@@ -95,7 +95,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](power-loss-rebuild.md)
 
--   **H · Stripe RAID & the Chained Warships**
+-   ### H · Stripe RAID & the Chained Warships
 
     ---
 
@@ -106,7 +106,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](stripe-raid.md)
 
--   **I · The Enumeration & Routing Explorer**
+-   ### I · The Enumeration & Routing Explorer
 
     ---
 
@@ -117,7 +117,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Play](enum-routing.md)
 
--   **J · The SSD Calculator Bundle**
+-   ### J · The SSD Calculator Bundle
 
     ---
 
@@ -134,7 +134,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
 <div class="grid cards" markdown>
 
--   **Why SSDs need an FTL — NAND flash, animated**
+-   ### Why SSDs need an FTL — NAND flash, animated
 
     ---
 
@@ -146,7 +146,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Watch](nand-flash-animation.md)
 
--   **How ECC finds and fixes a bit — Hamming visualizer**
+-   ### How ECC finds and fixes a bit — Hamming visualizer
 
     ---
 
@@ -157,7 +157,7 @@ look for the collapsed **"🎬 Animate this"** blocks while reading.
 
     [→ Watch](ecc-bit-correction.md)
 
--   **Stronger ECC in action — BCH & LDPC**
+-   ### Stronger ECC in action — BCH & LDPC
 
     ---
 

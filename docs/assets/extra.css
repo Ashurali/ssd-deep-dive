@@ -270,6 +270,15 @@
 .md-typeset a.sdd-step--supp { border-style: dashed; }
 .sdd-step--supp .n { color: var(--sdd-violet); }
 
+/* Gallery cards: each title is a heading so each card is its own search
+   section; sized like the bold card titles they replaced. */
+.md-typeset .grid.cards h3 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .sdd-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));

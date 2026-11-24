@@ -409,6 +409,8 @@ EMBEDS = {
     ],
 }
 
+# A wrapper leads with what the reader learns and what to try, then the
+# embed, then where the animation appears; the book anchor is provenance.
 WRAPPER_TEMPLATE = """---
 title: "{title}"
 tags: {tags}
@@ -418,7 +420,13 @@ tags: {tags}
 
 {description}
 
-**Book anchor:** {anchor}
+## What you'll learn
+
+- _TODO: two to four outcomes, one line each._
+
+## Try this
+
+1. _TODO: three or four steps, naming the animation's own controls._
 
 [Open full-screen ↗](files/{html_name}){{ .md-button }}
 
@@ -426,6 +434,15 @@ tags: {tags}
 <iframe src="../files/{html_name}" width="100%" height="720"
         class="sdd-anim"
         loading="lazy" title="{title}"></iframe>
+
+## Where it appears
+
+- _TODO: link each chapter section that embeds it._
+
+??? info "📖 Provenance"
+
+    An original interactive drawing made for this site; it reproduces no book
+    figure. {anchor}
 """
 
 # Collapsed by default; the lazy iframe only loads when the reader opens it.
