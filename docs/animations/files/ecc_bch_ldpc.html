@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<script>
+/* Theme: inside the site the page's theme is copied in (the site also sets
+   data-theme on load and on every toggle); on its own, follow the OS. */
+(function(){var r=document.documentElement;
+if(window.self!==window.top){try{var s=window.parent.document.body.getAttribute("data-md-color-scheme");if(s)r.setAttribute("data-theme",s==="slate"?"dark":"light")}catch(e){}return}
+var m=matchMedia("(prefers-color-scheme: light)");function f(){r.setAttribute("data-theme",m.matches?"light":"dark")}f();
+if(m.addEventListener)m.addEventListener("change",f);else if(m.addListener)m.addListener(f)})();
+</script>
 <style>
   :root{
     --bg-0:#0b1020; --bg-1:#0e1428;
@@ -18,6 +26,7 @@
     --pass:#56d364; --fail:#ff6b6b;
     --pass-dim:#193723; --fail-dim:#3a1c1f;
     --violet:#a78bfa; --violet-dim:#2a2350;
+    --scan:#7f8db3;
     --radius:10px;
     --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
     --sans:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
@@ -89,7 +98,7 @@
   .bit.data.on{background:linear-gradient(180deg,#123734,#0f2b29);border-color:var(--data);box-shadow:0 0 12px -6px var(--data)}
   .bit.parity.on{background:linear-gradient(180deg,#3a2e12,#2a220e);border-color:var(--parity);box-shadow:0 0 12px -6px var(--parity)}
   .bit.clickable{cursor:pointer} .bit.clickable:hover{transform:translateY(-2px)}
-  .bit.contrib{border-color:#7f8db3;box-shadow:0 0 0 2px #7f8db344}
+  .bit.contrib{border-color:var(--scan);box-shadow:0 0 0 2px #7f8db344}
   .bit.err{border-color:var(--fail)!important;color:var(--fail)!important;background:linear-gradient(180deg,#3a1c1f,#2a1416)!important;box-shadow:0 0 0 2px var(--fail),0 0 20px -6px var(--fail)!important}
   .bit.scan{border-color:var(--violet);box-shadow:0 0 0 2px var(--violet),0 0 16px -5px var(--violet)}
   .bit.root{animation:ring .5s ease}
@@ -178,6 +187,51 @@
   footer.foot{margin-top:26px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted-2)}
 
   .hidden{display:none}
+
+  /* ---------- light theme (site toggle, or the OS when opened on its own) ---------- */
+  :root[data-theme="light"]{
+    --bg-0:#ffffff; --bg-1:#f6f8fc;
+    --panel:#ffffff; --panel-2:#f2f4f9;
+    --line:#cfd6e6; --line-soft:#e1e6f0;
+    --text:#0a0e1c; --muted:#47526f; --muted-2:#646e8a;
+    --data:#0b7f76; --data-dim:#d6efec;
+    --parity:#8a5c00; --parity-dim:#f6e8c8;
+    --pass:#2e7d32; --fail:#c0392b;
+    --pass-dim:#dcefdc; --fail-dim:#f8dcd8;
+    --violet:#5b3fc0; --violet-dim:#e6e0f8;
+    --scan:#5b6b95; --chk-on:#e8ecf6; --dot-on:#2b3a66;
+  }
+  :root[data-theme="light"] body{background:linear-gradient(180deg,var(--bg-0),var(--bg-1))}
+  :root[data-theme="light"] .panel{background:var(--panel);box-shadow:0 12px 32px -26px rgba(10,14,28,.45)}
+  :root[data-theme="light"] .bit{background:#f6f8fc}
+  :root[data-theme="light"] .bit.data{border-color:#9fd3ce}
+  :root[data-theme="light"] .bit.parity{border-color:#e2c78f}
+  :root[data-theme="light"] .bit.data.on{background:linear-gradient(180deg,#d6efec,#c6e8e4);box-shadow:inset 0 0 0 1px rgba(11,127,118,.25)}
+  :root[data-theme="light"] .bit.parity.on{background:linear-gradient(180deg,#f6e8c8,#f0ddb3);box-shadow:inset 0 0 0 1px rgba(138,92,0,.25)}
+  :root[data-theme="light"] .bit.err{background:linear-gradient(180deg,#f8dcd8,#f3cbc5)!important}
+  :root[data-theme="light"] .narr code{background:#f6f8fc}
+  :root[data-theme="light"] button.btn:hover:not(:disabled){border-color:#9aa6c4}
+  :root[data-theme="light"] .bit:focus-visible,:root[data-theme="light"] button.btn:focus-visible{outline-color:#1d4ed8}
+  :root[data-theme="light"] .tab{background:#eef1f7}
+  :root[data-theme="light"] .tab.active{background:var(--panel)}
+  :root[data-theme="light"] .tab:focus-visible{outline-color:#1d4ed8}
+  :root[data-theme="light"] .sw.root{background:#f6e8c8}
+  :root[data-theme="light"] .cell .afld{color:#7c86a2}
+  :root[data-theme="light"] .bit.contrib{border-color:var(--scan);box-shadow:0 0 0 2px rgba(91,107,149,.25)}
+  :root[data-theme="light"] .meter{background:#f6f8fc}
+  :root[data-theme="light"] .meter.active{box-shadow:0 0 0 2px rgba(91,107,149,.3)}
+  :root[data-theme="light"] button.btn.amber{background:linear-gradient(180deg,#a26e0c,#8a5c00);color:#fff;border-color:#8a5c00}
+  :root[data-theme="light"] button.btn.vio{background:linear-gradient(180deg,#6d52d1,#5b3fc0);color:#fff;border-color:#5b3fc0}
+  :root[data-theme="light"] .tanner-wrap{background:#f6f8fc}
+  :root[data-theme="light"] .vnode .vc{fill:#ffffff}
+  :root[data-theme="light"] .vnode.on .vc{fill:#d6efec}
+  :root[data-theme="light"] .vnode .vlbl{fill:#6b7591}
+  :root[data-theme="light"] .cnode .cc{fill:#ffffff}
+  :root[data-theme="light"] .edge{stroke:#aab4cc}
+  :root[data-theme="light"] .rc.h{border-color:#cfd6e6}
+  :root[data-theme="light"] .rc.b1{border-color:#e2c78f}
+  :root[data-theme="light"] .rc.b2{border-color:#c9bdf0}
+
   @media (max-width:760px){ .steps{grid-template-columns:1fr} .stagerow{grid-template-columns:1fr} .grid3{grid-template-columns:1fr} }
   @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
 </style>

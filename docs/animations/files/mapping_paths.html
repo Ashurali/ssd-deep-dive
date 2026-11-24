@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mapping Lookup Paths — DRAM vs DRAM-less vs HMB vs HPB</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+/* Theme: inside the site the page's theme is copied in (the site also sets
+   data-theme on load and on every toggle); on its own, follow the OS. */
+(function(){var r=document.documentElement;
+if(window.self!==window.top){try{var s=window.parent.document.body.getAttribute("data-md-color-scheme");if(s)r.setAttribute("data-theme",s==="slate"?"dark":"light")}catch(e){}return}
+var m=matchMedia("(prefers-color-scheme: light)");function f(){r.setAttribute("data-theme",m.matches?"light":"dark")}f();
+if(m.addEventListener)m.addEventListener("change",f);else if(m.addListener)m.addListener(f)})();
+</script>
 <style>
-:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9;
+  --grid:#1a2342;--slab:#3a4468;--on:#0b1020;--on-slab:#e8eeff;--hover:rgba(77,208,196,.12)}
+:root[data-theme="light"]{--bg:#ffffff;--panel:#f4f6fb;--line:#cfd6e6;--cyan:#0b7f76;--amber:#8a5c00;--violet:#5b3fc0;--red:#c0392b;--tx:#0a0e1c;--dim:#4a5578;
+  --grid:#e2e7f1;--slab:#c3cbe0;--on:#ffffff;--on-slab:#0a0e1c;--hover:rgba(11,127,118,.10)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
 h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
@@ -14,7 +25,7 @@ h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
 button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
-button:hover{background:rgba(77,208,196,.12)}
+button:hover{background:var(--hover)}
 button.amber{color:var(--amber);border-color:var(--amber)}
 button.tgl.on{background:var(--cyan);color:var(--bg)}
 .mono{font-family:"IBM Plex Mono";font-size:13px}
@@ -22,6 +33,10 @@ button.tgl.on{background:var(--cyan);color:var(--bg)}
 svg{display:block;width:100%;height:auto}
 footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
 h2{font-family:"Space Grotesk";font-size:17px;margin:4px 0 8px;color:var(--tx)}
+@media (max-width:600px){
+  body{padding:12px 10px} .panel{padding:10px} h1{font-size:22px}
+  .row{gap:8px} button{min-height:40px;flex:1 1 auto}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -59,31 +74,43 @@ h2{font-family:"Space Grotesk";font-size:17px;margin:4px 0 8px;color:var(--tx)}
 const $=id=>document.getElementById(id);
 const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const NS="http://www.w3.org/2000/svg";
-function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
-function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"start"});e.textContent=s;return e;}
+/* colours are CSS variables, so a theme switch recolours a drawing at once;
+   var() goes through style, which every browser resolves */
+function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a){const v=a[k];if(typeof v==="string"&&v.startsWith("var("))e.style.setProperty(k,v);else e.setAttribute(k,v);}svg.appendChild(e);return e;}
+function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"var(--dim)","font-size":sz||13,"text-anchor":anch||"start"});e.textContent=s;return e;}
+/* each scene's viewBox matches its drawn width, so 12-13 unit text is 12-13 px
+   on a phone and on a desktop alike; below 560 px the layout stacks */
+const sceneW=svg=>Math.round(Math.max(300,Math.min(960,svg.getBoundingClientRect().width||960)));
+const fits=(s,size,w)=>s.length*size*0.56<=w-8;
+const redraws=[];let lastW=0;
+addEventListener("resize",()=>{const w=document.body.clientWidth;if(w!==lastW){lastW=w;redraws.forEach(f=>f());}});
 
 /* ---------- warm-up: block-map RMW ---------- */
+const RMW=[
+  {t0:0,t1:8,c:"var(--slab)",tc:"var(--on-slab)",l:"read ALL 8 pages of the block",ln:"read all 8"},
+  {t0:8,t1:9,c:"var(--cyan)",tc:"var(--on)",l:"modify 1",ln:"1"},
+  {t0:9,t1:17,c:"var(--amber)",tc:"var(--on)",l:"write ALL 8 pages to a fresh block",ln:"write all 8"},
+];
+let rmwUntil=17;
+function drawRMW(){
+  const svg=$("rmwSvg"),W=sceneW(svg),nar=W<560,T=17,X0=10,BW=W-20;
+  const y=nar?50:44,H=nar?96:96;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML="";
+  if(nar){txt(svg,X0,17,"host asked to write 1 page —");txt(svg,X0,35,"the drive did 16 pages of work");}
+  else txt(svg,X0,20,"host asked to write 1 page — the drive did 16 pages of work");
+  RMW.forEach(s=>{
+    if(s.t0>=rmwUntil)return;
+    const t1=Math.min(s.t1,rmwUntil),w=(t1-s.t0)/T*BW,lab=nar?s.ln:s.l;
+    mk(svg,"rect",{x:X0+s.t0/T*BW,y,width:w,height:34,rx:5,fill:s.c,opacity:.9});
+    if(fits(lab,12,w))txt(svg,X0+(s.t0+t1)/2/T*BW,y+22,lab,s.tc,12,"middle");
+  });
+}
+redraws.push(drawRMW);
 $("rmwGo").onclick=()=>{
-  const svg=$("rmwSvg");svg.innerHTML="";
-  const steps=[
-    {t0:0,t1:8,color:"#3a4468",label:"read ALL 8 pages of the block"},
-    {t0:8,t1:9,color:"#4dd0c4",label:"modify 1"},
-    {t0:9,t1:17,color:"#f2b13c",label:"write ALL 8 pages to a fresh block"},
-  ];
-  const X0=20,W=920,T=17;
-  txt(svg,X0,20,"host asked to write 1 page — the drive did 16 pages of work (WA=16× before GC even exists)","#8ea0c9",12);
-  let until=0;
+  $("rmwOut").textContent="";rmwUntil=0;
   const iv=setInterval(()=>{
-    until+=RM?T:T/60;
-    svg.innerHTML="";
-    txt(svg,X0,20,"host asked to write 1 page — the drive did 16 pages of work","#8ea0c9",12);
-    steps.forEach(s=>{
-      if(s.t0>=until)return;
-      const t1=Math.min(s.t1,until);
-      mk(svg,"rect",{x:X0+s.t0/T*W,y:44,width:(t1-s.t0)/T*W,height:34,rx:5,fill:s.color,opacity:.9});
-      if(t1-s.t0>1.5)txt(svg,X0+(s.t0+t1)/2/T*W,66,s.label,"#0b1020",11,"middle");
-    });
-    if(until>=T){clearInterval(iv);$("rmwOut").textContent="page mapping: would have been 1 write.";}
+    rmwUntil+=RM?17:17/60;drawRMW();
+    if(rmwUntil>=17){clearInterval(iv);$("rmwOut").textContent="page mapping: would have been 1 write.";}
   },30);
 };
 $("rmwGo").click();
@@ -91,54 +118,52 @@ $("rmwGo").click();
 /* ---------- the race ---------- */
 const FLASH=40, PCIE=1, DRAM=0.12;
 function lanes(seq,hpb){
+  const S=(d,c,l,ln,tc)=>({d,c,l,ln,tc:tc||"var(--on)"});
+  const data=S(FLASH,"var(--slab)","flash read (data)","data read","var(--on-slab)");
   const L=[
-    {name:"DRAM drive",steps:[
-      {d:DRAM,c:"#4dd0c4",l:"map in DRAM"},
-      {d:FLASH,c:"#3a4468",l:"flash read (data)"}]},
+    {name:"DRAM drive",steps:[S(DRAM,"var(--cyan)","map in DRAM","map"),data]},
     {name:"DRAM-less",steps: seq
-      ? [{d:DRAM,c:"#4dd0c4",l:"map chunk cached in SRAM ✓"},{d:FLASH,c:"#3a4468",l:"flash read (data)"}]
-      : [{d:FLASH,c:"#ef6a6a",l:"flash read (the MAPPING)"},{d:FLASH,c:"#3a4468",l:"flash read (data)"}]},
-    {name:"HMB",steps:[
-      {d:PCIE,c:"#a78bfa",l:"map over PCIe (host RAM)"},
-      {d:FLASH,c:"#3a4468",l:"flash read (data)"}]},
+      ? [S(DRAM,"var(--cyan)","map chunk cached in SRAM ✓","cached"),data]
+      : [S(FLASH,"var(--red)","flash read (the MAPPING)","map read"),data]},
+    {name:"HMB",steps:[S(PCIE,"var(--violet)","map over PCIe (host RAM)","map"),data]},
   ];
-  if(hpb) L.push({name:"HPB (UFS)",steps:[
-    {d:0.05,c:"#f2b13c",l:"host already sent the PA"},
-    {d:FLASH,c:"#3a4468",l:"flash read (data)"}]});
+  if(hpb) L.push({name:"HPB (UFS)",steps:[S(0.05,"var(--amber)","host already sent the PA","PA sent"),data]});
   return L;
 }
-function runRace(seq){
+let race={seq:false,until:85};
+function drawRace(){
   const hpb=$("hpbTgl").classList.contains("on");
-  const L=lanes(seq,hpb);
-  const svg=$("raceSvg");
-  const T=85,X0=150,W=780,rh=54;
-  let until=0;
-  const iv=setInterval(()=>{
-    until+=RM?T:T/70;
-    svg.innerHTML="";
-    txt(svg,X0,18,seq?"sequential read — map chunk already cached":"random 4K read — cold map","#8ea0c9",12);
-    L.forEach((lane,i)=>{
-      const y=36+i*rh;
-      txt(svg,10,y+22,lane.name,"#e8eeff",13);
-      mk(svg,"line",{x1:X0,x2:X0+W,y1:y+30,y2:y+30,stroke:"#1a2342"});
-      let t=0,fin=0;
-      lane.steps.forEach(s=>{
-        const t0=t,t1=t+s.d;t=t1;fin=t1;
-        if(t0>=until)return;
-        const tt=Math.min(t1,until);
-        mk(svg,"rect",{x:X0+t0/T*W,y:y+6,width:Math.max(2,(tt-t0)/T*W),height:24,rx:4,fill:s.c,opacity:.9});
-        if((tt-t0)/T*W>90)txt(svg,X0+(t0+tt)/2/T*W,y+22,s.l,"#0b1020",10,"middle");
-      });
-      if(until>=fin){
-        txt(svg,X0+fin/T*W+8,y+23,fin.toFixed(1)+" µs","#f2b13c",12);
-      }
+  const L=lanes(race.seq,hpb);
+  const svg=$("raceSvg"),W=sceneW(svg),nar=W<560,T=85;
+  const X0=nar?10:150,BW=nar?W-82:W-210,rh=nar?60:54,top=nar?30:36;
+  svg.setAttribute("viewBox",`0 0 ${W} ${top+L.length*rh+6}`);svg.innerHTML="";
+  txt(svg,10,18,race.seq?(nar?"sequential: map already cached":"sequential read — map chunk already cached"):(nar?"random 4K read, cold map":"random 4K read — cold map"));
+  L.forEach((lane,i)=>{
+    const y=top+i*rh,by=nar?y+20:y+6;
+    txt(svg,nar?X0:10,nar?y+14:y+22,lane.name,"var(--tx)",13);
+    mk(svg,"line",{x1:X0,x2:X0+BW,y1:by+24,y2:by+24,stroke:"var(--grid)"});
+    let t=0,fin=0;
+    lane.steps.forEach(s=>{
+      const t0=t,t1=t+s.d;t=t1;fin=t1;
+      if(t0>=race.until)return;
+      const tt=Math.min(t1,race.until),w=Math.max(2,(tt-t0)/T*BW),lab=nar?s.ln:s.l;
+      mk(svg,"rect",{x:X0+t0/T*BW,y:by,width:w,height:24,rx:4,fill:s.c,opacity:.9});
+      if(fits(lab,12,w))txt(svg,X0+(t0+tt)/2/T*BW,by+16,lab,s.tc,12,"middle");
     });
-    if(until>=T)clearInterval(iv);
+    if(race.until>=fin)txt(svg,X0+fin/T*BW+8,by+17,fin.toFixed(1)+" µs","var(--amber)",13);
+  });
+}
+redraws.push(drawRace);
+function runRace(seq){
+  race={seq,until:0};
+  const iv=setInterval(()=>{
+    race.until+=RM?85:85/70;drawRace();
+    if(race.until>=85)clearInterval(iv);
   },28);
 }
 $("raceRnd").onclick=()=>runRace(false);
 $("raceSeq").onclick=()=>runRace(true);
-$("hpbTgl").onclick=e=>{e.target.classList.toggle("on");};
+$("hpbTgl").onclick=e=>{e.target.classList.toggle("on");drawRace();};
 runRace(false);
 </script>
 </body>
