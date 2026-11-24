@@ -5,8 +5,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The NVMe Ring Machine — SQ, CQ, doorbells, phase tag</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+/* Theme: inside the site the page's theme is copied in (the site also sets
+   data-theme on load and on every toggle); on its own, follow the OS. */
+(function(){var r=document.documentElement;
+if(window.self!==window.top){try{var s=window.parent.document.body.getAttribute("data-md-color-scheme");if(s)r.setAttribute("data-theme",s==="slate"?"dark":"light")}catch(e){}return}
+var m=matchMedia("(prefers-color-scheme: light)");function f(){r.setAttribute("data-theme",m.matches?"light":"dark")}f();
+if(m.addEventListener)m.addEventListener("change",f);else if(m.addListener)m.addListener(f)})();
+</script>
 <style>
-:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9;
+  --cell:#0e1530;--cyan-d:#173a4d;--amber-d:#4d3a17;--blue:#93c5fd;--blue-d:#17304d;--cyan-ink:#4dd0c4;
+  --prog:rgba(77,208,196,.35);--hover:rgba(77,208,196,.12)}
+:root[data-theme="light"]{--bg:#ffffff;--panel:#f4f6fb;--line:#cfd6e6;--cyan:#0b7f76;--amber:#8a5c00;--violet:#5b3fc0;--red:#c0392b;--tx:#0a0e1c;--dim:#4a5578;
+  --cell:#eef1f8;--cyan-d:#d2ecea;--amber-d:#f6e8c8;--blue:#1f5fbf;--blue-d:#dbe7fb;--cyan-ink:#086a62;
+  --prog:rgba(11,127,118,.25);--hover:rgba(11,127,118,.10)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1020px;margin-inline:auto}
 h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
@@ -14,17 +27,23 @@ h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 .row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:6px 0}
 label{color:var(--dim);font-size:13px}
+.sl{display:inline-flex;align-items:center;gap:8px}
 button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
-button:hover{background:rgba(77,208,196,.12)}
+button:hover{background:var(--hover)}
 button.amber{color:var(--amber);border-color:var(--amber)}
 button.tgl.on{background:var(--cyan);color:var(--bg)}
 input[type=range]{accent-color:var(--cyan);width:130px}
 .mono{font-family:"IBM Plex Mono";font-size:13px}
 .note{color:var(--dim);font-size:13px;margin-top:6px}
 svg{display:block;width:100%;height:auto}
-#wire{font:12px "IBM Plex Mono";color:var(--dim);max-height:130px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}
+#wire{font:12px "IBM Plex Mono";color:var(--dim);max-height:130px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px;overflow-wrap:anywhere}
 #wire .tlp{color:var(--amber)}
 footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (max-width:600px){
+  body{padding:12px 10px} .panel{padding:10px} h1{font-size:22px}
+  .row{gap:8px} button{min-height:40px;flex:1 1 auto}
+  .sl{display:flex;width:100%} .sl input{flex:1 1 120px;width:auto;height:40px}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -37,12 +56,11 @@ footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-
     <button id="submit">① submit a command</button>
     <button class="amber" id="step">step ⏯</button>
     <button class="tgl" id="autoTgl">auto</button>
-    <label>queue depth limit <span class="mono" id="qdLab">4</span></label>
-    <input type="range" id="qd" min="1" max="8" value="4">
+    <label class="sl">queue depth limit <span class="mono" id="qdLab">4</span><input type="range" id="qd" min="1" max="8" value="4"></label>
     <button class="tgl" id="wireTgl">wire view (TLPs)</button>
     <span class="mono">completed: <span id="doneN" style="color:var(--amber)">0</span></span>
   </div>
-  <svg id="stage" viewBox="0 0 1000 430" aria-label="NVMe queues and doorbells"></svg>
+  <svg id="stage" viewBox="0 0 1000 430" role="img" aria-label="NVMe queues and doorbells"></svg>
   <div id="wire" hidden></div>
   <p class="note" id="stepNote">Submit puts a command in the SQ (host memory) and advances the tail; the tail value is then written to the SSD's doorbell register — that write <em>is</em> the doorbell. Watch CQ entries carry a colored <b>phase bit</b>: the host finds new completions by color, and the expected color <b>flips every ring wrap</b> (Fig 6-20). Each completion also carries the current <b>SQ head</b> home (Fig 6-19) so the host knows how far the SSD has consumed.</p>
 </div>
@@ -53,6 +71,7 @@ footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-
 "use strict";
 const $=id=>document.getElementById(id);
 const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS="http://www.w3.org/2000/svg";
 const N=8;                       // ring slots
 const S={
   sq:new Array(N).fill(null),    // {id}
@@ -61,7 +80,7 @@ const S={
   cqPhase:1,                     // phase the SSD writes this lap
   hostPhase:1,                   // phase the host expects
   inflight:[],                   // {id,progress}
-  nextId:1,done:0,qd:4,auto:null,wire:false,
+  nextId:1,done:0,qd:4,auto:null,wire:false,last:null,
 };
 const busy=()=>S.inflight.length + ringCount(S.sqHead,S.sqTail);
 const ringCount=(h,t)=>(t-h+2*N)%(2*N)>N?N:(t-h+N)%N||((t!==h)?N:0);
@@ -101,6 +120,7 @@ function step(){
       S.inflight.splice(i,1);
       if((S.cqTail+1)%N===S.cqHead){ note("CQ full — completion stalls."); draw(); return; }
       S.cq[S.cqTail%N]={id:job.id,phase:S.cqPhase,sqhead:S.sqHead};
+      S.last=S.cq[S.cqTail%N];
       S.cqTail=(S.cqTail+1)%N;
       if(S.cqTail===0){ S.cqPhase^=1; wireLog("CQ wrapped — SSD now writes phase="+S.cqPhase); }
       wireLog("SSD → host: completion for #"+job.id+" (P="+S.cq[(S.cqTail+N-1)%N].phase+", SQhead="+S.sqHead+")","MemWr (16B CQ entry)");
@@ -129,70 +149,120 @@ function step(){
 function note(m){ $("stepNote").innerHTML=m; }
 
 /* ---------- rendering ---------- */
+/* colours are CSS variables, so a theme switch recolours a drawing at once;
+   var() goes through style, which every browser resolves */
+function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a){const v=a[k];if(typeof v==="string"&&v.startsWith("var("))e.style.setProperty(k,v);else e.setAttribute(k,v);}svg.appendChild(e);return e;}
+function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"var(--dim)","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;}
+/* the viewBox matches the drawn width, so 12-13 unit text is 12-13 px on a
+   phone and on a desktop alike. Host and SSD panes sit side by side from
+   640 px and stack below that; the two rings stack when they can't fit side by side */
+const sceneW=svg=>Math.round(Math.max(300,Math.min(1000,svg.getBoundingClientRect().width||1000)));
+const fits=(s,size,w)=>s.length*size*0.56<=w;
+const R=58,SR=20,RB=R+SR+18;     // ring radius, slot radius, half the box a ring needs
 function ringSlots(cx,cy,r){
   const out=[];
   for(let i=0;i<N;i++){
     const a=-Math.PI/2 + i*2*Math.PI/N;
-    out.push([cx+r*Math.cos(a), cy+r*Math.sin(a)]);
+    out.push([cx+r*Math.cos(a), cy+r*Math.sin(a), a]);
   }
   return out;
 }
+/* one ring: H (head) labels sit outside their slot, T (tail) labels inside,
+   so the two never collide even when head == tail */
+function ring(svg,cx,cy,entries,head,tail,slot){
+  ringSlots(cx,cy,R).forEach(([x,y,a],i)=>{
+    slot(x,y,entries[i]);
+    if(i===head%N) txt(svg,cx+(R+SR+10)*Math.cos(a),cy+(R+SR+10)*Math.sin(a)+4,"H","var(--amber)",12);
+    if(i===tail%N) txt(svg,cx+(R-SR-10)*Math.cos(a),cy+(R-SR-10)*Math.sin(a)+4,"T","var(--violet)",12);
+  });
+}
 function draw(){
-  const svg=$("stage"); svg.innerHTML="";
-  const mk=(t,a)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
-  const txt=(x,y,s,c,sz,anch)=>{const e=mk("text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;};
+  const svg=$("stage"),W=sceneW(svg),side=W>=640;
+  const hx=6,hy=6,hostW=side?4*RB+36:W-12;
+  const ringsSide=hostW-24>=4*RB;
+  svg.innerHTML="";
+  const sqSlot=(x,y,e)=>{
+    mk(svg,"circle",{cx:x,cy:y,r:SR,fill:e?"var(--cyan-d)":"var(--cell)",stroke:e?"var(--cyan)":"var(--line)","stroke-width":1.6});
+    if(e) txt(svg,x,y+4,"#"+e.id,"var(--cyan-ink)",12);
+  };
+  const cqSlot=(x,y,e)=>{
+    mk(svg,"circle",{cx:x,cy:y,r:SR,
+      fill:e?(e.phase?"var(--amber-d)":"var(--blue-d)"):"var(--cell)",
+      stroke:e?(e.phase?"var(--amber)":"var(--blue)"):"var(--line)","stroke-width":1.6});
+    if(e){ txt(svg,x,y-3,"#"+e.id,e.phase?"var(--amber)":"var(--blue)",12); txt(svg,x,y+12,"P"+e.phase+"·h"+e.sqhead,"var(--dim)",11); }
+  };
+  const lastTxt=S.last?"newest: #"+S.last.id+" · P"+S.last.phase+" · SQ head "+S.last.sqhead:"newest: —";
 
-  // panes
-  mk("rect",{x:10,y:10,width:560,height:410,rx:12,fill:"none",stroke:"#26304d"});
-  txt(290,32,"HOST MEMORY","#8ea0c9",14);
-  mk("rect",{x:600,y:10,width:390,height:410,rx:12,fill:"none",stroke:"#26304d"});
-  txt(795,32,"SSD CONTROLLER","#8ea0c9",14);
+  // ---- host memory: the two rings
+  txt(svg,hx+hostW/2,hy+22,"HOST MEMORY","var(--dim)",13);
+  let hostBottom;
+  if(ringsSide){
+    const g=(hostW-4*RB)/3,cx1=hx+g+RB,cx2=hx+2*g+3*RB,cy=hy+58+RB;
+    txt(svg,cx1,hy+48,"Submission Queue","var(--cyan)",13);
+    txt(svg,cx2,hy+48,"Completion Queue","var(--amber)",13);
+    ring(svg,cx1,cy,S.sq,S.sqHead,S.sqTail,sqSlot);
+    ring(svg,cx2,cy,S.cq,S.cqHead,S.cqTail,cqSlot);
+    txt(svg,cx1,cy+RB+16,"head H · tail T","var(--dim)",12);
+    txt(svg,cx2,cy+RB+16,"host expects phase = "+S.hostPhase,"var(--dim)",12);
+    txt(svg,cx2,cy+RB+34,lastTxt,"var(--dim)",12);
+    hostBottom=cy+RB+46;
+  }else{
+    const cx=hx+hostW/2,cy1=hy+58+RB,cy2=cy1+RB+46+RB;
+    txt(svg,cx,hy+48,"Submission Queue","var(--cyan)",13);
+    ring(svg,cx,cy1,S.sq,S.sqHead,S.sqTail,sqSlot);
+    txt(svg,cx,cy1+RB+16,"head H · tail T","var(--dim)",12);
+    txt(svg,cx,cy2-RB-10,"Completion Queue","var(--amber)",13);
+    ring(svg,cx,cy2,S.cq,S.cqHead,S.cqTail,cqSlot);
+    txt(svg,cx,cy2+RB+16,"host expects phase = "+S.hostPhase,"var(--dim)",12);
+    txt(svg,cx,cy2+RB+34,lastTxt,"var(--dim)",12);
+    hostBottom=cy2+RB+46;
+  }
 
-  // SQ ring
-  txt(160,66,"Submission Queue","#4dd0c4",13);
-  ringSlots(160,180,86).forEach(([x,y],i)=>{
-    const e=S.sq[i];
-    mk("circle",{cx:x,cy:y,r:20,fill:e?"#173a4d":"#0e1530",stroke:e?"#4dd0c4":"#26304d","stroke-width":1.6});
-    if(e) txt(x,y+4,"#"+e.id,"#4dd0c4",12);
-    if(i===S.sqHead%N) txt(x,y-27,"H","#f2b13c",11);
-    if(i===S.sqTail%N) txt(x,y+33,"T","#a78bfa",11);
+  // ---- SSD controller: doorbells, then the execution slots
+  const sx=side?hx+hostW+36:6, sy=side?hy:hostBottom+28, sw=side?W-sx-6:W-12;
+  txt(svg,sx+sw/2,sy+22,"SSD CONTROLLER","var(--dim)",13);
+  const pair=(sw-36)/2>=120, dbW=pair?Math.min(150,(sw-36)/2):Math.min(170,sw-24);
+  const bells=[["SQ tail doorbell",S.sqTail,"var(--violet)"],["CQ head doorbell",S.cqHead,"var(--amber)"]];
+  let by=sy+36;
+  bells.forEach(([lab,val,c],k)=>{
+    const x=pair?sx+(sw-2*dbW-12)/2+k*(dbW+12):sx+(sw-dbW)/2, y=pair?by:by+k*58;
+    mk(svg,"rect",{x,y,width:dbW,height:50,rx:8,fill:"var(--cell)",stroke:"var(--line)"});
+    txt(svg,x+dbW/2,y+19,lab,"var(--dim)",12); txt(svg,x+dbW/2,y+42,String(val),c,18);
   });
-
-  // CQ ring — slots colored by phase bit
-  txt(430,66,"Completion Queue","#f2b13c",13);
-  ringSlots(430,180,86).forEach(([x,y],i)=>{
-    const e=S.cq[i];
-    mk("circle",{cx:x,cy:y,r:20,
-      fill:e?(e.phase?"#4d3a17":"#17304d"):"#0e1530",
-      stroke:e?(e.phase?"#f2b13c":"#93c5fd"):"#26304d","stroke-width":1.6});
-    if(e){ txt(x,y+1,"#"+e.id,e.phase?"#f2b13c":"#93c5fd",11); txt(x,y+13,"P"+e.phase+"·h"+e.sqhead,"#8ea0c9",8); }
-    if(i===S.cqHead%N) txt(x,y-27,"H","#f2b13c",11);
-    if(i===S.cqTail%N) txt(x,y+33,"T","#a78bfa",11);
-  });
-  txt(430,300,"host expects phase = "+S.hostPhase,"#8ea0c9",12);
-  txt(160,300,"head H · tail T","#8ea0c9",11);
-
-  // doorbells
-  mk("rect",{x:630,y:66,width:150,height:56,rx:8,fill:"#0e1530",stroke:"#26304d"});
-  txt(705,86,"SQ tail doorbell","#8ea0c9",11); txt(705,108,String(S.sqTail),"#a78bfa",18);
-  mk("rect",{x:810,y:66,width:150,height:56,rx:8,fill:"#0e1530",stroke:"#26304d"});
-  txt(885,86,"CQ head doorbell","#8ea0c9",11); txt(885,108,String(S.cqHead),"#f2b13c",18);
-
-  // execution units
-  txt(795,160,"execution (out-of-order allowed)","#8ea0c9",12);
+  by+=pair?50:108;
+  const exLab="execution (out-of-order allowed)";
+  let ey=by+26;
+  if(fits(exLab,12,sw-24)) txt(svg,sx+sw/2,ey,exLab,"var(--dim)",12);
+  else { txt(svg,sx+sw/2,ey,"execution","var(--dim)",12); ey+=16; txt(svg,sx+sw/2,ey,"(out-of-order allowed)","var(--dim)",12); }
+  const rows=Math.max(S.qd,S.inflight.length),bx=sx+12,bw=sw-24;
   S.inflight.forEach((j,i)=>{
-    const y=180+i*36;
-    mk("rect",{x:640,y,width:300,height:24,rx:6,fill:"#0e1530",stroke:"#26304d"});
-    mk("rect",{x:640,y,width:300*j.progress/j.need,height:24,rx:6,fill:"rgba(77,208,196,.35)"});
-    txt(655,y+16,"#"+j.id,"#4dd0c4",12,"start");
+    const y=ey+12+i*28;
+    mk(svg,"rect",{x:bx,y,width:bw,height:20,rx:6,fill:"var(--cell)",stroke:"var(--line)"});
+    mk(svg,"rect",{x:bx,y,width:bw*j.progress/j.need,height:20,rx:6,fill:"var(--prog)"});
+    txt(svg,bx+12,y+15,"#"+j.id,"var(--cyan-ink)",12,"start");
   });
-  txt(795,400,"in flight: "+S.inflight.length+" / QD "+S.qd,"#8ea0c9",12);
-  $("doneN").textContent=S.done;
+  const fy=ey+12+rows*28+14;
+  txt(svg,sx+sw/2,fy,"in flight: "+S.inflight.length+" / QD "+S.qd,"var(--dim)",12);
+  const ssdBottom=fy+14;
 
-  // wires between panes
-  mk("line",{x1:570,x2:600,y1:95,y2:95,stroke:"#a78bfa","stroke-dasharray":"4 4"});
-  mk("line",{x1:570,x2:600,y1:110,y2:110,stroke:"#f2b13c","stroke-dasharray":"4 4"});
-  txt(585,86,"PCIe","#8ea0c9",9);
+  // ---- panes and the PCIe link between them
+  const H=Math.max(hostBottom,side?ssdBottom:0),
+        hostH=(side?Math.max(hostBottom,ssdBottom):hostBottom)-hy;
+  mk(svg,"rect",{x:hx,y:hy,width:hostW,height:hostH,rx:12,fill:"none",stroke:"var(--line)"});
+  mk(svg,"rect",{x:sx,y:sy,width:sw,height:(side?hostH+hy:ssdBottom)-sy,rx:12,fill:"none",stroke:"var(--line)"});
+  if(side){
+    const lx1=hx+hostW,lx2=sx;
+    mk(svg,"line",{x1:lx1,x2:lx2,y1:sy+66,y2:sy+66,stroke:"var(--violet)","stroke-dasharray":"4 4"});
+    mk(svg,"line",{x1:lx1,x2:lx2,y1:sy+80,y2:sy+80,stroke:"var(--amber)","stroke-dasharray":"4 4"});
+    txt(svg,(lx1+lx2)/2,sy+56,"PCIe","var(--dim)",12);
+  }else{
+    const ly1=hostBottom,ly2=sy;
+    mk(svg,"line",{x1:W/2-8,x2:W/2-8,y1:ly1,y2:ly2,stroke:"var(--violet)","stroke-dasharray":"4 4"});
+    mk(svg,"line",{x1:W/2+8,x2:W/2+8,y1:ly1,y2:ly2,stroke:"var(--amber)","stroke-dasharray":"4 4"});
+    txt(svg,W/2+18,(ly1+ly2)/2+4,"PCIe","var(--dim)",12,"start");
+  }
+  svg.setAttribute("viewBox",`0 0 ${W} ${(side?H:ssdBottom)+6}`);
+  $("doneN").textContent=S.done;
 }
 
 /* ---------- controls ---------- */
@@ -206,6 +276,8 @@ $("autoTgl").onclick=e=>{
   e.target.classList.add("on");
   S.auto=setInterval(()=>{ if(Math.random()<0.45) submit(); step(); },RM?900:450);
 };
+let lastW=0;
+addEventListener("resize",()=>{const w=document.body.clientWidth;if(w!==lastW){lastW=w;draw();}});
 draw();
 </script>
 </body>
