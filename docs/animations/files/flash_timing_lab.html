@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Flash Timing &amp; Parallelism Lab — pipelining, planes, AIPR</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+/* Theme: inside the site the page's theme is copied in (the site also sets
+   data-theme on load and on every toggle); on its own, follow the OS. */
+(function(){var r=document.documentElement;
+if(window.self!==window.top){try{var s=window.parent.document.body.getAttribute("data-md-color-scheme");if(s)r.setAttribute("data-theme",s==="slate"?"dark":"light")}catch(e){}return}
+var m=matchMedia("(prefers-color-scheme: light)");function f(){r.setAttribute("data-theme",m.matches?"light":"dark")}f();
+if(m.addEventListener)m.addEventListener("change",f);else if(m.addListener)m.addListener(f)})();
+</script>
 <style>
-:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9;
+  --grid:#1a2342;--slab:#3a4468;--on:#0b1020;--on-slab:#e8eeff;--hover:rgba(77,208,196,.12)}
+:root[data-theme="light"]{--bg:#ffffff;--panel:#f4f6fb;--line:#cfd6e6;--cyan:#0b7f76;--amber:#8a5c00;--violet:#5b3fc0;--red:#c0392b;--tx:#0a0e1c;--dim:#4a5578;
+  --grid:#e2e7f1;--slab:#c3cbe0;--on:#ffffff;--on-slab:#0a0e1c;--hover:rgba(11,127,118,.10)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
 h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
@@ -17,7 +28,7 @@ h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
 button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
-button:hover{background:rgba(77,208,196,.12)}
+button:hover{background:var(--hover)}
 button.amber{color:var(--amber);border-color:var(--amber)}
 button.tgl.on{background:var(--cyan);color:var(--bg)}
 .mono{font-family:"IBM Plex Mono";font-size:13px}
@@ -25,7 +36,14 @@ button.tgl.on{background:var(--cyan);color:var(--bg)}
 .note{color:var(--dim);font-size:13px;margin-top:6px}
 svg{display:block;width:100%;height:auto}
 .hidden{display:none}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:3px}
 footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (max-width:600px){
+  body{padding:12px 10px} .panel{padding:10px} h1{font-size:22px}
+  .row,.tabs{gap:8px} button{min-height:40px;flex:1 1 auto}
+  .tabs button{flex:1 1 40%}
+  label{min-height:40px;display:flex;align-items:center;gap:6px}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -44,6 +62,7 @@ footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-
 <div class="panel" id="s0">
   <div class="row"><button class="amber" id="busGo">run: read on die 0, then program on die 2</button></div>
   <svg id="busSvg" viewBox="0 0 960 260"></svg>
+  <p class="note"><span class="sw" style="background:var(--violet)"></span>command · <span class="sw" style="background:var(--amber)"></span>address · <span class="sw" style="background:var(--cyan)"></span>data · <span class="sw" style="background:var(--slab)"></span>media busy</p>
   <p class="note">One channel = one shared 8-bit bus. <b>CE#</b> picks which die is listening; <b>CLE/ALE</b> flags say whether the bytes on the pins are a command, an address, or data. Eight pins carry everything — that's why channel time is precious and long media operations should never hog it. (Fig 2-8, 3-31→3-35)</p>
 </div>
 
@@ -86,32 +105,61 @@ footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-
 const $=id=>document.getElementById(id);
 const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const NS="http://www.w3.org/2000/svg";
-function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
-function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"start"});e.textContent=s;return e;}
+/* colours are CSS variables, so a theme switch recolours a drawing at once;
+   var() goes through style, which every browser resolves */
+function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a){const v=a[k];if(typeof v==="string"&&v.startsWith("var("))e.style.setProperty(k,v);else e.setAttribute(k,v);}svg.appendChild(e);return e;}
+function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"var(--dim)","font-size":sz||12,"text-anchor":anch||"start"});e.textContent=s;return e;}
+/* the viewBox matches the drawn width, so 12 unit text is 12 px on a phone and
+   on a desktop alike; below 560 px each row's name sits above its track */
+const sceneW=svg=>Math.round(Math.max(300,Math.min(960,svg.getBoundingClientRect().width||0))) ;
+const fits=(s,size,w)=>s.length*size*0.56<=w-8;
+/* a bar label that doesn't fit falls back to a shorter form, then to nothing */
+function shortest(label,w,ln){
+  const tries=[label,label.split(/ [—(]/)[0],label.split(" ")[0],ln||""];
+  return tries.find(s=>fits(s,12,w))||"";
+}
 
-const scn=["s0","s1","s2","s3"],tb=["t0","t1","t2","t3"];
-tb.forEach((t,i)=>$(t).onclick=()=>{scn.forEach((s,j)=>$(s).classList.toggle("hidden",i!==j));tb.forEach((u,j)=>$(u).classList.toggle("on",i===j));});
+const scn=["s0","s1","s2","s3"],tb=["t0","t1","t2","t3"],svgOf=["busSvg","pipeSvg","planeSvg","aiprSvg"];
+tb.forEach((t,i)=>$(t).onclick=()=>{
+  scn.forEach((s,j)=>$(s).classList.toggle("hidden",i!==j));tb.forEach((u,j)=>$(u).classList.toggle("on",i===j));
+  redraw($(svgOf[i]));   // a hidden scene was drawn at zero width
+});
 
 /* Gantt renderer: rows=[{label}], bars=[{row,t0,t1,color,label}] ; animated reveal to `until` */
+const last=new Map();
 function gantt(svg,rows,bars,tmax,until,unit){
+  last.set(svg,[rows,bars,tmax,until,unit]);
+  if(!svg.getBoundingClientRect().width)return;   // hidden: drawn when shown
+  const W=sceneW(svg),nar=W<560;
+  const X0=nar?10:160,BW=nar?W-20:W-X0-14,rh=nar?48:34,top=nar?30:34;
+  const rowY=i=>nar?top+i*rh+18:top+i*rh+2;      // bar top
+  svg.setAttribute("viewBox",`0 0 ${W} ${top+rows.length*rh+(nar?4:10)}`);
   svg.innerHTML="";
-  const X0=150,W=780,rh=34;
   rows.forEach((r,i)=>{
-    txt(svg,10,34+i*rh+16,r,"#8ea0c9",12);
-    mk(svg,"line",{x1:X0,x2:X0+W,y1:34+i*rh+24,y2:34+i*rh+24,stroke:"#1a2342"});
+    if(nar)txt(svg,X0,top+i*rh+12,r,"var(--dim)",12);
+    else txt(svg,10,top+i*rh+16,r,"var(--dim)",12);
+    mk(svg,"line",{x1:X0,x2:X0+BW,y1:rowY(i)+22,y2:rowY(i)+22,stroke:"var(--grid)"});
   });
   bars.forEach(b=>{
     if(b.t0>=until)return;
-    const t1=Math.min(b.t1,until);
-    mk(svg,"rect",{x:X0+b.t0/tmax*W,y:34+b.row*rh+2,width:Math.max(1,(t1-b.t0)/tmax*W),height:20,rx:4,fill:b.color,opacity:0.85});
-    if(t1-b.t0>tmax*0.05) txt(svg,X0+(b.t0+t1)/2/tmax*W,34+b.row*rh+16,b.label,"#0b1020",10,"middle");
+    const t1=Math.min(b.t1,until),w=Math.max(1,(t1-b.t0)/tmax*BW);
+    mk(svg,"rect",{x:X0+b.t0/tmax*BW,y:rowY(b.row),width:w,height:20,rx:4,fill:b.color,opacity:0.85});
+    const lab=shortest(b.label,w,b.ln);
+    if(lab) txt(svg,X0+(b.t0+t1)/2/tmax*BW,rowY(b.row)+14,lab,b.color==="var(--slab)"?"var(--on-slab)":"var(--on)",12,"middle");
   });
-  for(let t=0;t<=tmax;t+=tmax/8){
-    txt(svg,X0+t/tmax*W,26,Math.round(t)+unit,"#3a4468",9,"middle");
+  // ticks at round values (1, 2, 2.5 or 5 × a power of ten), at most 4 or 8 of them
+  const raw=tmax/(nar?4:8),p=Math.pow(10,Math.floor(Math.log10(raw)));
+  const step=[1,2,2.5,5,10].map(m=>m*p).find(s=>s>=raw);
+  for(let t=0;t<=tmax+1e-9;t+=step){
+    txt(svg,X0+t/tmax*BW,nar?16:24,Math.round(t)+unit,"var(--dim)",12,t===0?"start":(t/tmax>0.93?"end":"middle"));
   }
   // playhead
-  mk(svg,"line",{x1:X0+Math.min(until,tmax)/tmax*W,x2:X0+Math.min(until,tmax)/tmax*W,y1:30,y2:34+rows.length*rh,stroke:"#e8eeff","stroke-dasharray":"3 3"});
+  const px=X0+Math.min(until,tmax)/tmax*BW;
+  mk(svg,"line",{x1:px,x2:px,y1:nar?20:28,y2:top+rows.length*rh,stroke:"var(--tx)","stroke-dasharray":"3 3"});
 }
+function redraw(svg){const a=last.get(svg);if(a)gantt(svg,...a);}
+let lastW=0;
+addEventListener("resize",()=>{const w=document.body.clientWidth;if(w!==lastW){lastW=w;last.forEach((a,svg)=>gantt(svg,...a));}});
 function play(svg,rows,bars,tmax,unit,doneCb){
   if(RM){gantt(svg,rows,bars,tmax,tmax,unit);doneCb&&doneCb();return;}
   let t=0;
@@ -125,14 +173,14 @@ function play(svg,rows,bars,tmax,unit,doneCb){
 /* ---------- scene 1: shared bus ---------- */
 $("busGo").onclick=()=>{
   const rows=["channel bus (8 pins)","die 0 (CE0#)","die 1","die 2 (CE2#)","die 3"];
-  const C="#a78bfa",A="#f2b13c",D="#4dd0c4",M="#3a4468";
+  const C="var(--violet)",A="var(--amber)",D="var(--cyan)",M="var(--slab)";
   const bars=[
-    {row:0,t0:0,t1:4,color:C,label:"CMD 00h"},{row:0,t0:4,t1:12,color:A,label:"ADDR ×5"},
+    {row:0,t0:0,t1:4,color:C,label:"CMD 00h"},{row:0,t0:4,t1:12,color:A,label:"ADDR ×5",ln:"A"},
     {row:1,t0:12,t1:52,color:M,label:"tR — media busy (bus FREE)"},
-    {row:0,t0:14,t1:18,color:C,label:"CMD 80h"},{row:0,t0:18,t1:26,color:A,label:"ADDR"},
-    {row:0,t0:26,t1:46,color:D,label:"DATA-IN → die 2"},
+    {row:0,t0:14,t1:18,color:C,label:"CMD 80h"},{row:0,t0:18,t1:26,color:A,label:"ADDR",ln:"A"},
+    {row:0,t0:26,t1:46,color:D,label:"DATA-IN → die 2",ln:"IN"},
     {row:3,t0:46,t1:100,color:M,label:"tPROG — media busy"},
-    {row:0,t0:52,t1:72,color:D,label:"DATA-OUT ← die 0"},
+    {row:0,t0:52,t1:72,color:D,label:"DATA-OUT ← die 0",ln:"OUT"},
   ];
   play($("busSvg"),rows,bars,100,"");
 };
@@ -145,14 +193,14 @@ function pipeRun(){
   const bars=[];let total;
   if(pipeOn){
     for(let p=0;p<4;p++){
-      bars.push({row:0,t0:p*50,t1:p*50+50,color:"#3a4468",label:"load P"+p+" (50µs)"});
-      bars.push({row:1,t0:(p+1)*50,t1:(p+1)*50+50,color:"#4dd0c4",label:"xfer P"+p});
+      bars.push({row:0,t0:p*50,t1:p*50+50,color:"var(--slab)",label:"load P"+p+" (50µs)"});
+      bars.push({row:1,t0:(p+1)*50,t1:(p+1)*50+50,color:"var(--cyan)",label:"xfer P"+p});
     }
     total=250;
   } else {
     for(let p=0;p<4;p++){
-      bars.push({row:0,t0:p*100,t1:p*100+50,color:"#3a4468",label:"load P"+p});
-      bars.push({row:1,t0:p*100+50,t1:p*100+100,color:"#4dd0c4",label:"xfer P"+p});
+      bars.push({row:0,t0:p*100,t1:p*100+50,color:"var(--slab)",label:"load P"+p});
+      bars.push({row:1,t0:p*100+50,t1:p*100+100,color:"var(--cyan)",label:"xfer P"+p});
     }
     total=400;
   }
@@ -169,16 +217,16 @@ function planeRun(){
   const rows=["bus (data-in)","plane 0","plane 1"];
   const bars=[];let total;
   if(dual){
-    bars.push({row:0,t0:0,t1:50,color:"#4dd0c4",label:"data P0"});
-    bars.push({row:0,t0:50,t1:100,color:"#4dd0c4",label:"data P1"});
-    bars.push({row:1,t0:100,t1:1600,color:"#3a4468",label:"tPROG both planes together (1.5ms)"});
-    bars.push({row:2,t0:100,t1:1600,color:"#3a4468",label:"tPROG"});
+    bars.push({row:0,t0:0,t1:50,color:"var(--cyan)",label:"data P0"});
+    bars.push({row:0,t0:50,t1:100,color:"var(--cyan)",label:"data P1"});
+    bars.push({row:1,t0:100,t1:1600,color:"var(--slab)",label:"tPROG both planes together (1.5ms)"});
+    bars.push({row:2,t0:100,t1:1600,color:"var(--slab)",label:"tPROG"});
     total=1600;
   } else {
-    bars.push({row:0,t0:0,t1:50,color:"#4dd0c4",label:"data P0"});
-    bars.push({row:1,t0:50,t1:1550,color:"#3a4468",label:"tPROG (1.5ms)"});
-    bars.push({row:0,t0:1550,t1:1600,color:"#4dd0c4",label:"data P1"});
-    bars.push({row:2,t0:1600,t1:3100,color:"#3a4468",label:"tPROG (1.5ms)"});
+    bars.push({row:0,t0:0,t1:50,color:"var(--cyan)",label:"data P0"});
+    bars.push({row:1,t0:50,t1:1550,color:"var(--slab)",label:"tPROG (1.5ms)"});
+    bars.push({row:0,t0:1550,t1:1600,color:"var(--cyan)",label:"data P1"});
+    bars.push({row:2,t0:1600,t1:3100,color:"var(--slab)",label:"tPROG (1.5ms)"});
     total=3100;
   }
   play($("planeSvg"),rows,bars,3100,"µs",()=>{
@@ -197,16 +245,16 @@ $("aiprGo").onclick=()=>{
   const rows=["plane 0","plane 1"];
   const bars=[];let lat2;
   if(!aipr){
-    bars.push({row:0,t0:0,t1:60,color:"#4dd0c4",label:"read A (60µs)"});
-    bars.push({row:0,t0:60,t1:120,color:"#f2b13c",label:"read B — queued behind A"});
+    bars.push({row:0,t0:0,t1:60,color:"var(--cyan)",label:"read A (60µs)"});
+    bars.push({row:0,t0:60,t1:120,color:"var(--amber)",label:"read B — queued behind A"});
     lat2=120;
   } else if(samePlane){
-    bars.push({row:0,t0:0,t1:60,color:"#4dd0c4",label:"read A"});
-    bars.push({row:0,t0:60,t1:120,color:"#f2b13c",label:"read B — same-plane collision!"});
+    bars.push({row:0,t0:0,t1:60,color:"var(--cyan)",label:"read A"});
+    bars.push({row:0,t0:60,t1:120,color:"var(--amber)",label:"read B — same-plane collision!"});
     lat2=120;
   } else {
-    bars.push({row:0,t0:0,t1:60,color:"#4dd0c4",label:"read A"});
-    bars.push({row:1,t0:0,t1:60,color:"#f2b13c",label:"read B — concurrent"});
+    bars.push({row:0,t0:0,t1:60,color:"var(--cyan)",label:"read A"});
+    bars.push({row:1,t0:0,t1:60,color:"var(--amber)",label:"read B — concurrent"});
     lat2=60;
   }
   play($("aiprSvg"),rows,bars,120,"µs",()=>{
