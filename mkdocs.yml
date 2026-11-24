@@ -16,6 +16,7 @@ watch:
   - includes
   - hooks
   - scripts/build_glossary.py
+  - scripts/build_visual_index.py
 
 # Build-time steps that live in this repo (see each file's docstring)
 hooks:
@@ -152,6 +153,7 @@ nav:
       - animations/ecc-bch-ldpc.md
   - Reference:
       - reference/glossary.md
+      - reference/visual-index.md
       - reference/formulas.md
       - reference/quizzes.md
       - reference/specs.md

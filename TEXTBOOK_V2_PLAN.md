@@ -1,8 +1,10 @@
 # Textbook v2 — the big fix (plan)
 
-> Status: **Phases 0–1 done; Phase 2 done: all seven chapters and Supplements A–E; Phase 3 done: Ch 0 and Supps F–I (24 Nov 2026); the home page's "Start here" block moves to Phase 5 with the rest of the home page. Phases 4–5 next.** Work is
-> committed and pushed on the `textbook-v2` branch; fast-forwarding `main` to it publishes the live
-> site (last published after the Ch 1 pilot). Next: the rest of Phase 2, then Phases 3 and 4.
+> Status: **All phases done (24 Nov 2026).** Phase 2: all seven chapters and Supplements A–E.
+> Phase 3: Ch 0 and Supps F–I. Phase 4: all 13 animations (light theme, phone layout). Phase 5:
+> integration, the animation wrapper pages, gallery search sections and the generated visual
+> index. Work is committed and pushed on the `textbook-v2` branch; fast-forwarding `main` to it
+> publishes the live site (last published 24 Nov 2026, after Phase 3).
 
 ## Context
 
@@ -266,9 +268,26 @@ Groups:
 The 13 wrapper pages will lead with "what you'll learn / try this". The "Book anchor: Realizes
 Figs…" line moves into a provenance note.
 
+**Done (24 Nov 2026).** All 13 files, one commit each (or per group). The shared approach:
+
+- A small head script copies the site's theme into the frame (or follows the OS when the file is
+  opened on its own), and every drawn colour is a `var(--token)` with a light value.
+- Each SVG scene is drawn at a pixel-true width (its viewBox matches its rendered width), so 11–13
+  unit labels are 11–13 px on a phone and a desktop alike. Below a breakpoint (560–640 px), each
+  scene switches to a narrow arrangement: stacked panes, transposed grids, top-to-bottom flows.
+  Scenes redraw on resize and when a hidden tab opens.
+- Phone CSS: smaller padding, 40 px touch targets, sliders kept with their labels.
+- Checked per file at 375 px (dark) and on a desktop (light) by measuring, in the frame, label
+  size, text overlap, text outside the drawing or its box, and page overflow.
+
+Defects fixed on the way: the Toy SSD legend; `enum_routing`'s sideways overflow (its address
+select); `nand-flash-animation` was in quirks mode, drew several labels black on its dark stage,
+and had a transparent page; the calculators' six-nines label rounded up to 100%; the QoS markers'
+labels collided; `stripe_raid`'s disabled button looked enabled.
+
 ## Phase 5 — Integration
 
-**Done (24 Nov 2026):** nav for the new pages, the home learning path (00 → 07, A–I), the Start-here block, cross-links into Ch 0 and F–I, both Codas, the quizzes intro and index, new formulas (Little's law, throughput, tail fan-out, indirection-unit map size, inherent OP, PLP energy, expected errors), spec pointers, and the new pages' acronyms. **Still to do:** the generated Visual index, gallery cards as separate search sections, and the animation wrapper pages (with Phase 4).
+**Done (24 Nov 2026):** nav for the new pages, the home learning path (00 → 07, A–I), the Start-here block, cross-links into Ch 0 and F–I, both Codas, the quizzes intro and index, new formulas (Little's law, throughput, tail fan-out, indirection-unit map size, inherent OP, PLP energy, expected errors), spec pointers, and the new pages' acronyms. Then the rest: the 13 wrapper pages ("What you'll learn", "Try this", the embed, "Where it appears", provenance), gallery cards as separate search sections, and the visual index (`scripts/build_visual_index.py`, run in CI; the atlas now points to it as production notes).
 
 - **Nav**:
   - Ch 0 goes first under Core Chapters, and Supplements F–I are added;

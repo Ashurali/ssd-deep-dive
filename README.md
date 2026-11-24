@@ -18,6 +18,7 @@ GitHub Pages. The work in progress is planned in `TEXTBOOK_V2_PLAN.md`.
 ```bash
 pip install -r requirements.txt
 python scripts/build_glossary.py   # regenerate the master glossary
+python scripts/build_visual_index.py  # regenerate the visual index
 python scripts/check_content.py    # content-rule report (see below)
 mkdocs serve                       # http://127.0.0.1:8000/ssd-deep-dive/
 ```
@@ -63,6 +64,10 @@ What the figure shows, in a sentence or two.
   The checker computes the exact floor.
 - If a figure is generated, keep its generator in `scripts/figures/`, as
   `vt_bells.py` is.
+- The caption's first sentence names the figure in the
+  [visual index](docs/reference/visual-index.md), so make it say what the
+  picture shows. Run `python scripts/build_visual_index.py` after adding or
+  re-captioning a figure (CI regenerates it too).
 
 **Key vocabulary** is a `| Term | 中文 | Meaning |` table:
 

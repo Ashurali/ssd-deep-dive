@@ -49,6 +49,7 @@ Signposts: ⭐ marks an important section and ⭐⭐ a core one, and 🎬 marks 
   <a class="sdd-tile" href="reference/glossary/"><span class="i">🔤</span><span class="t">Glossary</span><span class="d">every term &amp; acronym, EN + 中文</span></a>
   <a class="sdd-tile" href="reference/formulas/"><span class="i">🧮</span><span class="t">Formulas</span><span class="d">WA · TBW · UCL · dmin</span></a>
   <a class="sdd-tile" href="animations/"><span class="i">🎬</span><span class="t">Animations</span><span class="d">13 interactive builds</span></a>
+  <a class="sdd-tile" href="reference/visual-index/"><span class="i">🖼️</span><span class="t">Visual index</span><span class="d">every figure, by page &amp; concept</span></a>
   <a class="sdd-tile" href="reference/quizzes/"><span class="i">✅</span><span class="t">Quizzes</span><span class="d">check yourself, per chapter</span></a>
 </div>
 

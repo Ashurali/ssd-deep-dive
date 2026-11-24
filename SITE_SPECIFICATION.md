@@ -74,6 +74,7 @@ ssd-deep-dive/                      # suggested repo name; my call at creation
     │   └── <one wrapper .md per animation>
     └── reference/
         ├── glossary.md             # AUTO-GENERATED master glossary (see §6.3)
+        ├── visual-index.md         # AUTO-GENERATED: every figure and animation, by page and concept
         ├── formulas.md             # AUTO-EXTRACTED key formulas cheat sheet (see §6.4)
         ├── quizzes.md              # index linking every guide's self-quiz section
         └── tags.md                 # tags index page (Material tags plugin target)

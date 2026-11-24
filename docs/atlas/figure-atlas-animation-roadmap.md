@@ -16,6 +16,8 @@ source_anchor: "catalog of all 359 book figures"
 
 *Production notes: the survey of every figure in《深入淺出SSD》that planned this site's animations. It covers what each figure shows, which ones carry the mental models that matter, and what it takes to make them move. Method: caption extraction across all 459 pages of the book (359 figures: Ch1=43, Ch2=34, Ch3=62, Ch4=57, Ch5=68, Ch6=67, Ch7=28), cross-referenced against the chapter text, plus visual checks of the anchor figures. Figures are cited by book page for readers who own the book. The site never reproduces them; every animation is an original build.*
 
+*To find a picture on this site, use the [visual index](../reference/visual-index.md): every original figure and animation, by page and by concept.*
+
 ---
 
 ## Part 0 — Reading a figure: what deserves to move
