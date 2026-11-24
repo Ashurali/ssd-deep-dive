@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The SSD Calculator Bundle — bandwidth, WA/TBW, endurance, QoS</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+/* Theme: inside the site the page's theme is copied in (the site also sets
+   data-theme on load and on every toggle); on its own, follow the OS. */
+(function(){var r=document.documentElement;
+if(window.self!==window.top){try{var s=window.parent.document.body.getAttribute("data-md-color-scheme");if(s)r.setAttribute("data-theme",s==="slate"?"dark":"light")}catch(e){}return}
+var m=matchMedia("(prefers-color-scheme: light)");function f(){r.setAttribute("data-theme",m.matches?"light":"dark")}f();
+if(m.addEventListener)m.addEventListener("change",f);else if(m.addListener)m.addListener(f)})();
+</script>
 <style>
-:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9;
+  --hover-amber:rgba(242,177,60,.12)}
+:root[data-theme="light"]{--bg:#ffffff;--panel:#f4f6fb;--line:#cfd6e6;--cyan:#0b7f76;--amber:#8a5c00;--violet:#5b3fc0;--red:#c0392b;--tx:#0a0e1c;--dim:#4a5578;
+  --hover-amber:rgba(138,92,0,.10)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
 h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
@@ -17,17 +28,28 @@ h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
 .row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:8px 0}
 label{color:var(--dim);font-size:13px}
+.sl{display:inline-flex;align-items:center;gap:8px}
 input[type=range]{accent-color:var(--cyan);width:160px;vertical-align:middle}
 select{font:13px "IBM Plex Mono";background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
 button.act{font:600 13px "IBM Plex Sans";background:transparent;color:var(--amber);border:1px solid var(--amber);border-radius:8px;padding:5px 11px;cursor:pointer}
+button.act:hover{background:var(--hover-amber)}
 .mono{font-family:"IBM Plex Mono";font-size:13px}
 .big{font-family:"IBM Plex Mono";font-size:22px;color:var(--amber)}
-.out{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;font-family:"IBM Plex Mono";font-size:13px;line-height:1.9}
+.out{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;font-family:"IBM Plex Mono";font-size:13px;line-height:1.9;overflow-wrap:anywhere}
 .out b{color:var(--cyan)}
 .note{color:var(--dim);font-size:13px;margin-top:8px}
 svg{display:block;width:100%;height:auto}
 .hidden{display:none}
 footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+@media (max-width:600px){
+  body{padding:12px 10px} .panel{padding:10px} h1{font-size:22px}
+  .tabs button{flex:1 1 40%;min-height:40px}
+  .row{gap:8px}
+  .sl{display:flex;width:100%} .sl input{flex:1 1 120px;width:auto;height:40px}
+  select{min-height:40px}
+  button.act{min-height:40px;flex:1 1 auto}
+  .big{font-size:19px}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -47,7 +69,7 @@ footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-
   <div class="row">
     <label>generation <select id="gen"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></label>
     <label>lanes <select id="lanes"><option>1</option><option>2</option><option selected>4</option><option>8</option><option>16</option></select></label>
-    <label>MPS <span class="mono" id="mpsV">256</span> B</label><input type="range" id="mps" min="7" max="12" value="8" step="1">
+    <label class="sl">MPS <span class="mono" id="mpsV">256</span> B<input type="range" id="mps" min="7" max="12" value="8" step="1"></label>
   </div>
   <div class="out" id="o0"></div>
   <p class="note">Raw bits/s × encoding efficiency = usable link rate; every TLP then pays ~24–28 B of header per MPS-byte payload — the §5.13 overhead model. The book's Gen3 ×4 example lands at ~1.9 GB/s effective with MPS 512, exactly what a good NVMe drive achieves. IOPS ceiling = effective bandwidth ÷ 4 KB.</p>
@@ -56,24 +78,24 @@ footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-
 <!-- J2 -->
 <div class="panel hidden" id="p1">
   <div class="row">
-    <label>capacity <span class="mono" id="capV">200</span> GB</label><input type="range" id="cap" min="120" max="4000" value="200" step="40">
-    <label>P/E cycles <span class="mono" id="pecV">3000</span></label><input type="range" id="pec" min="500" max="30000" value="3000" step="500">
-    <label>OP <span class="mono" id="opV">28</span>%</label><input type="range" id="opR" min="7" max="100" value="28">
-    <label>warranty <span class="mono" id="yrV">5</span> yr</label><input type="range" id="yr" min="1" max="10" value="5">
+    <label class="sl">capacity <span class="mono" id="capV">200</span> GB<input type="range" id="cap" min="120" max="4000" value="200" step="40"></label>
+    <label class="sl">P/E cycles <span class="mono" id="pecV">3000</span><input type="range" id="pec" min="500" max="30000" value="3000" step="500"></label>
+    <label class="sl">OP <span class="mono" id="opV">28</span>%<input type="range" id="opR" min="7" max="100" value="28"></label>
+    <label class="sl">warranty <span class="mono" id="yrV">5</span> yr<input type="range" id="yr" min="1" max="10" value="5"></label>
     <button class="act" id="s3710">S3710 preset</button>
   </div>
   <div class="out" id="o1"></div>
-  <svg id="waPlot" viewBox="0 0 940 190"></svg>
+  <svg id="waPlot" viewBox="0 0 940 190" role="img" aria-label="Worst-case write amplification against over-provisioning"></svg>
   <p class="note">WA here is the book's worst-case model (garbage spread evenly): WA = (1+OP)/OP — real greedy GC does better, so treat it as an upper bound. Then TBW ≈ capacity × P/E ÷ WA and DWPD = TBW ÷ (365 × years × capacity). The curve is Fig 4-25 recomputed live.</p>
 </div>
 
 <!-- J3 -->
 <div class="panel hidden" id="p2">
   <div class="row">
-    <label>FFR <span class="mono" id="ffrV">3</span>%</label><input type="range" id="ffr" min="1" max="10" value="3">
-    <label>UBER 1e-<span class="mono" id="uberV">16</span></label><input type="range" id="uber" min="14" max="18" value="16">
-    <label>TBW <span class="mono" id="tbwV">100</span></label><input type="range" id="tbw" min="20" max="2000" value="100" step="20">
-    <label>hours needed <span class="mono" id="hrsV">400</span></label><input type="range" id="hrs" min="50" max="3000" value="400" step="50">
+    <label class="sl">FFR <span class="mono" id="ffrV">3</span>%<input type="range" id="ffr" min="1" max="10" value="3"></label>
+    <label class="sl">UBER 1e-<span class="mono" id="uberV">16</span><input type="range" id="uber" min="14" max="18" value="16"></label>
+    <label class="sl">TBW <span class="mono" id="tbwV">100</span><input type="range" id="tbw" min="20" max="2000" value="100" step="20"></label>
+    <label class="sl">hours needed <span class="mono" id="hrsV">400</span><input type="range" id="hrs" min="50" max="3000" value="400" step="50"></label>
   </div>
   <div class="out" id="o2"></div>
   <p class="note">JESD218A's two inequalities with UCL(0 failures)=0.92; allowed data errors comes from reverse-looking-up the UCL table (0.92, 2.02, 3.11, 4.18, 5.24…). The temperature row uses the book's Table 7-9 shape: hotter = shorter. Defaults reproduce the Ch7 §7.8 worked example: 31 drives, ≤1 data error, 66 °C.</p>
@@ -82,10 +104,10 @@ footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-
 <!-- J4 -->
 <div class="panel hidden" id="p3">
   <div class="row">
-    <label>tail heaviness <span class="mono" id="tailV">moderate</span></label><input type="range" id="tail" min="1" max="10" value="4">
-    <label>confidence: <span class="big" id="ninesLab">99.9%</span></label><input type="range" id="nines" min="0" max="4" value="1" step="1">
+    <label class="sl">tail heaviness <span class="mono" id="tailV">moderate</span><input type="range" id="tail" min="1" max="10" value="4"></label>
+    <label class="sl">confidence: <span class="big" id="ninesLab">99.9%</span><input type="range" id="nines" min="0" max="4" value="1" step="1"></label>
   </div>
-  <svg id="qosSvg" viewBox="0 0 940 240"></svg>
+  <svg id="qosSvg" viewBox="0 0 940 240" role="img" aria-label="Latency histogram with a log-normal tail"></svg>
   <div class="out" id="o3"></div>
   <p class="note">A latency histogram with a log-normal tail. Drag the "nines": the average barely moves, but each extra nine walks the cursor deep into the tail — that's why enterprise buyers read QoS, not averages (Fig 1-20), and why FIO prints clat percentiles (§7.1.1).</p>
 </div>
@@ -95,8 +117,17 @@ footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const scn=["p0","p1","p2","p3"],tb=["t0","t1","t2","t3"];
-tb.forEach((t,i)=>$(t).onclick=()=>{scn.forEach((s,j)=>$(s).classList.toggle("hidden",i!==j));tb.forEach((u,j)=>$(u).classList.toggle("on",i===j));});
+const NS="http://www.w3.org/2000/svg";
+/* colours are CSS variables, so a theme switch recolours a drawing at once;
+   var() goes through style, which every browser resolves */
+function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a){const v=a[k];if(typeof v==="string"&&v.startsWith("var("))e.style.setProperty(k,v);else e.setAttribute(k,v);}svg.appendChild(e);return e;}
+function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"var(--dim)","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;}
+/* the plots' viewBox matches their drawn width, so 12 unit text is 12 px on a
+   phone and on a desktop alike; long captions wrap */
+const sceneW=svg=>Math.round(Math.max(300,Math.min(940,svg.getBoundingClientRect().width)));
+const shown=svg=>svg.getBoundingClientRect().width>0;   // hidden plots are drawn when their tab opens
+const tw=(s,size)=>s.length*size*0.56;
+function wrap(s,size,w){const out=[];let cur="";for(const wd of s.split(" ")){const t=cur?cur+" "+wd:wd;if(tw(t,size)<=w||!cur)cur=t;else{out.push(cur);cur=wd;}}if(cur)out.push(cur);return out;}
 
 /* ---- J1: PCIe bandwidth ---- */
 const GENS={1:[2.5,.8],2:[5,.8],3:[8,128/130],4:[16,128/130],5:[32,128/130],6:[64,242/256],7:[128,242/256]};
@@ -128,19 +159,21 @@ function j2(){
     "worst-case WA = (1+OP)/OP = <b>"+wa.toFixed(2)+"</b><br>"+
     "TBW ≈ "+cap+" GB × "+pe+" ÷ "+wa.toFixed(2)+" = <span class='big'>"+Math.round(tbw)+" TB</span><br>"+
     "DWPD = "+Math.round(tbw)+" TB ÷ (365 × "+yr+" × "+cap+" GB) = <span class='big'>"+dwpd.toFixed(2)+"</span>";
-  // Fig 4-25 curve: WA vs OP
-  const svg=$("waPlot");svg.innerHTML="";
-  const mk=(t,a)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
+  plotWA(op);
+}
+// Fig 4-25 curve: WA vs OP
+function plotWA(op){
+  const svg=$("waPlot");
+  if(!shown(svg))return;
+  const W=sceneW(svg),X0=20,X1=W-20,base=160,X=o=>X0+(o-0.05)/0.95*(X1-X0),Y=o=>base-Math.min(150,((1+o)/o-1)/20*150);
+  const cap=wrap("OP → (Fig 4-25: more reserve, less amplification — steeply at first)",12,W-20);
+  svg.setAttribute("viewBox",`0 0 ${W} ${base+12+cap.length*16}`);svg.innerHTML="";
   let d="";
-  for(let o=0.05;o<=1.0;o+=0.01){
-    const w=(1+o)/o, x=60+(o-0.05)/0.95*840, y=160-Math.min(150,(w-1)/20*150);
-    d+=(d?"L":"M")+x.toFixed(1)+","+y.toFixed(1);
-  }
-  mk("path",{d,fill:"none",stroke:"#4dd0c4","stroke-width":2.5});
-  mk("line",{x1:60,x2:900,y1:160,y2:160,stroke:"#26304d"});
-  const cx=60+(op-0.05)/0.95*840, cy=160-Math.min(150,((1+op)/op-1)/20*150);
-  mk("circle",{cx,cy,r:6,fill:"#f2b13c"});
-  const t=mk("text",{x:480,y:185,fill:"#8ea0c9","font-size":11,"text-anchor":"middle"});t.textContent="OP → (Fig 4-25: more reserve, less amplification — steeply at first)";
+  for(let o=0.05;o<=1.0;o+=0.01) d+=(d?"L":"M")+X(o).toFixed(1)+","+Y(o).toFixed(1);
+  mk(svg,"path",{d,fill:"none",stroke:"var(--cyan)","stroke-width":2.5});
+  mk(svg,"line",{x1:X0,x2:X1,y1:base,y2:base,stroke:"var(--line)"});
+  mk(svg,"circle",{cx:X(op),cy:Y(op),r:6,fill:"var(--amber)"});
+  cap.forEach((l,i)=>txt(svg,W/2,base+22+i*16,l,"var(--dim)",12));
 }
 ["cap","pec","opR","yr"].forEach(id=>$(id).oninput=j2);
 $("s3710").onclick=()=>{$("cap").value=200;$("pec").value=25000;$("opR").value=42;$("yr").value=5;j2();};
@@ -173,7 +206,7 @@ function j4(){
   const tail=+$("tail").value, nines=+$("nines").value;
   $("tailV").textContent=["","tiny","light","light","moderate","moderate","heavy","heavy","brutal","brutal","brutal"][tail];
   const conf=[0.99,0.999,0.9999,0.99999,0.999999][nines];
-  $("ninesLab").textContent=(conf*100).toFixed(conf>=0.9999?3:1).replace(/\.?0+$/,"")+"%";
+  $("ninesLab").textContent=(conf*100).toFixed(nines+1).replace(/\.?0+$/,"")+"%";   // 99 … 99.9999, never rounded up to 100
   // log-normal: mu=ln(100µs), sigma from tail slider
   const mu=Math.log(100), sg=0.25+tail*0.09;
   // percentile via inverse erf approximation (Beasley-Springer/Moro-lite): use binary search on CDF
@@ -182,27 +215,47 @@ function j4(){
   let lo=1,hi=1e6;
   for(let i=0;i<60;i++){const mid=(lo+hi)/2;(cdf(mid)<conf)?lo=mid:hi=mid;}
   const pv=lo, mean=Math.exp(mu+sg*sg/2);
-  // histogram
-  const svg=$("qosSvg");svg.innerHTML="";
-  const mk=(t,a)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
-  const X=v=>60+(Math.log10(v)-1)/(4.5)*840;  // 10µs .. ~300ms log axis
-  let peak=0;const ys=[];
-  for(let px=0;px<=840;px+=6){
-    const v=Math.pow(10,1+px/840*4.5);
-    const pdf=Math.exp(-((Math.log(v)-mu)**2)/(2*sg*sg))/(v*sg);
-    ys.push([60+px,pdf]);peak=Math.max(peak,pdf);
-  }
-  let d="";ys.forEach(([x,p],i)=>{d+=(i?"L":"M")+x+","+(200-p/peak*170);});
-  mk("path",{d,fill:"none",stroke:"#4dd0c4","stroke-width":2.5});
-  mk("line",{x1:60,x2:900,y1:200,y2:200,stroke:"#26304d"});
-  [[X(mean),"#8ea0c9","mean "+mean.toFixed(0)+"µs"],[X(pv),"#f2b13c",(conf*100)+"% @ "+(pv>=1000?(pv/1000).toFixed(1)+"ms":pv.toFixed(0)+"µs")]].forEach(([x,c,l])=>{
-    mk("line",{x1:x,x2:x,y1:20,y2:200,stroke:c,"stroke-dasharray":"5 4"});
-    const t=mk("text",{x:Math.min(x,830),y:16,fill:c,"font-size":11,"text-anchor":"middle"});t.textContent=l;
-  });
-  const ax=mk("text",{x:480,y:228,fill:"#8ea0c9","font-size":11,"text-anchor":"middle"});ax.textContent="latency (log scale) →";
+  Q={mu,sg,pv,mean,lab:$("ninesLab").textContent};
+  plotQos();
   $("o3").innerHTML="mean: <b>"+mean.toFixed(0)+" µs</b> — but the worst command in "+$("ninesLab").textContent+" of I/Os takes <span class='big'>"+(pv>=1000?(pv/1000).toFixed(2)+" ms":pv.toFixed(0)+" µs")+"</span>";
 }
+let Q=null;
+// histogram; the mean and percentile labels get a row each, so they never collide
+function plotQos(){
+  const svg=$("qosSvg");
+  if(!shown(svg)||!Q)return;
+  const {mu,sg,pv,mean,lab}=Q;
+  const W=sceneW(svg),X0=20,X1=W-20,base=200,span=X1-X0;
+  const X=v=>X0+(Math.log10(v)-1)/(4.5)*span;  // 10µs .. ~300ms log axis
+  svg.setAttribute("viewBox",`0 0 ${W} 232`);svg.innerHTML="";
+  let peak=0;const ys=[];
+  for(let px=0;px<=span;px+=3){
+    const v=Math.pow(10,1+px/span*4.5);
+    const pdf=Math.exp(-((Math.log(v)-mu)**2)/(2*sg*sg))/(v*sg);
+    ys.push([X0+px,pdf]);peak=Math.max(peak,pdf);
+  }
+  let d="";ys.forEach(([x,p],i)=>{d+=(i?"L":"M")+x.toFixed(1)+","+(base-p/peak*150).toFixed(1);});
+  mk(svg,"path",{d,fill:"none",stroke:"var(--cyan)","stroke-width":2.5});
+  mk(svg,"line",{x1:X0,x2:X1,y1:base,y2:base,stroke:"var(--line)"});
+  [[X(mean),"var(--dim)","mean "+mean.toFixed(0)+"µs",16],[X(pv),"var(--amber)",lab+" @ "+(pv>=1000?(pv/1000).toFixed(1)+"ms":pv.toFixed(0)+"µs"),32]].forEach(([x,c,l,y])=>{
+    mk(svg,"line",{x1:x,x2:x,y1:38,y2:base,stroke:c,"stroke-dasharray":"5 4"});
+    const h=tw(l,12)/2+2;
+    txt(svg,Math.max(10+h,Math.min(W-10-h,x)),y,l,c,12);
+  });
+  txt(svg,W/2,base+22,"latency (log scale) →","var(--dim)",12);
+}
 ["tail","nines"].forEach(id=>$(id).oninput=j4); j4();
+
+/* ---- tabs and resizing ---- */
+const scn=["p0","p1","p2","p3"],tb=["t0","t1","t2","t3"];
+const plots=[()=>{},j2,()=>{},plotQos];
+tb.forEach((t,i)=>$(t).onclick=()=>{
+  scn.forEach((s,j)=>$(s).classList.toggle("hidden",i!==j));
+  tb.forEach((u,j)=>$(u).classList.toggle("on",i===j));
+  plots[i]();
+});
+let lastW=0;
+addEventListener("resize",()=>{const w=document.body.clientWidth;if(w!==lastW){lastW=w;j2();plotQos();}});
 </script>
 </body>
 </html>
