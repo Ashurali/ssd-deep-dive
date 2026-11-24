@@ -1,19 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Why SSDs need an FTL — NAND flash, animated</title>
+<script>
+/* Theme: inside the site the page's theme is copied in (the site also sets
+   data-theme on load and on every toggle); on its own, follow the OS. */
+(function(){var r=document.documentElement;
+if(window.self!==window.top){try{var s=window.parent.document.body.getAttribute("data-md-color-scheme");if(s)r.setAttribute("data-theme",s==="slate"?"dark":"light")}catch(e){}return}
+var m=matchMedia("(prefers-color-scheme: light)");function f(){r.setAttribute("data-theme",m.matches?"light":"dark")}f();
+if(m.addEventListener)m.addEventListener("change",f);else if(m.addListener)m.addListener(f)})();
+</script>
 <style>
   :root{
-    --bg:#0E1017; --stage:#12141D; --panel:#1B1F2E; --panel2:#232838;
+    --bg:#0E1017; --stage:#12141D; --stage-hi:#181C29; --panel:#1B1F2E; --panel2:#232838;
     --line:#333B54; --line-soft:#242B40; --grid:#1C2233;
-    --ink:#EAECF4; --muted:#8B93A9; --faint:#5A627A;
-    --charge:#FFB020; --charge-fill:rgba(255,176,32,.15); --charge-glow:rgba(255,176,32,.45);
+    --ink:#EAECF4; --muted:#8B93A9; --faint:#7A829A; --cap:#C9CEDD;
+    --charge:#FFB020; --charge-hover:#ffbe42; --on-charge:#12141D; --on-charge-dim:rgba(18,20,29,.6);
+    --charge-fill:rgba(255,176,32,.15); --charge-glow:rgba(255,176,32,.45);
     --invalid:#C65A44; --invalid-fill:rgba(198,90,68,.13);
-    --ok:#5CC79B; --deny:#E0574B;
+    --ok:#5CC79B; --deny:#E0574B; --ok-fill:rgba(92,199,155,.10); --deny-fill:rgba(224,87,75,.10);
+    --page-fill:rgba(255,255,255,.015); --sub:#20283C; --sub-hot:#3A2E12; --track:#161B29;
     --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
+  /* light theme (site toggle, or the OS when opened on its own) */
+  :root[data-theme="light"]{
+    --bg:#ffffff; --stage:#f6f8fc; --stage-hi:#ffffff; --panel:#ffffff; --panel2:#eef1f7;
+    --line:#b9c2d6; --line-soft:#d6dce8; --grid:#e6eaf3;
+    --ink:#0a0e1c; --muted:#4a5578; --faint:#626b86; --cap:#2a3350;
+    --charge:#8a5c00; --charge-hover:#a26e0c; --on-charge:#ffffff; --on-charge-dim:rgba(255,255,255,.75);
+    --charge-fill:rgba(138,92,0,.10); --charge-glow:rgba(138,92,0,.35);
+    --invalid:#b0432c; --invalid-fill:rgba(176,67,44,.10);
+    --ok:#1b7a3d; --deny:#c0392b; --ok-fill:rgba(27,122,61,.10); --deny-fill:rgba(192,57,43,.10);
+    --page-fill:rgba(10,14,28,.025); --sub:#e4e8f1; --sub-hot:#f6e8c8; --track:#e9edf5;
+  }
   *{box-sizing:border-box}
-  html,body{margin:0;background:transparent;color:var(--ink);font-family:var(--sans)}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans)}
   .wrap{max-width:1040px;margin:0 auto;padding:20px 18px 34px}
 
   /* Header */
@@ -29,11 +53,11 @@
        transition:color .25s,border-color .25s,background .25s}
   .tab:hover{color:var(--ink);border-color:var(--line)}
   .tab .num{color:var(--faint);transition:color .25s}
-  .tab.on{color:#12141D;background:var(--charge);border-color:var(--charge);font-weight:600}
-  .tab.on .num{color:rgba(18,20,29,.6)}
+  .tab.on{color:var(--on-charge);background:var(--charge);border-color:var(--charge);font-weight:600}
+  .tab.on .num{color:var(--on-charge-dim)}
 
   /* Stage */
-  .stage{background:radial-gradient(120% 120% at 50% -10%,#181C29 0%,var(--stage) 60%);
+  .stage{background:radial-gradient(120% 120% at 50% -10%,var(--stage-hi) 0%,var(--stage) 60%);
          border:1px solid var(--line-soft);border-radius:16px;overflow:hidden;position:relative}
   svg.board{display:block;width:100%;height:auto}
 
@@ -41,7 +65,7 @@
   .scene.active{opacity:1}
 
   /* Page cells */
-  .page{fill:rgba(255,255,255,.015);stroke:var(--line);stroke-width:1.5;
+  .page{fill:var(--page-fill);stroke:var(--line);stroke-width:1.5;
         transition:fill .5s,stroke .5s,opacity .5s,stroke-dasharray .3s}
   .page.charged{fill:var(--charge-fill);stroke:var(--charge)}
   .page.valid{fill:var(--charge-fill);stroke:var(--charge)}
@@ -56,30 +80,29 @@
   .edot{fill:var(--charge);transition:opacity .55s ease,transform .55s ease;transform-box:fill-box;transform-origin:center}
   .page-g.drained .edot{opacity:0;transform:scale(0) translateY(14px)}
 
-  /* generic svg text */
-  .lbl{font-family:var(--mono);fill:var(--muted);font-size:12px;letter-spacing:.06em}
-  .lbl.dim{fill:var(--faint)}
-  .lbl.charge{fill:var(--charge)}
-  .tag{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em}
+  /* generic svg text (13 units, so 11+ px even where the board is drawn smaller) */
+  .tag{font-family:var(--mono);font-size:13px;letter-spacing:.05em;fill:var(--ink)}
+  .tag.dim{fill:var(--faint)}
+  .tag.charge{fill:var(--charge)}
   .fade{opacity:0;transition:opacity .45s ease}
   .fade.show{opacity:1}
   #s1blk{transition:transform .65s cubic-bezier(.4,0,.2,1)}
   .struct{stroke:var(--line);fill:none;transition:opacity .45s ease,stroke .4s}
 
   /* scene 2 substrate bits */
-  .substrate{fill:#20283C;stroke:var(--line);transition:fill .4s,stroke .4s,filter .4s}
-  .substrate.hot{fill:#3A2E12;stroke:var(--charge)}
+  .substrate{fill:var(--sub);stroke:var(--line);transition:fill .4s,stroke .4s,filter .4s}
+  .substrate.hot{fill:var(--sub-hot);stroke:var(--charge)}
   .streak{opacity:0;stroke:var(--charge);stroke-width:2;stroke-dasharray:5 6;stroke-linecap:round}
   .streak.flowing{opacity:.85}
   @keyframes flowdown{to{stroke-dashoffset:-44}}
   .flowing{animation:flowdown .55s linear infinite}
-  .volt{fill:var(--faint);transition:fill .4s}
-  .volt.on{fill:var(--charge)}
+  .volt{fill:var(--faint);color:var(--faint);transition:fill .4s,color .4s}
+  .volt.on{fill:var(--charge);color:var(--charge)}
 
   /* scene 3 rule chips */
   .rulechip rect{fill:var(--panel);stroke:var(--line-soft);transition:stroke .35s,fill .35s}
-  .rulechip.ok.hot rect{stroke:var(--ok);fill:rgba(92,199,155,.10)}
-  .rulechip.deny.hot rect{stroke:var(--deny);fill:rgba(224,87,75,.10)}
+  .rulechip.ok.hot rect{stroke:var(--ok);fill:var(--ok-fill)}
+  .rulechip.deny.hot rect{stroke:var(--deny);fill:var(--deny-fill)}
   .rulechip text{font-family:var(--mono);font-size:13px;fill:var(--muted);transition:fill .35s}
   .rulechip.ok.hot text{fill:var(--ok)} .rulechip.deny.hot text{fill:var(--deny)}
   .denyX{stroke:var(--deny);stroke-width:4;stroke-linecap:round;opacity:0;transition:opacity .3s}
@@ -90,10 +113,10 @@
   .bigdigit.one{fill:var(--faint)} .bigdigit.zero{fill:var(--charge)}
 
   /* scene 4 meter */
-  .metertrack{fill:#161B29;stroke:var(--line-soft)}
+  .metertrack{fill:var(--track);stroke:var(--line-soft)}
   .meterfill{transition:width .7s cubic-bezier(.4,0,.2,1)}
   .meterfill.host{fill:var(--muted)} .meterfill.flash{fill:var(--charge)}
-  .metercap{font-family:var(--mono);font-size:12.5px;fill:var(--muted);letter-spacing:.04em}
+  .metercap{font-family:var(--mono);font-size:13px;fill:var(--muted);letter-spacing:.04em}
   .wanum{font-family:var(--mono);font-weight:750;fill:var(--charge);font-size:52px}
   .arrow{stroke:var(--charge);stroke-width:2;fill:none;opacity:0;transition:opacity .4s;marker-end:url(#ah)}
   .arrow.show{opacity:.9}
@@ -101,7 +124,7 @@
   /* Caption */
   .caption{display:flex;gap:12px;align-items:flex-start;margin:16px 2px 0;min-height:3.4em}
   .caption .bar{flex:0 0 3px;align-self:stretch;background:var(--charge);border-radius:2px;margin-top:2px}
-  .caption p{margin:0;font-size:15.5px;line-height:1.55;color:#C9CEDD;max-width:74ch}
+  .caption p{margin:0;font-size:15.5px;line-height:1.55;color:var(--cap);max-width:74ch}
   .caption p b{color:var(--ink);font-weight:600}
 
   /* Controls */
@@ -113,8 +136,8 @@
   .btn:active{transform:translateY(1px)}
   .btn:disabled{opacity:.35;cursor:not-allowed}
   .btn.play{width:52px;background:var(--charge);border-color:var(--charge)}
-  .btn.play:hover{background:#ffbe42}
-  .btn.play svg{fill:#12141D;stroke:#12141D}
+  .btn.play:hover{background:var(--charge-hover)}
+  .btn.play svg{fill:var(--on-charge);stroke:var(--on-charge)}
   .btn svg{width:18px;height:18px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .steps{display:flex;gap:7px;margin-left:6px}
   .dot{width:9px;height:9px;border-radius:50%;background:var(--line);transition:background .25s,transform .25s;cursor:pointer}
@@ -128,9 +151,11 @@
   :focus-visible{outline:2px solid var(--charge);outline-offset:3px}
   .reduce .scene,.reduce .page,.reduce .edot,.reduce .meterfill,.reduce .fade,.reduce .streak{transition-duration:.001s!important}
   .reduce .flowing{animation:none}
+  @media (max-width:600px){ .wrap{padding:12px 10px 24px} .tab{min-height:40px} }
   @media (max-width:560px){ .counter{display:none} h1.stagetitle{min-height:2.3em} }
 </style>
-
+</head>
+<body>
 <div class="wrap">
   <div class="eyebrow">NAND FLASH · <b>THE GRANULARITY MISMATCH</b></div>
   <h1 class="stagetitle" id="title">The smallest write</h1>
@@ -143,16 +168,16 @@
   </div>
 
   <div class="stage">
-    <svg class="board" viewBox="0 0 960 580" role="img" aria-label="Animated diagram of NAND flash operation">
+    <svg class="board" viewBox="0 0 640 400" role="img" aria-label="Animated diagram of NAND flash operation">
       <defs>
         <pattern id="lattice" width="26" height="26" patternUnits="userSpaceOnUse">
-          <path d="M26 0H0V26" fill="none" stroke="var(--grid)" stroke-width="1"/>
+          <path d="M26 0H0V26" style="fill:none;stroke:var(--grid)" stroke-width="1"/>
         </pattern>
         <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0 0L10 5L0 10z" fill="var(--charge)"/>
+          <path d="M0 0L10 5L0 10z" style="fill:var(--charge)"/>
         </marker>
       </defs>
-      <rect x="0" y="0" width="960" height="580" fill="url(#lattice)" opacity="0.55"/>
+      <rect id="lat" x="0" y="0" width="640" height="400" fill="url(#lattice)" opacity="0.55"/>
 
       <g id="s1" class="scene"></g>
       <g id="s2" class="scene"></g>
@@ -183,7 +208,25 @@
 
 <script>
 const NS="http://www.w3.org/2000/svg";
-function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+/* colours are CSS variables, so a theme switch recolours a drawing at once;
+   var() goes through style, which every browser resolves */
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a){const v=a[k];if(typeof v==="string"&&v.startsWith("var("))e.style.setProperty(k,v);else e.setAttribute(k,v);}if(p)p.appendChild(e);return e;}
+const $=id=>document.getElementById(id);
+
+/* Two layouts: a 640-unit board for wide frames and a 320-unit one for phones,
+   picked at 560 px. Each is drawn at 0.875x-1.6x, so 13-unit labels stay 11+ px. */
+const LAY={
+  wide:{W:640,H:400,
+    s1:{cell:48,gap:8,pad:13,grid:{cols:4,rows:3,slotW:116,slotH:104,rect:96,oy:62}},
+    s2:{cell:48,gap:8,pad:12,by:46,below:false},
+    s3:{cell:56,gap:10,digit:30,inset:14,stack:false},
+    s4:{cell:34,gap:6,pad:10,yB:36,gapXZ:84,m:{x:40,y:228,w:560,h:160,stack:false}}},
+  narrow:{W:320,H:452,
+    s1:{cell:54,gap:8,pad:13,grid:{cols:3,rows:4,slotW:92,slotH:88,rect:72,oy:56}},
+    s2:{cell:54,gap:8,pad:12,by:46,below:true},
+    s3:{cell:34,gap:4,digit:22,inset:8,stack:true},
+    s4:{cell:26,gap:5,pad:8,yB:36,gapXZ:18,m:{x:10,y:190,w:300,h:254,stack:true}}}
+};
 
 /* ---------- page cell helper ---------- */
 function makePage(parent,x,y,s,r){
@@ -200,54 +243,50 @@ function setPage(p,state,text){
 
 /* ================= SCENE 1 : hierarchy ================= */
 const S1={};
-(function(){
-  const g=document.getElementById("s1");
+function buildS1(L){
+  const g=$("s1");g.innerHTML="";
+  const {cell,gap,pad,grid}=L.s1;
   // detailed block, built at native scale (top-left 0,0 inside its own g)
   const bg=el("g",{id:"s1blk"},g); S1.blk=bg;
-  const cell=60,gap=10,pad=16,cols=4;
   S1.pages=[];
   for(let i=0;i<16;i++){const c=i%4,r=Math.floor(i/4);
     S1.pages.push(makePage(bg,pad+c*(cell+gap),pad+r*(cell+gap),cell,9));}
-  const W=pad*2+cols*cell+(cols-1)*gap;
-  S1.blkBorder=el("rect",{x:2,y:2,width:W-4,height:W-4,rx:13,class:"struct",transform:"",fill:"none",stroke:"var(--charge)","stroke-width":2},bg);
-  S1.blkBorder.classList.add("fade");
-  S1.native={tx:330,ty:150,w:W};
+  const W=pad*2+4*cell+3*gap;
+  S1.blkBorder=el("rect",{x:2,y:2,width:W-4,height:W-4,rx:13,class:"struct fade",fill:"none",stroke:"var(--charge)","stroke-width":2},bg);
+  S1.native={tx:(L.W-W)/2,ty:(L.H-W-30)/2,w:W};
   bg.setAttribute("transform",`translate(${S1.native.tx},${S1.native.ty}) scale(1)`);
 
-  // single page highlight ring (step0) — around page index 5
+  // single page highlight ring (step 0) — around page index 5
   const hp=S1.pages[5];
   S1.pageRing=el("rect",{x:hp.x-4,y:hp.y-4,width:cell+8,height:cell+8,rx:11,fill:"none",stroke:"var(--charge)","stroke-width":2,class:"fade"},bg);
 
-  // BLOCK label (step1)
+  // BLOCK label (step 1)
   S1.blkLabel=el("text",{x:W/2,y:W+26,"text-anchor":"middle",class:"tag charge fade"},bg);
   S1.blkLabel.textContent="1 BLOCK";
 
-  // sibling blocks + plane (step2) — drawn in scene space, hidden until step2
+  // sibling blocks + plane (step 2) — drawn in scene space, hidden until step 2
+  const {cols,rows,slotW,slotH,rect,oy}=grid,ox=(L.W-((cols-1)*slotW+rect))/2;
   const sib=el("g",{class:"fade",id:"s1sib"},g); S1.sib=sib;
-  const slotW=150,slotH=132,ox=160,oy=146;
-  S1.slot0={x:ox,y:oy};
-  for(let r=0;r<3;r++)for(let c=0;c<4;c++){
-    if(r===0&&c===0)continue; // slot0 is the main block
+  S1.slot0={x:ox,y:oy}; S1.scale=rect/W;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    if(r===0&&c===0)continue; // slot 0 is the main block
     const bx=ox+c*slotW, by=oy+r*slotH;
-    el("rect",{x:bx,y:by,width:122,height:112,rx:11,fill:"rgba(255,255,255,.02)",stroke:"var(--line-soft)","stroke-width":1.5},sib);
+    el("rect",{x:bx,y:by,width:rect,height:rect,rx:11,fill:"var(--page-fill)",stroke:"var(--line-soft)","stroke-width":1.5},sib);
     for(let k=1;k<4;k++){ // faint inner grid
-      el("line",{x1:bx+k*30.5,y1:by+8,x2:bx+k*30.5,y2:by+104,stroke:"var(--line-soft)","stroke-width":1},sib);
-      el("line",{x1:bx+8,y1:by+8+k*24,x2:bx+114,y2:by+8+k*24,stroke:"var(--line-soft)","stroke-width":1},sib);
+      el("line",{x1:bx+k*rect/4,y1:by+8,x2:bx+k*rect/4,y2:by+rect-8,stroke:"var(--line-soft)","stroke-width":1},sib);
+      el("line",{x1:bx+8,y1:by+8+k*(rect-16)/4,x2:bx+rect-8,y2:by+8+k*(rect-16)/4,stroke:"var(--line-soft)","stroke-width":1},sib);
     }
   }
   // plane bracket + label
   const plane=el("g",{class:"fade",id:"s1plane"},g); S1.plane=plane;
-  el("rect",{x:ox-16,y:oy-30,width:4*slotW+8,height:3*slotH+16,rx:14,fill:"none",stroke:"var(--line)","stroke-width":1.5,"stroke-dasharray":"2 5"},plane);
-  const pl=el("text",{x:ox-16,y:oy-40,class:"tag dim"},plane); pl.textContent="PLANE · DIE · CHIP"; pl.setAttribute("fill","var(--faint)");
-  // "watching" outline that sits over the scaled main block in step2
-  S1.watch=el("rect",{x:ox-5,y:oy-5,width:122,height:112,rx:12,fill:"none",stroke:"var(--charge)","stroke-width":2,class:"fade"},g);
-
-  // static caption chip under detailed block for step0/1 handled via labels above
-})();
+  el("rect",{x:ox-14,y:oy-26,width:(cols-1)*slotW+rect+28,height:(rows-1)*slotH+rect+40,rx:14,fill:"none",stroke:"var(--line)","stroke-width":1.5,"stroke-dasharray":"2 5"},plane);
+  el("text",{x:ox-14,y:oy-34,class:"tag dim"},plane).textContent="PLANE · DIE · CHIP";
+  // "watching" outline that sits over the scaled main block in step 2
+  S1.watch=el("rect",{x:ox-5,y:oy-5,width:rect+10,height:rect+10,rx:12,fill:"none",stroke:"var(--charge)","stroke-width":2,class:"fade"},g);
+}
 function renderS1(local){
   const big=`translate(${S1.native.tx},${S1.native.ty}) scale(1)`;
-  const scale=112/S1.native.w; // fit block into a slot
-  const small=`translate(${S1.slot0.x},${S1.slot0.y}) scale(${scale.toFixed(4)})`;
+  const small=`translate(${S1.slot0.x},${S1.slot0.y}) scale(${S1.scale.toFixed(4)})`; // fit block into a slot
   // default page look
   S1.pages.forEach(p=>setPage(p,""));
   const on=(node,b)=>node.classList.toggle("show",b);
@@ -268,42 +307,41 @@ function renderS1(local){
 
 /* ================= SCENE 2 : shared substrate erase ================= */
 const S2={};
-(function(){
-  const g=document.getElementById("s2");
-  const cell=58,gap=9,pad=14,cols=4, bx=336,by=64;
+function buildS2(L){
+  const g=$("s2");g.innerHTML="";
+  const {cell,gap,pad,by,below}=L.s2;
+  const W=pad*2+4*cell+3*gap, bx=(L.W-W)/2;
   const blk=el("g",{transform:`translate(${bx},${by})`},g);
   S2.pages=[];
   for(let i=0;i<16;i++){const c=i%4,r=Math.floor(i/4);
     const p=makePage(blk,pad+c*(cell+gap),pad+r*(cell+gap),cell,9);
     // 3 electrons per page
-    const cy=cell/2, s=cell;
-    for(let k=0;k<3;k++){el("circle",{class:"edot",cx:s/2+(k-1)*s*0.19,cy,r:3.6},p.g);}
+    for(let k=0;k<3;k++){el("circle",{class:"edot",cx:cell/2+(k-1)*cell*0.19,cy:cell/2,r:3.6},p.g);}
     S2.pages.push(p);
   }
-  const W=pad*2+cols*cell+(cols-1)*gap;
   el("text",{x:bx+W/2,y:by-14,"text-anchor":"middle",class:"tag dim"},g).textContent="ONE BLOCK";
   // column centers (absolute)
   S2.colX=[]; for(let c=0;c<4;c++)S2.colX.push(bx+pad+c*(cell+gap)+cell/2);
-  const blkBottom=by+W, subTop=by+W+56;
+  const blkBottom=by+W, subTop=blkBottom+50;
   // connectors + streaks
   const conn=el("g",{},g);
   S2.streaks=[];
   S2.colX.forEach(cx=>{
     el("line",{x1:cx,y1:blkBottom,x2:cx,y2:subTop,class:"struct",stroke:"var(--line-soft)","stroke-width":1.5},conn);
-    const st=el("line",{x1:cx,y1:blkBottom+2,x2:cx,y2:subTop-2,class:"streak"},conn);
-    S2.streaks.push(st);
+    S2.streaks.push(el("line",{x1:cx,y1:blkBottom+2,x2:cx,y2:subTop-2,class:"streak"},conn));
   });
   // substrate
   S2.sub=el("rect",{x:bx,y:subTop,width:W,height:26,rx:8,class:"substrate"},g);
-  el("text",{x:bx+W/2,y:subTop+17,"text-anchor":"middle",class:"tag"},g).textContent="SHARED SUBSTRATE";
-  // voltage source to the left
+  el("text",{x:bx+W/2,y:subTop+18,"text-anchor":"middle",class:"tag"},g).textContent="SHARED SUBSTRATE";
+  // voltage source: to the left of the substrate, or under it on a phone
   S2.volt=el("g",{class:"volt"},g); S2.voltEl=S2.volt;
-  const vx=bx-84, vy=subTop+13;
+  const vx=below?L.W/2-50:bx-84, vy=below?subTop+70:subTop+13;
   el("circle",{cx:vx,cy:vy,r:16,fill:"none",stroke:"currentColor","stroke-width":2},S2.volt);
   el("text",{x:vx,y:vy+1,"text-anchor":"middle","dominant-baseline":"central","font-family":"var(--mono)","font-size":"13","font-weight":"700",fill:"currentColor"},S2.volt).textContent="+V";
-  S2.voltArrow=el("path",{d:`M${vx+18} ${vy}H${bx-4}`,stroke:"currentColor","stroke-width":2,fill:"none","marker-end":"url(#ah)"},S2.volt);
-  S2.voltLabel=el("text",{x:vx,y:vy-26,"text-anchor":"middle",class:"tag"},S2.volt); S2.voltLabel.textContent="HIGH VOLTAGE";
-})();
+  S2.voltArrow=el("path",{d:below?`M${vx} ${vy-18}V${subTop+30}`:`M${vx+18} ${vy}H${bx-4}`,stroke:"currentColor","stroke-width":2,fill:"none","marker-end":"url(#ah)"},S2.volt);
+  S2.voltLabel=el("text",below?{x:vx+28,y:vy+5,class:"tag"}:{x:vx,y:vy-26,"text-anchor":"middle",class:"tag"},S2.volt); S2.voltLabel.textContent="HIGH VOLTAGE";
+  S2.voltLabel.style.fill="inherit";   // follows the source's on/off colour
+}
 function renderS2(local){
   const charged = local<=1;
   S2.pages.forEach(p=>{
@@ -319,34 +357,45 @@ function renderS2(local){
 
 /* ================= SCENE 3 : no overwrite ================= */
 const S3={};
-(function(){
-  const g=document.getElementById("s3");
-  const n=8,cell=66,gap=13, W=n*cell+(n-1)*gap, x0=(960-W)/2, y0=176;
-  el("text",{x:960/2,y:y0-26,"text-anchor":"middle",class:"tag dim"},g).textContent="ONE WORDLINE · 8 CELLS";
+function buildS3(L){
+  const g=$("s3");g.innerHTML="";
+  const {cell,gap,digit,inset,stack}=L.s3,n=8,W=n*cell+(n-1)*gap,x0=(L.W-W)/2;
+  const y0=(L.H-(26+cell+40+(stack?88:38)))/2+26;   // centre label, cells and chips
+  el("text",{x:L.W/2,y:y0-20,"text-anchor":"middle",class:"tag dim"},g).textContent="ONE WORDLINE · 8 CELLS";
   S3.cells=[];
   for(let i=0;i<n;i++){
-    const cx=x0+i*(cell+gap);
-    const cg=el("g",{transform:`translate(${cx},${y0})`},g);
-    const rect=el("rect",{x:0,y:0,width:cell,height:cell,rx:10,class:"page"},cg);
+    const cg=el("g",{transform:`translate(${x0+i*(cell+gap)},${y0})`},g);
+    const rect=el("rect",{x:0,y:0,width:cell,height:cell,rx:Math.min(10,cell/4),class:"page"},cg);
     const dig=el("text",{x:cell/2,y:cell/2+2,"text-anchor":"middle","dominant-baseline":"central",class:"bigdigit one"},cg);
+    dig.style.fontSize=digit+"px";
     dig.textContent="1";
     // deny X overlay
     const dx=el("g",{class:"denyX"},cg);
-    el("line",{x1:14,y1:14,x2:cell-14,y2:cell-14,stroke:"var(--deny)","stroke-width":4,"stroke-linecap":"round"},dx);
-    el("line",{x1:cell-14,y1:14,x2:14,y2:cell-14,stroke:"var(--deny)","stroke-width":4,"stroke-linecap":"round"},dx);
+    el("line",{x1:inset,y1:inset,x2:cell-inset,y2:cell-inset,stroke:"var(--deny)","stroke-width":4,"stroke-linecap":"round"},dx);
+    el("line",{x1:cell-inset,y1:inset,x2:inset,y2:cell-inset,stroke:"var(--deny)","stroke-width":4,"stroke-linecap":"round"},dx);
     S3.cells.push({g:cg,rect,dig,dx});
   }
-  // rule chips below
-  const cy=y0+cell+52;
-  function chip(cls,x,txt){
-    const gg=el("g",{class:"rulechip "+cls,transform:`translate(${x},${cy})`},g);
-    el("rect",{x:0,y:0,width:190,height:38,rx:10},gg);
-    el("text",{x:16,y:24},gg).textContent=txt;
-    return gg;
+  // rule chips below: side by side, or stacked on a phone; each sized to its text
+  const cy=y0+cell+40;
+  function chip(cls,txt){
+    const gg=el("g",{class:"rulechip "+cls},g);
+    const r=el("rect",{x:0,y:0,width:190,height:38,rx:10},gg);
+    const t=el("text",{x:16,y:24},gg); t.textContent=txt;
+    const w=Math.ceil(t.getComputedTextLength()||txt.replace(/ +/g," ").length*7.8)+32;
+    r.setAttribute("width",w);
+    return {gg,w};
   }
-  S3.okChip=chip("ok",960/2-206,"1 → 0   write · allowed");
-  S3.denyChip=chip("deny",960/2+16,"0 → 1   needs erase · blocked");
-})();
+  const a=chip("ok","1 → 0   write · allowed"), b=chip("deny","0 → 1   needs erase · blocked");
+  if(stack){
+    a.gg.setAttribute("transform",`translate(${(L.W-a.w)/2},${cy})`);
+    b.gg.setAttribute("transform",`translate(${(L.W-b.w)/2},${cy+50})`);
+  }else{
+    const x=(L.W-a.w-16-b.w)/2;
+    a.gg.setAttribute("transform",`translate(${x},${cy})`);
+    b.gg.setAttribute("transform",`translate(${x+a.w+16},${cy})`);
+  }
+  S3.okChip=a.gg; S3.denyChip=b.gg;
+}
 function renderS3(local){
   const setCell=(i,val)=>{
     const c=S3.cells[i];
@@ -371,51 +420,54 @@ function renderS3(local){
 
 /* ================= SCENE 4 : GC + write amplification ================= */
 const S4={};
-(function(){
-  const g=document.getElementById("s4");
-  const cell=50,gap=8,pad=13,cols=4;
-  const W=pad*2+cols*cell+(cols-1)*gap; // 250
-  const xX=150,xZ=xX+W+96,yB=58;
-  el("text",{x:xX+W/2,y:yB-14,"text-anchor":"middle",class:"tag charge"},g).textContent="BLOCK X";
-  S4.zLabel=el("text",{x:xZ+W/2,y:yB-14,"text-anchor":"middle",class:"tag dim"},g); S4.zLabel.textContent="BLOCK Z · FREE";
+function buildS4(L){
+  const g=$("s4");g.innerHTML="";
+  const {cell,gap,pad,yB,gapXZ,m}=L.s4;
+  const W=pad*2+4*cell+3*gap, xX=(L.W-(2*W+gapXZ))/2, xZ=xX+W+gapXZ;
+  el("text",{x:xX+W/2,y:yB-12,"text-anchor":"middle",class:"tag charge"},g).textContent="BLOCK X";
+  S4.zLabel=el("text",{x:xZ+W/2,y:yB-12,"text-anchor":"middle",class:"tag dim"},g); S4.zLabel.textContent="BLOCK Z · FREE";
   const blkX=el("g",{transform:`translate(${xX},${yB})`},g);
   const blkZ=el("g",{transform:`translate(${xZ},${yB})`},g);
   el("rect",{x:2,y:2,width:W-4,height:W-4,rx:12,fill:"none",stroke:"var(--line-soft)","stroke-width":1.5},blkX);
   el("rect",{x:2,y:2,width:W-4,height:W-4,rx:12,fill:"none",stroke:"var(--line-soft)","stroke-width":1.5},blkZ);
   S4.X=[];S4.Z=[];
-  const pos=i=>({c:i%4,r:Math.floor(i/4)});
+  const pos=i=>({c:i%4,r:Math.floor(i/4)}), rx=Math.min(8,cell/4);
   for(let i=0;i<16;i++){const {c,r}=pos(i);
-    S4.X.push(makePage(blkX,pad+c*(cell+gap),pad+r*(cell+gap),cell,8));
-    S4.Z.push(makePage(blkZ,pad+c*(cell+gap),pad+r*(cell+gap),cell,8));}
+    S4.X.push(makePage(blkX,pad+c*(cell+gap),pad+r*(cell+gap),cell,rx));
+    S4.Z.push(makePage(blkZ,pad+c*(cell+gap),pad+r*(cell+gap),cell,rx));}
   // absolute centre of a page (for arrows)
   S4.absX=i=>{const {c,r}=pos(i);return {x:xX+pad+c*(cell+gap)+cell/2,y:yB+pad+r*(cell+gap)+cell/2};};
   S4.absZ=i=>{const {c,r}=pos(i);return {x:xZ+pad+c*(cell+gap)+cell/2,y:yB+pad+r*(cell+gap)+cell/2};};
+  S4.cell=cell;
   // GC arrows (3) from X valid survivors -> Z
   S4.arrows=[];
-  for(let k=0;k<3;k++){
-    const a=el("path",{class:"arrow"},g); S4.arrows.push(a);
-  }
+  for(let k=0;k<3;k++) S4.arrows.push(el("path",{class:"arrow"},g));
 
-  /* ---- Write amplification meter ---- */
-  const mx=150,my=344,mw=600,mh=204;
-  el("rect",{x:mx,y:my,width:mw,height:mh,rx:14,fill:"rgba(255,255,255,.02)",stroke:"var(--line-soft)","stroke-width":1.5},g);
-  el("text",{x:mx+26,y:my+34,class:"tag dim"},g).textContent="WRITE AMPLIFICATION";
-  // big WA number left
-  S4.wa=el("text",{x:mx+118,y:my+128,"text-anchor":"middle",class:"wanum"},g); S4.wa.textContent="—";
-  el("text",{x:mx+118,y:my+164,"text-anchor":"middle",class:"metercap"},g).textContent="flash writes ÷ host writes";
-  // bars right
-  const tx=mx+256, tw=316, tH=26;
-  const barY1=my+70, barY2=my+130;
-  el("text",{x:tx,y:barY1-12,class:"metercap"},g).textContent="Host asked to write";
-  el("text",{x:tx,y:barY2-12,class:"metercap"},g).textContent="Flash actually wrote";
+  /* ---- Write amplification meter: number beside the bars, or above them on a phone ---- */
+  el("rect",{x:m.x,y:m.y,width:m.w,height:m.h,rx:14,fill:"var(--page-fill)",stroke:"var(--line-soft)","stroke-width":1.5},g);
+  el("text",{x:m.x+20,y:m.y+26,class:"tag dim"},g).textContent="WRITE AMPLIFICATION";
+  let tx,tw,tH,barY1,barY2;
+  if(m.stack){
+    S4.wa=el("text",{x:m.x+20,y:m.y+82,class:"wanum"},g);
+    el("text",{x:m.x+20,y:m.y+106,class:"metercap"},g).textContent="flash writes ÷ host writes";
+    tx=m.x+20; tw=m.w-40; tH=20; barY1=m.y+140; barY2=m.y+204;
+  }else{
+    S4.wa=el("text",{x:m.x+20,y:m.y+100,class:"wanum"},g);
+    el("text",{x:m.x+20,y:m.y+134,class:"metercap"},g).textContent="flash writes ÷ host writes";
+    tx=m.x+250; tw=m.w-270; tH=22; barY1=m.y+46; barY2=m.y+106;
+  }
+  S4.wa.textContent="—";
+  el("text",{x:tx,y:barY1-8,class:"metercap"},g).textContent="Host asked to write";
+  el("text",{x:tx,y:barY2-8,class:"metercap"},g).textContent="Flash actually wrote";
   el("rect",{x:tx,y:barY1,width:tw,height:tH,rx:7,class:"metertrack"},g);
   el("rect",{x:tx,y:barY2,width:tw,height:tH,rx:7,class:"metertrack"},g);
   S4.hostBar=el("rect",{x:tx,y:barY1,width:0,height:tH,rx:7,class:"meterfill host"},g);
   S4.flashBar=el("rect",{x:tx,y:barY2,width:0,height:tH,rx:7,class:"meterfill flash"},g);
-  S4.hostCnt=el("text",{x:tx+tw,y:barY1+tH+18,"text-anchor":"end",class:"metercap"},g); S4.hostCnt.textContent="0 pages";
-  S4.flashCnt=el("text",{x:tx+tw,y:barY2+tH+18,"text-anchor":"end",class:"metercap"},g); S4.flashCnt.textContent="0 pages";
+  S4.hostCnt=el("text",{x:tx+tw,y:barY1+tH+16,"text-anchor":"end",class:"metercap"},g); S4.hostCnt.textContent="0 pages";
+  S4.flashCnt=el("text",{x:tx+tw,y:barY2+tH+16,"text-anchor":"end",class:"metercap"},g); S4.flashCnt.textContent="0 pages";
   S4.meter={tx,tw,max:6};
-})();
+  waShown=0;
+}
 
 let waShown=0, waTween=null;
 function tweenWA(target){
@@ -430,7 +482,7 @@ function tweenWA(target){
   })(t0);
 }
 function setMeter(host,flash){
-  const {tx,tw,max}=S4.meter;
+  const {tw,max}=S4.meter;
   S4.hostBar.setAttribute("width", tw*host/max);
   S4.flashBar.setAttribute("width", tw*flash/max);
   S4.hostCnt.textContent=host+" page"+(host===1?"":"s");
@@ -456,10 +508,10 @@ function renderS4(local){
             setX(4,"moved","A′"); setX(5,"moved","B′"); setX(6,"moved","C′");
             S4.X[4].label.textContent="A′";S4.X[5].label.textContent="B′";S4.X[6].label.textContent="C′";
             setZ(0,"valid","A′"); setZ(1,"valid","B′"); setZ(2,"valid","C′");
-            // arrows from X survivors to Z targets
-            const src=[4,5,6], dst=[0,1,2];
+            // arrows from X survivors to Z targets, edge to edge so no head sits on a label
+            const src=[4,5,6], dst=[0,1,2], o1=S4.cell/2, o2=S4.cell/2+1;
             S4.arrows.forEach((a,k)=>{const s=S4.absX(src[k]),d=S4.absZ(dst[k]);
-              a.setAttribute("d",`M${s.x+18} ${s.y} C ${(s.x+d.x)/2} ${s.y-14}, ${(s.x+d.x)/2} ${d.y-14}, ${d.x-20} ${d.y}`);
+              a.setAttribute("d",`M${s.x+o1} ${s.y} C ${(s.x+d.x)/2} ${s.y-14}, ${(s.x+d.x)/2} ${d.y-14}, ${d.x-o2} ${d.y}`);
               a.classList.add("show");});
             S4.zLabel.textContent="BLOCK Z · IN USE"; },
     5:()=>{ // erase X -> all free ; Z keeps data
@@ -475,6 +527,19 @@ function renderS4(local){
 
   const counts={0:[0,0],1:[1,1],2:[3,3],3:[3,3],4:[3,6],5:[3,6],6:[3,6]};
   const [h,f]=counts[local]; setMeter(h,f);
+}
+
+/* ================= LAYOUT ================= */
+const board=document.querySelector("svg.board");
+let mode=null;
+function build(){   // (re)build every scene when the frame crosses the breakpoint
+  const want=board.getBoundingClientRect().width<560?"narrow":"wide";
+  if(want===mode)return false;
+  mode=want; const L=LAY[mode];
+  board.setAttribute("viewBox",`0 0 ${L.W} ${L.H}`);
+  $("lat").setAttribute("width",L.W); $("lat").setAttribute("height",L.H);
+  buildS1(L); buildS2(L); buildS3(L); buildS4(L);
+  return true;
 }
 
 /* ================= BEATS + DRIVER ================= */
@@ -506,12 +571,12 @@ const chLocal={}; // map global index -> local index within chapter
 (function(){const seen={};beats.forEach((b,i)=>{seen[b.ch]=(seen[b.ch]||0);b._local=seen[b.ch];seen[b.ch]++;});
   Object.keys(seen).forEach(c=>chLocal[c]=seen[c]);})();
 
-const scenes={1:document.getElementById("s1"),2:document.getElementById("s2"),3:document.getElementById("s3"),4:document.getElementById("s4")};
-const $title=document.getElementById("title"),$cap=document.getElementById("cap"),
-      $tabs=[...document.querySelectorAll(".tab")],$steps=document.getElementById("steps"),
-      $counter=document.getElementById("counter"),$prev=document.getElementById("prev"),
-      $next=document.getElementById("next"),$play=document.getElementById("play"),
-      $playicon=document.getElementById("playicon"),$restart=document.getElementById("restart");
+const scenes={1:$("s1"),2:$("s2"),3:$("s3"),4:$("s4")};
+const $title=$("title"),$cap=$("cap"),
+      $tabs=[...document.querySelectorAll(".tab")],$steps=$("steps"),
+      $counter=$("counter"),$prev=$("prev"),
+      $next=$("next"),$play=$("play"),
+      $playicon=$("playicon"),$restart=$("restart");
 
 let idx=-1,playing=false,timer=null;
 const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -559,7 +624,11 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="ArrowLeft"){e.preventDefault();if(idx>0)go(idx-1);}
   else if(e.key===" "){e.preventDefault();togglePlay();}
 });
+addEventListener("resize",()=>{ if(build()&&idx>=0){ const i=idx; idx=-1; render(i); } });
 
+build();
 render(0);
 if(!reduce)setTimeout(play,650);
 </script>
+</body>
+</html>
