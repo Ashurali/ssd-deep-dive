@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Enumeration &amp; Routing Explorer — BAR sizing and TLP routing</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+/* Theme: inside the site the page's theme is copied in (the site also sets
+   data-theme on load and on every toggle); on its own, follow the OS. */
+(function(){var r=document.documentElement;
+if(window.self!==window.top){try{var s=window.parent.document.body.getAttribute("data-md-color-scheme");if(s)r.setAttribute("data-theme",s==="slate"?"dark":"light")}catch(e){}return}
+var m=matchMedia("(prefers-color-scheme: light)");function f(){r.setAttribute("data-theme",m.matches?"light":"dark")}f();
+if(m.addEventListener)m.addEventListener("change",f);else if(m.addListener)m.addListener(f)})();
+</script>
 <style>
-:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9}
+:root{--bg:#0b1020;--panel:#111832;--line:#26304d;--cyan:#4dd0c4;--amber:#f2b13c;--violet:#a78bfa;--red:#ef6a6a;--tx:#e8eeff;--dim:#8ea0c9;
+  --cell:#0e1530;--cyan-d:#173a4d;--cyan-ink:#4dd0c4;--violet-t:rgba(167,139,250,.18);--hover:rgba(77,208,196,.12)}
+:root[data-theme="light"]{--bg:#ffffff;--panel:#f4f6fb;--line:#cfd6e6;--cyan:#0b7f76;--amber:#8a5c00;--violet:#5b3fc0;--red:#c0392b;--tx:#0a0e1c;--dim:#4a5578;
+  --cell:#eef1f8;--cyan-d:#d2ecea;--cyan-ink:#086a62;--violet-t:rgba(91,63,192,.12);--hover:rgba(11,127,118,.10)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "IBM Plex Sans",sans-serif;padding:22px;max-width:1000px;margin-inline:auto}
 h1{font-family:"Space Grotesk";font-size:26px;margin:0 0 4px}
@@ -14,16 +25,21 @@ h1 .a{color:var(--cyan)} .sub{color:var(--dim);margin:0 0 14px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}
 button{font:600 13px "IBM Plex Sans";background:transparent;color:var(--cyan);border:1px solid var(--cyan);border-radius:8px;padding:6px 12px;cursor:pointer}
-button:hover{background:rgba(77,208,196,.12)}
+button:hover{background:var(--hover)}
 button.amber{color:var(--amber);border-color:var(--amber)}
-select{font:13px "IBM Plex Mono";background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+select{font:13px "IBM Plex Mono";background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:4px 8px;max-width:100%}
 .mono{font-family:"IBM Plex Mono";font-size:13px}
 .note{color:var(--dim);font-size:13px;margin-top:6px}
 svg{display:block;width:100%;height:auto}
-#elog{font:12px "IBM Plex Mono";color:var(--dim);max-height:140px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}
+#elog{font:12px "IBM Plex Mono";color:var(--dim);max-height:140px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px;overflow-wrap:anywhere}
 #elog b{color:var(--amber)}
 footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
 h2{font-family:"Space Grotesk";font-size:17px;margin:4px 0 8px;color:var(--tx)}
+@media (max-width:600px){
+  body{padding:12px 10px} .panel{padding:10px} h1{font-size:22px}
+  .row{gap:8px} button{min-height:40px;flex:1 1 auto}
+  select{min-height:40px;flex:1 1 100%}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -37,7 +53,7 @@ h2{font-family:"Space Grotesk";font-size:17px;margin:4px 0 8px;color:var(--tx)}
     <span class="mono" id="enumState">boot: nothing mapped yet</span>
   </div>
   <div class="row">
-    <label class="mono">fire a MemWr at:</label>
+    <label class="mono" for="target">fire a MemWr at:</label>
     <select id="target">
       <option value="0x8000_1000">0x8000_1000 (inside SSD's window)</option>
       <option value="0x8010_2000">0x8010_2000 (inside NIC's window)</option>
@@ -46,7 +62,7 @@ h2{font-family:"Space Grotesk";font-size:17px;margin:4px 0 8px;color:var(--tx)}
     </select>
     <button id="fire">fire TLP</button>
   </div>
-  <svg id="stage" viewBox="0 0 1000 360"></svg>
+  <svg id="stage" viewBox="0 0 1000 360" role="img" aria-label="PCIe tree: root complex, switch, three endpoints and the host memory map"></svg>
   <div id="elog"></div>
   <p class="note">Enumeration: for each BAR, software reads, <b>writes all-1s</b>, reads back — the bits that <em>stayed zero</em> are hardwired, and they spell out the region size. Then it allocates host addresses and writes the base in. Routing: every switch port owns a <b>[Base, Limit]</b> address window (shaded); a TLP descends the tree only where its address fits — aim outside every window and it's rejected as an Unsupported Request. (Figs 5-30→5-48)</p>
 </div>
@@ -59,53 +75,96 @@ const $=id=>document.getElementById(id);
 const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const NS="http://www.w3.org/2000/svg";
 function log(m){const el=$("elog");el.innerHTML="<div>"+m+"</div>"+el.innerHTML;}
+/* colours are CSS variables, so a theme switch recolours a drawing at once;
+   var() goes through style, which every browser resolves */
+function mk(svg,t,a){const e=document.createElementNS(NS,t);for(const k in a){const v=a[k];if(typeof v==="string"&&v.startsWith("var("))e.style.setProperty(k,v);else e.setAttribute(k,v);}svg.appendChild(e);return e;}
+function txt(svg,x,y,s,c,sz,anch){const e=mk(svg,"text",{x,y,fill:c||"var(--dim)","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;}
+/* the viewBox matches the drawn width, so 11-13 unit text is 11-13 px on a
+   phone and on a desktop alike; below 640 px the memory map moves under the tree */
+const sceneW=svg=>Math.round(Math.max(300,Math.min(1000,svg.getBoundingClientRect().width||1000)));
+const fits=(s,size,w)=>s.length*size*0.6<=w-8;
 
 const EPS=[
-  {name:"SSD",size:0x10000,sizeTxt:"64 KB",base:null,x:290},
-  {name:"NIC",size:0x8000,sizeTxt:"32 KB",base:null,x:560},
-  {name:"GPU",size:0x100000,sizeTxt:"1 MB",base:null,x:830},
+  {name:"SSD",size:0x10000,sizeTxt:"64 KB",base:null},
+  {name:"NIC",size:0x8000,sizeTxt:"32 KB",base:null},
+  {name:"GPU",size:0x100000,sizeTxt:"1 MB",base:null},
 ];
 const BASES=[0x80000000,0x80100000,0x80200000];
 let phase=0; // 3 devices × 4 sub-steps, then done
-let flyer=null, flyPath=null;
+let flyer=null; // {leg,t,bad,hit}: leg 0 RC → switch, 1 through the switch, 2 switch → endpoint
 
 function hex(v){return "0x"+(v>>>0).toString(16).toUpperCase().padStart(8,"0").replace(/^(.{4})/,"$1_");}
 function draw(){
-  const svg=$("stage");svg.innerHTML="";
-  const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
-  const txt=(x,y,s,c,sz,anch)=>{const e=mk("text",{x,y,fill:c||"#8ea0c9","font-size":sz||12,"text-anchor":anch||"middle"});e.textContent=s;return e;};
-  // RC
-  mk("rect",{x:420,y:16,width:160,height:50,rx:10,fill:"#0e1530",stroke:"#26304d"});
-  txt(500,38,"Root Complex","#e8eeff",13); txt(500,56,"(CPU + memory map)","#8ea0c9",10);
-  // switch
-  mk("rect",{x:420,y:120,width:160,height:50,rx:10,fill:"#0e1530",stroke:"#26304d"});
-  txt(500,142,"Switch","#e8eeff",13);
+  const svg=$("stage"),W=sceneW(svg),nar=W<640;
+  svg.innerHTML="";
+  // tree geometry: the memory map sits left of the tree, or under it on a phone
+  const tx0=nar?10:200, tw=W-10-tx0, cx=tx0+tw/2;
+  const rc={y:10,h:nar?46:50,w:Math.min(160,tw-20)}, sw={y:nar?100:112,h:nar?46:50,w:Math.min(160,tw-20)};
+  const winY=sw.y+sw.h+18, linkTop=winY+8, epY=linkTop+(nar?54:56);
+  const gap=nar?8:10, epW=Math.min(190,(tw-2*gap)/3), epH=86;   // room for a two-line name and range
+  const epX=[0,1,2].map(i=>cx+(i-1)*(epW+gap));
+  // Root Complex
+  mk(svg,"rect",{x:cx-rc.w/2,y:rc.y,width:rc.w,height:rc.h,rx:10,fill:"var(--cell)",stroke:"var(--line)"});
+  txt(svg,cx,rc.y+21,"Root Complex","var(--tx)",13); txt(svg,cx,rc.y+38,"(CPU + memory map)","var(--dim)",11);
+  mk(svg,"line",{x1:cx,x2:cx,y1:rc.y+rc.h,y2:sw.y,stroke:"var(--line)","stroke-width":3});
+  // switch and its programmed window
+  mk(svg,"rect",{x:cx-sw.w/2,y:sw.y,width:sw.w,height:sw.h,rx:10,fill:"var(--cell)",stroke:"var(--line)"});
+  txt(svg,cx,sw.y+sw.h/2+5,"Switch","var(--tx)",13);
   const covered=EPS.filter(e=>e.base!=null);
-  txt(500,160,covered.length?("window "+hex(Math.min(...covered.map(e=>e.base)))+" – "+hex(Math.max(...covered.map(e=>e.base+e.size))-1)):"window: (not programmed)",covered.length?"#a78bfa":"#3a4468",9);
-  mk("line",{x1:500,x2:500,y1:66,y2:120,stroke:"#26304d","stroke-width":3});
-  // EPs
+  txt(svg,cx,winY,covered.length?("window "+hex(Math.min(...covered.map(e=>e.base)))+" – "+hex(Math.max(...covered.map(e=>e.base+e.size))-1)):"window: (not programmed)",covered.length?"var(--violet)":"var(--dim)",12);
+  // endpoints
   EPS.forEach((ep,i)=>{
-    mk("line",{x1:500,x2:ep.x,y1:170,y2:230,stroke:"#26304d","stroke-width":3});
-    mk("rect",{x:ep.x-85,y:230,width:170,height:64,rx:10,fill:"#0e1530",stroke:ep.base!=null?"#4dd0c4":"#26304d"});
-    txt(ep.x,252,ep.name+"  (BAR0: "+ep.sizeTxt+")","#e8eeff",12);
-    txt(ep.x,272,ep.base!=null?hex(ep.base)+" – "+hex(ep.base+ep.size-1):"unmapped","#4dd0c4",10);
+    const x=epX[i];
+    mk(svg,"line",{x1:cx,x2:x,y1:linkTop,y2:epY,stroke:"var(--line)","stroke-width":3});
+    mk(svg,"rect",{x:x-epW/2,y:epY,width:epW,height:epH,rx:10,fill:"var(--cell)",stroke:ep.base!=null?"var(--cyan)":"var(--line)"});
+    const one=ep.name+"  (BAR0: "+ep.sizeTxt+")",range=ep.base!=null?hex(ep.base)+" – "+hex(ep.base+ep.size-1):"";
+    let y=epY+20;
+    if(fits(one,12,epW)){ txt(svg,x,y,one,"var(--tx)",12); }
+    else{ txt(svg,x,y,ep.name,"var(--tx)",13); y+=16; txt(svg,x,y,"BAR0: "+ep.sizeTxt,"var(--dim)",11); }
+    y+=20;
+    if(ep.base==null) txt(svg,x,y,"unmapped","var(--cyan-ink)",11);
+    else if(fits(range,11,epW)) txt(svg,x,y,range,"var(--cyan-ink)",11);
+    else{ txt(svg,x,y,hex(ep.base),"var(--cyan-ink)",11); txt(svg,x,y+16,"– "+hex(ep.base+ep.size-1),"var(--cyan-ink)",11); }
     if(ep.base!=null){
       // shaded window on the link
-      mk("rect",{x:(500+ep.x)/2-38,y:192,width:76,height:16,rx:4,fill:"rgba(167,139,250,0.18)"});
-      txt((500+ep.x)/2,204,"[B,L]","#a78bfa",9);
+      const mx=(cx+x)/2,my=(linkTop+epY)/2;
+      mk(svg,"rect",{x:mx-20,y:my-9,width:40,height:18,rx:4,fill:"var(--violet-t)"});
+      txt(svg,mx,my+4,"[B,L]","var(--violet)",11);
     }
   });
-  // memory-map side pane
-  mk("rect",{x:10,y:16,width:170,height:330,rx:10,fill:"none",stroke:"#26304d"});
-  txt(95,36,"host memory map","#8ea0c9",11);
-  EPS.filter(e=>e.base!=null).sort((a,b)=>a.base-b.base).forEach((e,i)=>{
-    mk("rect",{x:24,y:52+i*54,width:142,height:44,rx:6,fill:"#173a4d",stroke:"#4dd0c4"});
-    txt(95,70+i*54,e.name,"#4dd0c4",11);
-    txt(95,86+i*54,hex(e.base),"#8ea0c9",9);
-  });
+  // host memory map
+  const mapped=EPS.filter(e=>e.base!=null).sort((a,b)=>a.base-b.base);
+  let H;
+  if(nar){
+    const my=epY+epH+18;
+    mk(svg,"rect",{x:10,y:my,width:W-20,height:124,rx:10,fill:"none",stroke:"var(--line)"});
+    txt(svg,W/2,my+20,"host memory map","var(--dim)",12);
+    mapped.forEach((e,i)=>{
+      const y=my+30+i*30;
+      mk(svg,"rect",{x:20,y,width:W-40,height:24,rx:6,fill:"var(--cyan-d)",stroke:"var(--cyan)"});
+      txt(svg,32,y+17,e.name,"var(--cyan-ink)",12,"start");
+      txt(svg,W-32,y+17,hex(e.base),"var(--cyan-ink)",12,"end");
+    });
+    H=my+132;
+  }else{
+    H=Math.max(epY+epH+12,352);
+    mk(svg,"rect",{x:10,y:10,width:170,height:H-20,rx:10,fill:"none",stroke:"var(--line)"});
+    txt(svg,95,32,"host memory map","var(--dim)",12);
+    mapped.forEach((e,i)=>{
+      mk(svg,"rect",{x:24,y:46+i*54,width:142,height:44,rx:6,fill:"var(--cyan-d)",stroke:"var(--cyan)"});
+      txt(svg,95,64+i*54,e.name,"var(--cyan-ink)",12);
+      txt(svg,95,81+i*54,hex(e.base),"var(--dim)",11);
+    });
+  }
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  // the TLP in flight
   if(flyer){
-    mk("circle",{cx:flyer.x,cy:flyer.y,r:9,fill:flyer.bad?"#ef6a6a":"#f2b13c"});
-    txt(flyer.x,flyer.y-14,"TLP","#f2b13c",10);
+    const pts=[[cx,rc.y+rc.h],[cx,sw.y],[cx,linkTop]];
+    if(flyer.hit>=0) pts.push([epX[flyer.hit],epY]);
+    const k=Math.min(flyer.leg,pts.length-1),a=pts[k],b=pts[Math.min(k+1,pts.length-1)];
+    const x=a[0]+(b[0]-a[0])*flyer.t,y=a[1]+(b[1]-a[1])*flyer.t;
+    mk(svg,"circle",{cx:x,cy:y,r:9,fill:flyer.bad?"var(--red)":"var(--amber)"});
+    txt(svg,x+14,y+4,"TLP","var(--amber)",11,"start");
   }
 }
 $("enumStep").onclick=()=>{
@@ -130,36 +189,34 @@ $("fire").onclick=()=>{
   if(flyer)return;
   const sel=$("target").value;
   const addr=parseInt(sel.replace(/_/g,"").replace("0x",""),16);
-  const hit=EPS.find(e=>e.base!=null&&addr>=e.base&&addr<e.base+e.size);
-  const inSwitch=EPS.some(e=>e.base!=null)&&hit;
+  const hit=EPS.findIndex(e=>e.base!=null&&addr>=e.base&&addr<e.base+e.size);
+  const inSwitch=EPS.some(e=>e.base!=null)&&hit>=0;
   log("RC emits MemWr @ "+sel);
-  const path=[[500,66],[500,120]];
-  if(hit) path.push([500,170],[hit.x,230]);
-  let leg=0,t=0;
-  flyer={x:500,y:66,bad:false};
+  const legs=hit>=0?3:1;
+  flyer={leg:0,t:0,bad:false,hit};
   const iv=setInterval(()=>{
-    t+=RM?1:0.07;
-    if(t>=1){
-      t=0;leg++;
-      if(leg===1){
+    flyer.t+=RM?1:0.07;
+    if(flyer.t>=1){
+      flyer.t=0;flyer.leg++;
+      if(flyer.leg===1){
         if(!inSwitch){
           flyer.bad=true;
           log("switch: address "+sel+" fits NO downstream [Base,Limit] window → <b>Unsupported Request</b>, TLP rejected.");
           setTimeout(()=>{flyer=null;draw();},RM?400:1200);
           clearInterval(iv);draw();return;
         }
-        log("switch: "+sel+" ∈ "+hit.name+"'s window → route down that port");
+        log("switch: "+sel+" ∈ "+EPS[hit].name+"'s window → route down that port");
       }
-      if(leg>=path.length-1){
-        log(hit.name+" accepts the write. Address decoded, done.");
-        clearInterval(iv);setTimeout(()=>{flyer=null;draw();},RM?300:900);return;
+      if(flyer.leg>=legs){
+        log(EPS[hit].name+" accepts the write. Address decoded, done.");
+        clearInterval(iv);draw();setTimeout(()=>{flyer=null;draw();},RM?300:900);return;
       }
     }
-    const [x0,y0]=path[leg],[x1,y1]=path[leg+1];
-    flyer.x=x0+(x1-x0)*t; flyer.y=y0+(y1-y0)*t;
     draw();
   },RM?250:25);
 };
+let lastW=0;
+addEventListener("resize",()=>{const w=document.body.clientWidth;if(w!==lastW){lastW=w;draw();}});
 draw();
 log("press ▶ to start enumeration — 4 steps per device, watch the memory map fill in");
 </script>
